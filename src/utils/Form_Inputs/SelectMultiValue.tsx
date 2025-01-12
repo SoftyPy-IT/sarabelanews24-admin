@@ -43,6 +43,7 @@ export default function SelectMultiValue({
             <>
               <Select
                 isSearchable
+                isClearable
                 primaryColor="indigo"
                 value={isMultiple ? value || null : value || null}
                 onChange={(selected) => {

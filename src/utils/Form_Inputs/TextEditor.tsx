@@ -84,7 +84,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
+import AllImages from "@/app/(main)/dashboard/gallery/all-img/_components/AllImages";
 
 const ColorPickerContent = ({
   editor,
@@ -228,7 +228,7 @@ const TableMenu = ({ editor }: { editor: any }) => {
 interface TextEditorProps {
   name: string;
   rules?: string | object;
-  placeholder: string | any;
+  placeholder: string;
   defaultValue?: string;
   readOnly?: boolean;
 }
@@ -236,9 +236,10 @@ interface TextEditorProps {
 const TextEditor: React.FC<TextEditorProps> = ({
   name,
   rules,
-  placeholder = "please type...",
+  placeholder = "Start typing...",
   defaultValue = "",
   readOnly = false,
+  // onImageUpload,
 }) => {
   const [linkUrl, setLinkUrl] = useState("");
   const [linkDialog, setLinkDialog] = useState(false);
@@ -295,10 +296,6 @@ const TextEditor: React.FC<TextEditorProps> = ({
       Typography,
       Placeholder.configure({
         placeholder,
-        emptyEditorClass: "is-editor-empty",
-        emptyNodeClass: "is-empty",
-        showOnlyWhenEditable: true,
-        showOnlyCurrent: true,
       }),
       TaskList,
       TaskItem.configure({
@@ -308,7 +305,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
     editorProps: {
       attributes: {
         class:
-          "prose prose-lg focus:outline border border-black focus:ring-1 focus:ring-black  max-w-full mx-auto min-h-[200px] bg-white p-3",
+          "prose prose-lg focus:outline focus:outline-gray-300 max-w-full mx-auto min-h-[200px] bg-white p-3",
       },
     },
     onUpdate: ({ editor }) => {
@@ -353,7 +350,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
     if (readOnly) return null;
 
     return (
-      <ScrollArea className="border-t border-x border-black">
+      <ScrollArea className="border-b">
         <div className="flex flex-wrap items-center gap-2 p-2">
           <div className="flex flex-wrap gap-2">
             <TooltipProvider>
@@ -430,7 +427,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
                         if (value === "paragraph") {
                           editor.chain().focus().setParagraph().run();
                         } else {
-                          const level: any = parseInt(
+                          const level = parseInt(
                             value.replace("heading", ""),
                             10
                           );
@@ -735,17 +732,6 @@ const TextEditor: React.FC<TextEditorProps> = ({
 
   return (
     <div className="border rounded-lg">
-      <style jsx global>{`
-        .ProseMirror p.is-editor-empty:first-child::before {
-          color: #adb5bd;
-          content: attr(data-placeholder);
-          float: left;
-          height: 0;
-          font-size: 1rem;
-          pointer-events: none;
-          position: absolute;
-        }
-      `}</style>
       <Controller
         name={name}
         control={control}
@@ -768,9 +754,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
         render={({ field, fieldState }) => (
           <>
             <MenuBar />
-          
-            <EditorContent editor={editor} value={field.value}/>
-       
+            <EditorContent editor={editor} value={field.value} />
             {fieldState.error && (
               <p className="text-red-500 text-sm px-3 py-1">
                 {fieldState.error.message}
@@ -780,7 +764,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
             <div>
               <Sheet open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
                 <SheetContent side="right" style={{ maxWidth: "800px" }}>
-                  <AllImgModal />
+                  <AllImages />
                 </SheetContent>
               </Sheet>
             </div>
