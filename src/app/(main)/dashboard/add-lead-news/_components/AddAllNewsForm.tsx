@@ -26,6 +26,7 @@ import TagSelector from "@/utils/Form_Inputs/TagSelector";
 import { NEWSSelect } from "@/utils/Form_Inputs/Select";
 import { newsCategory, newsType } from "@/types/select";
 import { useRouter } from "next/navigation";
+import RichText from "@/utils/Form_Inputs/RichText";
 
 type Inputs = {
   reporterType: string;
@@ -112,8 +113,11 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
       ...data,
       category: data.category.value,
       postDate: new Date().toISOString(),
+     
+      // reporterType: data.reporterType.value,
+      // reportedDate: new Date().toISOString(),
     };
-
+    
     try {
       const res = await createNews(modifyData).unwrap();
       if (res.success) {
@@ -124,6 +128,8 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
       console.error(error);
     }
   };
+
+  console.log(data)
 
   return (
     <>
@@ -143,10 +149,12 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                       name="reportedDate"
                       rules={{ required: "Reported date and time is required" }}
                     />
+
                     <SelectInput
                       control={form.control}
                       name="reporterType"
-                      placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
+                      placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"                     
+                      
                       options={[
                         {
                           label: "নিজস্ব প্রতিনিধি",
@@ -156,6 +164,7 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                       ]}
                       rules={{ required: "Reporter type is required" }}
                     />
+                    
 
                     <TextInput
                       control={form.control}
@@ -203,7 +212,18 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                         placeholder="ইমেজ ট্যাগ লাইন"
                         rules={{ required: "Image Tagline is required" }}
                       />
-
+                      <DateTimeInput
+                        control={form.control}
+                        name="publishedDate"
+                        type="datetime-local"
+                        rules={{ required: "Published date is required" }}
+                      />
+                      {/* <TextInput
+                        control={form.control}
+                        name="publishedDate"
+                        type="datetime-local"
+                        rules={{ required: "Published date is required" }}
+                      /> */}
                       <TextInput
                         control={form.control}
                         rules={{ required: "Photographer name is required" }}
@@ -212,7 +232,7 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                       />
                       <TextInput
                         control={form.control}
-                        rules={{ required: "slug is required" }}
+                        rules={{ required: "Slug is required" }}
                         name="slug"
                         placeholder="Slug"
                       />
@@ -254,12 +274,6 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
 
                       <TextInput
                         control={form.control}
-                        name="publishedDate"
-                        type="datetime-local"
-                        rules={{ required: "Published date is required" }}
-                      />
-                      <TextInput
-                        control={form.control}
                         name="newsTag"
                         placeholder="News Tag"
                         rules={{ required: "Published date is required" }}
@@ -283,13 +297,16 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                         rules={{ required: "Short Description is required" }}
                       />
                     </div>
-
+                    {/* 
                     <div className="col-span-2">
                       <TextEditor
                         rules={"Description is required"}
                         name={"description"}
                         placeholder={"সংবাদ বিবরণ লিখুন"}
                       />
+                    </div> */}
+                    <div className="col-span-2">
+                      <RichText name="description" label="Description" />
                     </div>
                   </div>
                 </section>
@@ -356,13 +373,18 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                         <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
                           <TextInput
                             control={form.control}
-                            name={`tags.${index}.photoJournalistName`}
-                            placeholder="ফটো সাংবাদিক নাম"
+                            name={`tags.${index}.imageTagline`}
+                            placeholder="ইমেজ ট্যাগ লাইন"
+                            rules={{ required: "Image Tag Line is required" }}
                           />
                           <TextInput
                             control={form.control}
-                            name={`tags.${index}.imageTagline`}
-                            placeholder="ইমেজ ট্যাগ লাইন"
+                            name={`tags.${index}.photoJournalistName`}
+                            placeholder="ফটো সাংবাদিক নাম"
+                            rules={{
+                              required:
+                                "Photo Journalist Name name is required",
+                            }}
                           />
                         </div>
                       </div>
@@ -376,17 +398,26 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                   <div className="col-span-2">
                     <div className="flex flex-col space-y-3 mb-2">
                       <div className="grid grid-cols-1  gap-4">
+                        <DateTimeInput
+                          control={form.control}
+                          name="postDate"
+                          label="Post Date"
+                          type="datetime-local"
+                          rules={{ required: "Post date is required" }}
+                        />
                         <TextInput
                           control={form.control}
                           name={"adminName"}
                           placeholder="Admin"
+                          label="Admin"
+                          rules={{ required: "Admin Name is Required" }}
                         />
-                        <TextInput
+                        {/* <TextInput
                           control={form.control}
                           name="postDate"
                           type="datetime-local"
                           rules={{ required: "Published date is required" }}
-                        />
+                        /> */}
                       </div>
                     </div>
                   </div>
@@ -418,17 +449,16 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                   </CardContent>
                 </section>
               </div>
-              
             </div>
             {/* Submit Section */}
             <section className="flex justify-end mt-5">
-                <Button
-                  type="submit"
-                  className="w-[200px] bg-blue-500 text-white hover:bg-blue-600"
-                >
-                  Submit
-                </Button>
-              </section>
+              <Button
+                type="submit"
+                className="w-[200px] bg-blue-500 text-white hover:bg-blue-600"
+              >
+                Submit
+              </Button>
+            </section>
           </form>
         </Form>
       </div>
