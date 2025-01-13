@@ -37,7 +37,7 @@ type Inputs = {
   imageTagline: string;
   photoJournalistName: string;
   news_category: string;
-  news_sub_category:string;
+  news_sub_category: string;
   news_type: string;
   adminName: string;
   postDate: Date;
@@ -79,7 +79,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       imageTagline: "",
       photoJournalistName: "",
       news_showing_position: "",
-      news_sub_category:"",
+      news_sub_category: "",
       news_category: "",
       news_type: "",
       slug: "",
@@ -428,16 +428,6 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                       />
                     </div>
                   </div>
-
-                  {/* Submit Section */}
-                  <section className="flex justify-end mt-5">
-                    <Button
-                      type="submit"
-                      className="w-[200px]  text-white hover:bg-blue-600"
-                    >
-                      <PlusIcon className="w-4 h-4" /> Add Lead News
-                    </Button>
-                  </section>
                 </section>
               </div>
 
@@ -628,7 +618,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
             </section>
           </form>
         </Form>
-      </div>
+      </div>  
     </>
   );
 };
