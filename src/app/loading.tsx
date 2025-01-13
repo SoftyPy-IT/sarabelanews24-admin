@@ -10,7 +10,7 @@ const LoadingFallback = () => (
   </div>
 );
 
-const LoadingAnimation = () => {
+const Loading = () => {
   const loading = require("@public/assets/loading.json");
 
   return (
@@ -22,4 +22,4 @@ const LoadingAnimation = () => {
   );
 };
 
-export default LoadingAnimation;
+export default Loading;

@@ -66,7 +66,7 @@ const TopBar = () => {
         {/* Create User Button */}
         <Sheet>
           <SheetTrigger asChild>
-            <Button className="w-full sm:w-auto bg-blue-500 text-white hover:bg-blue-600">
+            <Button className="w-full sm:w-auto text-white hover:bg-blue-600">
               Create User
             </Button>
           </SheetTrigger>
@@ -109,7 +109,7 @@ const TopBar = () => {
                 <div className="flex justify-end my-6">
                   <Button
                     onClick={handleButtonClick}
-                    className="bg-green-500 text-white hover:bg-green-600"
+                    className=" text-white hover:bg-green-600"
                   >
                     Create User
                   </Button>

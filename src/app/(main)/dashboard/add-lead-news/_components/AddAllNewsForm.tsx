@@ -289,7 +289,7 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                         rules={{ required: "Short Description is required" }}
                       />
                     </div>
-                    {/* 
+                    {/*
                     <div className="col-span-2">
                       <TextEditor
                         rules={"Description is required"}

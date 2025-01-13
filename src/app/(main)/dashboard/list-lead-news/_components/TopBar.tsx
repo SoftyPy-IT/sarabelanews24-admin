@@ -1,95 +1,95 @@
 "use client";
 
 import * as React from "react";
-import { Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import Image from "next/image";
-import upload from "../../../../../assests/images/upload.webp";
-import { Form } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import SelectInput from "@/utils/Form_Inputs/SelectInput";
+// import { Search } from "lucide-react";
+// import { Button } from "@/components/ui/button";
+// import {
+//   Sheet,
+//   SheetContent,
+//   SheetHeader,
+//   SheetTitle,
+//   SheetTrigger,
+// } from "@/components/ui/sheet";
+// import Image from "next/image";
+// import upload from "../../../../../assests/images/upload.webp";
+// import { Form } from "@/components/ui/form";
+// import { useForm } from "react-hook-form";
+// import SelectInput from "@/utils/Form_Inputs/SelectInput";
 
 const TopBar = () => {
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-  const [open, setOpen] = React.useState(false);
-  const [dragOver, setDragOver] = React.useState(false);
+  // const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+  // const [open, setOpen] = React.useState(false);
+  // const [dragOver, setDragOver] = React.useState(false);
 
-  const handleButtonClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+  // const handleButtonClick = () => {
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.click();
+  //   }
+  // };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      console.log("File selected:", file);
+  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0];
+  //   if (file) {
+  //     console.log("File selected:", file);
       
-    }
-  };
+  //   }
+  // };
 
-  type Inputs = {
-    reporterType: string;
-    reporterName: string;
-    newsArea: string;
-    reportedDateAndTime: string;
-    selectedImage: string;
-    photoJournalistName: string;
-    img_type: string;
-    publishedDate: string;
-    newsTitle: string;
-    description: string;
-    newsTags: string[];
-  };
+  // type Inputs = {
+  //   reporterType: string;
+  //   reporterName: string;
+  //   newsArea: string;
+  //   reportedDateAndTime: string;
+  //   selectedImage: string;
+  //   photoJournalistName: string;
+  //   img_type: string;
+  //   publishedDate: string;
+  //   newsTitle: string;
+  //   description: string;
+  //   newsTags: string[];
+  // };
 
-  const form = useForm<Inputs>({
-    defaultValues: {
-      reporterType: "",
-      reporterName: "",
-      newsArea: "",
-      reportedDateAndTime: "",
-      photoJournalistName: "",
-      img_type: "",
-      publishedDate: "",
-      newsTitle: "",
-      description: "",
-      newsTags: [""],
-    },
-  });
+  // const form = useForm<Inputs>({
+  //   defaultValues: {
+  //     reporterType: "",
+  //     reporterName: "",
+  //     newsArea: "",
+  //     reportedDateAndTime: "",
+  //     photoJournalistName: "",
+  //     img_type: "",
+  //     publishedDate: "",
+  //     newsTitle: "",
+  //     description: "",
+  //     newsTags: [""],
+  //   },
+  // });
 
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    setDragOver(true);
-  };
+  // const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+  //   event.preventDefault();
+  //   setDragOver(true);
+  // };
 
-  const handleDragLeave = () => {
-    setDragOver(false);
-  };
+  // const handleDragLeave = () => {
+  //   setDragOver(false);
+  // };
 
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    setDragOver(false);
-    const file = event.dataTransfer.files?.[0];
-    if (file) {
-      console.log("File dropped:", file);
+  // const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+  //   event.preventDefault();
+  //   setDragOver(false);
+  //   const file = event.dataTransfer.files?.[0];
+  //   if (file) {
+  //     console.log("File dropped:", file);
       
-    }
-  };
+  //   }
+  // };
   return (
     <>
-      <div className="flex justify-between items-center content-center bg-white p-2  border shadow-sm mb-5 gap-2 md:gap-0 ">
+      <div className="flex justify-between items-center content-center bg-white p-3  border rounded-md shadow-sm mb-5 gap-2 md:gap-0  ">
         <div className="space-y-2">
-          <h2 className="text-sm md:text-3xl pl-2 font-semibold">Image</h2>
+          <h2 className="text-sm md:text-3xl pl-2 font-semibold">Update</h2>
         </div>
 
-        <div className="relative border md:w-[300px] py-1">
+        {/* <div className="relative border md:w-[300px] py-1">
           <span className="absolute inset-y-0 left-0 flex items-center py-4">
             <button type="submit" className="p-2 focus:outline-none focus:ring">
               <Search className="h-4 md:h-5 w-4 md:w-5" />
@@ -169,7 +169,7 @@ const TopBar = () => {
               </div>
             </Form>
           </SheetContent>
-        </Sheet>
+        </Sheet> */}
       </div>
       {/* <CreateFolderModal isOpen={open} onOpenChange={setOpen} /> */}
     </>
