@@ -1,4 +1,4 @@
-import AddAllNewsForm from "./_components/AddAllNewsForm";
+import AddAllNewsForm from "./_components/AddNewsForm";
 
 const page = () => {
   return (

@@ -21,7 +21,7 @@ import {
   Folder,
   UserRoundCog,
   GalleryThumbnailsIcon,
-  ChartLine
+  ChartLine,
 } from "lucide-react";
 
 const Aside = () => {
@@ -35,10 +35,15 @@ const Aside = () => {
     },
     {
       href: "/dashboard",
-      label: "Lead News",
+      label: "News",
       icon: ChartNetworkIcon,
       children: [
-        { href: "/dashboard/add-lead-news", label: "Add News", icon: PlusIcon },
+        { href: "/dashboard/add-news", label: "Add News", icon: PlusIcon },
+        {
+          href: "/dashboard/add-news-category",
+          label: "Add News Category",
+          icon: PlusIcon,
+        },
         {
           href: "/dashboard/list-lead-news",
           label: "List Lead News",
@@ -146,9 +151,7 @@ const Aside = () => {
             priority
           />
         </Link>
-        <p className="text-lg   font-bold">
-          সত্যের সন্ধানে সব সময়
-        </p>
+        <p className="text-lg   font-bold">সত্যের সন্ধানে সব সময়</p>
       </div>
 
       {/* Navigation Menu */}
