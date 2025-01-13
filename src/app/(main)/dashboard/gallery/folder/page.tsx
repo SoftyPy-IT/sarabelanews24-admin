@@ -24,7 +24,7 @@ const Page = () => {
         <h1 className="text-xl text-black font-bold flex-1">Image Manager</h1>
 
         <div className="relative border rounded-md w-full sm:w-[300px] flex-shrink-0">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-1">
             <button type="submit" className="p-2 focus:outline-none focus:ring">
               <Search className="h-5 w-5 text-black" />
             </button>

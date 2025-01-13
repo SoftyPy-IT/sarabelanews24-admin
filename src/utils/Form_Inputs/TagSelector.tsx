@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Tag, X } from "lucide-react";
+import { PlusIcon, Tag, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type TagSelectorProps = {
@@ -112,7 +112,7 @@ export default function TagSelector({
                 onClick={() => handleAddTag(onChange)}
                 className="whitespace-nowrap"
               >
-                Add Tag
+                <PlusIcon className="w-4 h-4" /> Add Tag
               </Button>
             </div>
             {error && <p className="text-sm text-red-600">{error.message}</p>}

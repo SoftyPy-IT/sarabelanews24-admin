@@ -1,32 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { Button } from "@/components/ui/button";
+import TopBar from "./TopBar";
 import { Form } from "@/components/ui/form";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { CardContent } from "@/components/ui/card";
+import RichText from "@/utils/Form_Inputs/RichText";
+import TextArea from "@/utils/Form_Inputs/TextArea";
+import { DialogTitle } from "@/components/ui/dialog";
+import TextInput from "@/utils/Form_Inputs/TextInput";
+import { newsCategory, newsType } from "@/types/select";
 import { useForm, useFieldArray } from "react-hook-form";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
-import TextInput from "@/utils/Form_Inputs/TextInput";
-import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import TextEditor from "@/utils/Form_Inputs/TextEditor";
-import TextArea from "@/utils/Form_Inputs/TextArea";
-import { Delete, ImageUpIcon, PlusIcon } from "lucide-react";
-import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
-import {
-  useCreateNewsMutation,
-  useGetAllNewsQuery,
-} from "@/redux/dailynews/news.api";
-import TopBar from "./TopBar";
-import Image from "next/image";
-import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
-import SelectMultiValue from "@/utils/Form_Inputs/SelectMultiValue";
-import { DialogTitle } from "@/components/ui/dialog";
-import { CardContent } from "@/components/ui/card";
 import TagSelector from "@/utils/Form_Inputs/TagSelector";
-import { NEWSSelect } from "@/utils/Form_Inputs/Select";
-import { newsCategory, newsType } from "@/types/select";
-import { useRouter } from "next/navigation";
-import RichText from "@/utils/Form_Inputs/RichText";
+import { Delete, ImageUpIcon, PlusIcon } from "lucide-react";
+import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
+import { useCreateNewsMutation } from "@/redux/dailynews/news.api";
+import SelectMultiValue from "@/utils/Form_Inputs/SelectMultiValue";
+import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
+import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 type Inputs = {
   reporterType: string;
@@ -113,11 +107,11 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
       ...data,
       category: data.category.value,
       postDate: new Date().toISOString(),
-     
+
       // reporterType: data.reporterType.value,
       // reportedDate: new Date().toISOString(),
     };
-    
+
     try {
       const res = await createNews(modifyData).unwrap();
       if (res.success) {
@@ -129,7 +123,7 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
     }
   };
 
-  console.log(data)
+  console.log(data);
 
   return (
     <>
@@ -153,8 +147,7 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                     <SelectInput
                       control={form.control}
                       name="reporterType"
-                      placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"                     
-                      
+                      placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
                       options={[
                         {
                           label: "নিজস্ব প্রতিনিধি",
@@ -164,7 +157,6 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                       ]}
                       rules={{ required: "Reporter type is required" }}
                     />
-                    
 
                     <TextInput
                       control={form.control}
@@ -309,6 +301,16 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                       <RichText name="description" label="Description" />
                     </div>
                   </div>
+
+                  {/* Submit Section */}
+                  <section className="flex justify-end mt-5">
+                    <Button
+                      type="submit"
+                      className="w-[200px]  text-white hover:bg-blue-600"
+                    >
+                      <PlusIcon className="w-4 h-4" /> Add Lead News
+                    </Button>
+                  </section>
                 </section>
               </div>
 
@@ -450,15 +452,6 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                 </section>
               </div>
             </div>
-            {/* Submit Section */}
-            <section className="flex justify-end mt-5">
-              <Button
-                type="submit"
-                className="w-[200px] bg-blue-500 text-white hover:bg-blue-600"
-              >
-                Submit
-              </Button>
-            </section>
           </form>
         </Form>
       </div>
