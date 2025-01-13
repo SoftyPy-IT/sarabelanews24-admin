@@ -67,59 +67,59 @@ const LeadNewsDataTable = () => {
   const columns: ColumnDef<any, any>[] = [
     {
       accessorKey: "adminName",
-      header: "Admin Name",
+      header: () => <span className="font-bold">Admin Name</span>,
     },
     {
       accessorKey: "category",
-      header: "Category",
+      header: () => <span className="font-bold">Category</span>,
     },
     {
       accessorKey: "createdAt",
-      header: "Created At",
+      header: () => <span className="font-bold">Created At</span>,
     },
     {
       accessorKey: "date",
-      header: "Date",
+      header: () => <span className="font-bold">Date</span>,
     },
     {
       accessorKey: "description",
-      header: "Description",
+      header: () => <span className="font-bold">Description</span>,
     },
     {
       accessorKey: "imageTagline",
-      header: "Image Tagline",
+      header: () => <span className="font-bold">Image Tagline</span>,
     },
     {
       accessorKey: "metaTitle",
-      header: "Meta Title",
+      header: () => <span className="font-bold">Meta Title</span>,
     },
     {
       accessorKey: "metaDescription",
-      header: "Meta Description",
+      header: () => <span className="font-bold">Meta Description</span>,
     },
     {
       accessorKey: "newsCategory",
-      header: "News Category",
+      header: () => <span className="font-bold">News Category</span>,
     },
     {
       accessorKey: "newsType",
-      header: "News Type",
+      header: () => <span className="font-bold">News Type</span>,
     },
     {
       accessorKey: "shortDescription",
-      header: "Short Description",
+      header: () => <span className="font-bold">Short Description</span>,
     },
     {
       accessorKey: "slug",
-      header: "Slug",
+      header: () => <span className="font-bold">Slug</span>,
     },
     {
       accessorKey: "title",
-      header: "Title",
+      header: () => <span className="font-bold">Title</span>,
     },
     {
       accessorKey: "Action",
-      header: "Action",
+      header: () => <span className="font-bold">Action</span>,
       cell: ({ row }: any) => (
         <ActionDropdown
           row={row}
@@ -130,10 +130,12 @@ const LeadNewsDataTable = () => {
       ),
     },
   ];
+  
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto bg-white p-2">
       <DataTable
+      
         columns={columns}
         data={newsData}
         filterKey="adminName"

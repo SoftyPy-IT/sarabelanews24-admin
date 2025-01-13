@@ -111,8 +111,8 @@ const Page = () => {
         <DataTable
           columns={columns}
           data={data}
-          filterKey="name"
-          filterPlaceholder="Search by Name"
+          // filterKey="name"
+          // filterPlaceholder="Search by Name"
           pageSize={10}
         />
       </div>
