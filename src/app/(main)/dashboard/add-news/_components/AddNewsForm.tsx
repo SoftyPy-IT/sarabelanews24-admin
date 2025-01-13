@@ -1,33 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { useForm, useFieldArray } from "react-hook-form";
-import SelectInput from "@/utils/Form_Inputs/SelectInput";
-import TextInput from "@/utils/Form_Inputs/TextInput";
-import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import TextEditor from "@/utils/Form_Inputs/TextEditor";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { CardContent } from "@/components/ui/card";
+import RichText from "@/utils/Form_Inputs/RichText";
 import TextArea from "@/utils/Form_Inputs/TextArea";
-import { Delete, ImageUpIcon, PlusIcon } from "lucide-react";
+import TextInput from "@/utils/Form_Inputs/TextInput";
+import SelectInput from "@/utils/Form_Inputs/SelectInput";
+import { Delete, ImageUpIcon, PlusIcon, Sheet } from "lucide-react";
+import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
+import { useCreateNewsMutation } from "@/redux/dailynews/news.api";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
-import {
-  useCreateNewsMutation,
-  useGetAllNewsQuery,
-} from "@/redux/dailynews/news.api";
-import TopBar from "./TopBar";
-import Image from "next/image";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
 import SelectMultiValue from "@/utils/Form_Inputs/SelectMultiValue";
-import { DialogTitle } from "@/components/ui/dialog";
-import { CardContent } from "@/components/ui/card";
 import TagSelector from "@/utils/Form_Inputs/TagSelector";
-import { NEWSSelect } from "@/utils/Form_Inputs/Select";
-import { useRouter } from "next/navigation";
-import RichText from "@/utils/Form_Inputs/RichText";
 import NewsType from "./NewsType";
 import RadioInput from "@/utils/Form_Inputs/RadioInput";
+// import { SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 type Inputs = {
   reporterType: string;
@@ -38,8 +36,8 @@ type Inputs = {
   selectedImage: string;
   imageTagline: string;
   photoJournalistName: string;
-  news_division: string;
   news_category: string;
+  news_sub_category:string;
   news_type: string;
   adminName: string;
   postDate: Date;
@@ -54,7 +52,6 @@ type Inputs = {
     photoJournalistName: string;
     selectedImage: string;
   }[];
-  newsTag: string;
   metaTitle: string;
   metaKeywords: string | string[];
   metaDescription: string;
@@ -78,12 +75,11 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       reporterName: "",
       adminName: "",
       newsArea: "",
-      newsTag: "",
       reportedDate: "",
       imageTagline: "",
       photoJournalistName: "",
       news_showing_position: "",
-      news_division: "",
+      news_sub_category:"",
       news_category: "",
       news_type: "",
       slug: "",
@@ -98,10 +94,18 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       metaDescription: "",
     },
   });
+
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "tags",
   });
+
+  const newsDivision = useWatch({
+    control: form.control,
+    name: "news_category",
+  });
+
+  console.log(newsDivision);
 
   // api
   if (isLoading) {
@@ -146,7 +150,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                   <h1 className="mb-2 font-semibold text-blue-500">
                     প্রতিনিধি তথ্য:
                   </h1>
-                  
+
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <SelectInput
                       control={form.control}
@@ -236,68 +240,84 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
                 {/* news area */}
                 <section className="bg-white border border-blue-500 rounded-md p-5">
-                  <h1 className="mb-2">সংবাদ এলাকা:</h1>
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    <SelectMultiValue
-                      name={"news_area"}
-                      options={[
-                        { label: "ঢাকা (Dhaka)", value: "Dhaka" },
-                        { label: "বরিশাল (Barisal)", value: "Barisal" },
-                        {
-                          label: "চট্টগ্রাম (Chittagong)",
-                          value: "Chittagong",
-                        },
-                        { label: "রাজশাহী (Rajshahi)", value: "Rajshahi" },
-                        { label: "খুলনা (Khulna)", value: "Khulna" },
-                        { label: "সিলেট (Sylhet)", value: "Sylhet" },
-                        { label: "রংপুর (Rangpur)", value: "Rangpur" },
-                        {
-                          label: "ময়মনসিংহ (Mymensingh)",
-                          value: "Mymensingh",
-                        },
-                      ]}
-                      label={"বিভাগ নির্বাচন করুন"}
-                    />
-                    <SelectMultiValue
-                      name={"news_area"}
-                      options={[
-                        { label: "ঢাকা (Dhaka)", value: "Dhaka" },
-                        { label: "বরিশাল (Barisal)", value: "Barisal" },
-                        {
-                          label: "চট্টগ্রাম (Chittagong)",
-                          value: "Chittagong",
-                        },
-                        { label: "রাজশাহী (Rajshahi)", value: "Rajshahi" },
-                        { label: "খুলনা (Khulna)", value: "Khulna" },
-                        { label: "সিলেট (Sylhet)", value: "Sylhet" },
-                        { label: "রংপুর (Rangpur)", value: "Rangpur" },
-                        {
-                          label: "ময়মনসিংহ (Mymensingh)",
-                          value: "Mymensingh",
-                        },
-                      ]}
-                      label={"বিভাগ নির্বাচন করুন"}
-                    />
-                    <SelectMultiValue
-                      name={"news_area"}
-                      options={[
-                        { label: "ঢাকা (Dhaka)", value: "Dhaka" },
-                        { label: "বরিশাল (Barisal)", value: "Barisal" },
-                        {
-                          label: "চট্টগ্রাম (Chittagong)",
-                          value: "Chittagong",
-                        },
-                        { label: "রাজশাহী (Rajshahi)", value: "Rajshahi" },
-                        { label: "খুলনা (Khulna)", value: "Khulna" },
-                        { label: "সিলেট (Sylhet)", value: "Sylhet" },
-                        { label: "রংপুর (Rangpur)", value: "Rangpur" },
-                        {
-                          label: "ময়মনসিংহ (Mymensingh)",
-                          value: "Mymensingh",
-                        },
-                      ]}
-                      label={"বিভাগ নির্বাচন করুন"}
-                    />
+                  <h1 className="mb-2 font-semibold text-blue-500">
+                    নিউজ ক্যাটাগরি:
+                  </h1>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div className="col-span-2">
+                      <SelectInput
+                        control={form.control}
+                        name="news_category"
+                        placeholder="নিউজ ক্যাটাগরি নির্বাচন করুন"
+                        rules={{ required: "News Category is required" }}
+                        options={[
+                          { label: "Bangladesh", value: "Bangladesh" },
+                          { label: "International", value: "International" },
+                        ]}
+                      />
+                    </div>
+
+                    {newsDivision === "Bangladesh" && (
+                      <>
+                        <h1 className="mb-1 font-semibold text-blue-500">
+                          নিউজ এলাকা
+                        </h1>
+                        <div className="col-span-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
+                          <SelectMultiValue
+                            name={`newsArea`}
+                            options={[
+                              { label: "Bangladesh", value: "Bangladesh" },
+                              {
+                                label: "International",
+                                value: "International",
+                              },
+                            ]}
+                            label="বিভাগ নির্বাচন করুন"
+                          />
+                          <SelectMultiValue
+                            name={`newsArea`}
+                            options={[
+                              { label: "Bangladesh", value: "Bangladesh" },
+                              {
+                                label: "International",
+                                value: "International",
+                              },
+                            ]}
+                            label="বিভাগ নির্বাচন করুন"
+                          />
+                          <SelectMultiValue
+                            name={`newsArea`}
+                            options={[
+                              { label: "Bangladesh", value: "Bangladesh" },
+                              {
+                                label: "International",
+                                value: "International",
+                              },
+                            ]}
+                            label="বিভাগ নির্বাচন করুন"
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {newsDivision === "International" && (
+                      <>
+                        <h1 className="mb-1 font-semibold text-blue-500">
+                          নিউজ এলাকা
+                        </h1>
+                        <div className="col-span-2">
+                          <TextInput
+                            control={form.control}
+                            name={"international_news_area"}
+                            placeholder="আন্তর্জাতিক সংবাদ এলাকা"
+                            rules={{
+                              required: "International area is required",
+                            }}
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
                 </section>
 
@@ -307,7 +327,24 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                     সংবাদের তথ্য:
                   </h1>
                   <div>
-                    <Sheet>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="p-8 border hover:bg-blue-400 rounded-full mb-5"
+                        >
+                          <ImageUpIcon color="red" size={50} /> Add Image
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent style={{ maxWidth: "800px" }}>
+                        <DialogTitle className="sr-only">
+                          Image Selection Modal
+                        </DialogTitle>
+                        <AllImgModal />
+                      </DialogContent>
+                    </Dialog>
+
+                    {/* <Sheet>
                       <SheetTrigger asChild>
                         <Button
                           variant="outline"
@@ -317,12 +354,12 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         </Button>
                       </SheetTrigger>
                       <SheetContent side="right" style={{ maxWidth: "800px" }}>
-                        <DialogTitle className="sr-only">
+                        <SheetTitle className="sr-only">
                           Image Selection Modal
-                        </DialogTitle>
+                        </SheetTitle>
                         <AllImgModal />
                       </SheetContent>
-                    </Sheet>
+                    </Sheet> */}
                   </div>
                   <div className="space-y-2">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -340,31 +377,9 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         placeholder="ফটো সাংবাদিক নাম"
                       />
 
-                      <TextInput
-                        control={form.control}
-                        rules={{ required: "Slug is required" }}
-                        name="slug"
-                        placeholder="Slug"
-                      />
-
                       <SelectInput
                         control={form.control}
-                        name="news_division"
-                        placeholder="নিউজ ক্যাটাগরি নির্বাচন করুন"
-                        rules={{ required: "News Category is required" }}
-                        options={
-                          data?.data?.categories?.map(
-                            (program: { name: string; _id: string }) => ({
-                              label: program.name,
-                              value: program._id,
-                            })
-                          ) || []
-                        }
-                      />
-
-                      <SelectInput
-                        control={form.control}
-                        name="news_category"
+                        name="news_sub_category"
                         placeholder="নিউজ সাব_ক্যাটাগরি নির্বাচন করুন"
                         rules={{ required: "News Sub Category is required" }}
                         options={
@@ -377,6 +392,15 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         }
                       />
                       <NewsType form={form} name="news_type" className="mb-4" />
+                    </div>
+
+                    <div className="col-span-2">
+                      <TextInput
+                        control={form.control}
+                        rules={{ required: "Slug is required" }}
+                        name="slug"
+                        placeholder="Slug"
+                      />
                     </div>
 
                     <div className="col-span-2">
@@ -396,14 +420,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         rules={{ required: "Short Description is required" }}
                       />
                     </div>
-                    {/* 
-                    <div className="col-span-2">
-                      <TextEditor
-                        rules={"Description is required"}
-                        name={"description"}
-                        placeholder={"সংবাদ বিবরণ লিখুন"}
-                      />
-                    </div> */}
+
                     <div className="col-span-2">
                       <RichText
                         name="description"
@@ -411,6 +428,16 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                       />
                     </div>
                   </div>
+
+                  {/* Submit Section */}
+                  <section className="flex justify-end mt-5">
+                    <Button
+                      type="submit"
+                      className="w-[200px]  text-white hover:bg-blue-600"
+                    >
+                      <PlusIcon className="w-4 h-4" /> Add Lead News
+                    </Button>
+                  </section>
                 </section>
               </div>
 
@@ -424,7 +451,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                     {fields.map((field, index) => (
                       <div key={field.id} className="flex flex-col space-y-3">
                         <div className="flex justify-between items-center gap-2 p-4">
-                          <Sheet>
+                          {/* <Sheet>
                             <SheetTrigger asChild>
                               <Button
                                 variant="outline"
@@ -438,12 +465,29 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                               side="right"
                               style={{ maxWidth: "800px" }}
                             >
+                              <AllImgModal />
+                            </SheetContent>
+                          </Sheet> */}
+
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="p-8 border hover:bg-blue-400 rounded-full mb-5"
+                              >
+                                <ImageUpIcon color="red" size={50} /> Add Image
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent
+                              side="right"
+                              style={{ maxWidth: "800px" }}
+                            >
                               <DialogTitle className="sr-only">
                                 Image Selection Modal
                               </DialogTitle>
                               <AllImgModal />
-                            </SheetContent>
-                          </Sheet>
+                            </DialogContent>
+                          </Dialog>
 
                           <div className="flex justify-end gap-2">
                             {fields.length > 1 && (
@@ -538,13 +582,6 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                           label="Post Date"
                           type="datetime-local"
                           rules={{ required: "Post date is required" }}
-                        />
-                        <TextInput
-                          control={form.control}
-                          name={"adminName"}
-                          placeholder="Admin"
-                          label="Admin"
-                          rules={{ required: "Admin Name is Required" }}
                         />
                       </div>
                     </div>

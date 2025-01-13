@@ -27,7 +27,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
           fixed lg:sticky inset-y-0 left-0 
           w-64 text-white bg-sky-950
           transform transition-transform duration-300 ease-in-out z-30
-          lg:translate-x-0 h-full
+          lg:translate-x-0 h-full overflow-y-auto
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
@@ -57,7 +57,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         </nav>
 
         {/* Content */}
-        <main className="flex-1 overflow-auto p-4 sm:p-6 md:p-4 bg-gray-100">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-4 bg-[#eceff1]">
           {children}
         </main>
       </div>

@@ -1,3 +1,5 @@
+"use client";
+
 import RadioInput from "@/utils/Form_Inputs/RadioInput";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
 import React from "react";
@@ -14,6 +16,7 @@ const NewsType = <T extends FieldValues>({
   name,
   className,
 }: NewsTypeProps<T>) => {
+  
   const selectedNewsType = useWatch({
     control: form.control,
     name, 
