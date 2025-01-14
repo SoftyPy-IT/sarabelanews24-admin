@@ -20,9 +20,7 @@ import {
   UserRoundCog,
   GalleryThumbnailsIcon,
   ChartLine,
-  Settings2Icon,
   Settings2,
-  SectionIcon,
 } from "lucide-react";
 
 const Aside = () => {
