@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-
 import { Form } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import RichText from "@/utils/Form_Inputs/RichText";
 import TextArea from "@/utils/Form_Inputs/TextArea";
-import { DialogTitle } from "@/components/ui/dialog";
 import TextInput from "@/utils/Form_Inputs/TextInput";
 import { newsCategory, newsType } from "@/types/select";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -20,7 +18,7 @@ import { useCreateNewsMutation } from "@/redux/dailynews/news.api";
 import SelectMultiValue from "@/utils/Form_Inputs/SelectMultiValue";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import TopBar from "../../_components/TopBar";
 import Loading from "@/app/loading";
 import toast from "react-hot-toast";
@@ -106,29 +104,29 @@ const Page = ({ editingId, initialData }: CourseFormProps) => {
   // console.log(data);
 
   const onSubmit = async (data: Inputs) => {
-    const modifyData = {
-      ...data,
-      category: data.category.value,
-      postDate: new Date().toISOString(),
+    // const modifyData = {
+    //   ...data,
+    //   category: data.category.value,
+    //   postDate: new Date().toISOString(),
 
       // reporterType: data.reporterType.value,
       // reportedDate: new Date().toISOString(),
-    };
+    // };
 
-    try {
-      const res = await createNews(modifyData).unwrap();
-      const toastID = toast.loading("Saving News...");
-      if (res.success) {
-        // alert("News Update Successfully!");
-        toast.success("News Updated successfully", { id: toastID });
-      }
-      router.push("/dashboard/list-lead-news");
-    } catch (error) {
-      console.error(error);
-    }
+    // try {
+    //   const res = await createNews(modifyData).unwrap();
+    //   const toastID = toast.loading("Saving News...");
+    //   if (res.success) {
+    //     // alert("News Update Successfully!");
+    //     toast.success("News Updated successfully", { id: toastID });
+    //   }
+    //   router.push("/dashboard/list-lead-news");
+    // } catch (error) {
+    //   console.error(error);
+    // }
   };
 
-  console.log(data);
+  // console.log(data);
 
   return (
     <>
@@ -193,9 +191,9 @@ const Page = ({ editingId, initialData }: CourseFormProps) => {
                         </Button>
                       </SheetTrigger>
                       <SheetContent side="right" style={{ maxWidth: "800px" }}>
-                        <DialogTitle className="sr-only">
+                        <SheetTitle className="sr-only">
                           Image Selection Modal
-                        </DialogTitle>
+                        </SheetTitle>
                         <AllImgModal />
                       </SheetContent>
                     </Sheet>
@@ -341,9 +339,9 @@ const Page = ({ editingId, initialData }: CourseFormProps) => {
                               side="right"
                               style={{ maxWidth: "800px" }}
                             >
-                              <DialogTitle className="sr-only">
+                              <SheetTitle className="sr-only">
                                 Image Selection Modal
-                              </DialogTitle>
+                              </SheetTitle>
                               <AllImgModal />
                             </SheetContent>
                           </Sheet>

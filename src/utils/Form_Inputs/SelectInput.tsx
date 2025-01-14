@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
 import {
   FormControl,
   FormField,
@@ -41,7 +40,6 @@ const SelectInput = <T extends FieldValues>({
 
   return (
     <FormField
-    
       control={control}
       name={name}
       render={({ field }) => (

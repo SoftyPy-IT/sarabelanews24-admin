@@ -5,7 +5,6 @@ import { useForm, useFieldArray } from "react-hook-form";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
 import TextInput from "@/utils/Form_Inputs/TextInput";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
-import TextEditor from "@/utils/Form_Inputs/TextEditor";
 import TextArea from "@/utils/Form_Inputs/TextArea";
 import { Delete, PlusIcon } from "lucide-react";
 
@@ -38,8 +37,15 @@ const AddVideoForm = () => {
       publishedDate: "1988-09-07T23:17",
       newsTitle: "This  is the first news",
       shortDescription: "This is the first news title and description for",
-      description:   "This is the first news description. This description includes  information about the news.",
-      tags: [{ videoLink: "https//www.lorem.com", videoJournalistName: "jahan Ahmed", videoTagLine: "This is  tagline" }],
+      description:
+        "This is the first news description. This description includes  information about the news.",
+      tags: [
+        {
+          videoLink: "https//www.lorem.com",
+          videoJournalistName: "jahan Ahmed",
+          videoTagLine: "This is  tagline",
+        },
+      ],
     },
   });
 
@@ -132,14 +138,6 @@ const AddVideoForm = () => {
                   name="shortDescription"
                   placeholder="সংক্ষিপ্ত বিবরণ"
                   rules={{ required: "Short Description is required" }}
-                />
-              </div>
-
-              <div className="col-span-2">
-                <TextEditor
-                  rules={"Description is required"}
-                  name={"description"}
-                  placeholder={"সংবাদ বিবরণ লিখুন"}
                 />
               </div>
             </div>

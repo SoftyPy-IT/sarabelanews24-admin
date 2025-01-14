@@ -9,7 +9,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
-const LeadNewsDataTable = () => {
+const NewsDataTable = () => {
   const router = useRouter();
 
   // API call
@@ -157,4 +157,4 @@ const LeadNewsDataTable = () => {
   );
 };
 
-export default LeadNewsDataTable;
+export default NewsDataTable;

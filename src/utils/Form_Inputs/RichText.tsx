@@ -5,30 +5,32 @@ import dynamic from "next/dynamic";
 import { Jodit } from "jodit-react";
 import { joditConfig as baseConfig } from "@/lib/jodit-editor-config";
 
+// Dynamically import JoditEditor for client-side rendering
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 interface JoditEditorProps {
-  name: string;
-  label?: string;
-  placeholder?: string; 
+  name: string; // Form field name
+  label?: string; // Optional label for the field
+  placeholder?: string; // Placeholder text for the editor
 }
 
 const RichText: React.FC<JoditEditorProps> = ({ name, label, placeholder }) => {
   const { control } = useFormContext();
   const editor = useRef<Jodit | null>(null);
 
+  // Customize Jodit editor configuration
   const joditConfig = {
     ...baseConfig,
-    placeholder: placeholder || "Start typing here...", 
+    placeholder: placeholder || "Start typing here...",
+    height: 300,
+    statusbar: false,
     uploader: {
       ...baseConfig.uploader,
-      defaultHandlerSuccess: function (data: any, resp: any) {
-        const files = data.files || [];
+      defaultHandlerSuccess: (data: any) => {
+        const files = data?.files || [];
         if (files.length) {
           const editorInstance = editor.current;
-          if (editorInstance) {
-            editorInstance.selection.insertImage(files[0], null, 200);
-          }
+          editorInstance?.selection.insertImage(files[0], null, 200);
         }
       },
     },
@@ -46,7 +48,7 @@ const RichText: React.FC<JoditEditorProps> = ({ name, label, placeholder }) => {
           {label && (
             <label
               htmlFor={name}
-              className="block text-sm mb-2 font-medium leading-6 text-gray-900"
+              className="block text-sm font-medium text-gray-900 mb-2"
             >
               {label}
             </label>
@@ -55,16 +57,19 @@ const RichText: React.FC<JoditEditorProps> = ({ name, label, placeholder }) => {
             <JoditEditor
               ref={editor}
               value={value}
-              config={{
-                ...joditConfig,
-                height: 300, // Set editor height
-              }}
-              onBlur={(newContent: string) => onBlur()}
+              config={joditConfig}
+              onBlur={() => onBlur()}
               onChange={(newContent: string) => onChange(newContent)}
             />
           </div>
           {error && (
-            <span className="text-red-500 text-sm">{error.message}</span>
+            <span
+              className="text-red-500 text-sm mt-1 block"
+              role="alert"
+              aria-live="assertive"
+            >
+              {error.message}
+            </span>
           )}
         </div>
       )}

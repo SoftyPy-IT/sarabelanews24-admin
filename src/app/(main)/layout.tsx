@@ -6,58 +6,43 @@ import Navbar from "@/components/Navbar/Navbar";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
-    <div className="flex h-screen bg-gray-100 overflow-hidden">
-      {/* Overlay for Sidebar on Mobile */}
+    <div className="flex h-screen bg-gray-100">
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-sky-950 bg-opacity-50 z-20 lg:hidden"
+          className="fixed inset-0 bg-sky-950/50 z-20 lg:hidden"
           onClick={toggleSidebar}
         />
       )}
 
-      {/* Sidebar */}
       <aside
-        className={`
-          fixed lg:sticky inset-y-0 left-0 
-          w-64 text-white bg-sky-950
-          transform transition-transform duration-300 ease-in-out z-30
-          lg:translate-x-0 h-full overflow-y-auto
-          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-        `}
+        className={`fixed lg:static w-64 h-full bg-sky-950 text-white z-30
+          transition-transform duration-300 lg:translate-x-0
+          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
-        {/* Mobile Sidebar Header */}
-        <div className="flex justify-between items-center p-4 lg:hidden">
-          <h1 className="text-xl font-bold text-white">Dashboard</h1>
-          <button onClick={toggleSidebar} className="p-2 text-white">
+        <div className="flex items-center justify-between p-4 lg:hidden">
+          <h1 className="text-xl font-bold">Dashboard</h1>
+          <button onClick={toggleSidebar} className="p-2">
             <X className="h-6 w-6" />
           </button>
         </div>
         <Aside />
       </aside>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Navbar */}
-        <nav className="bg-white shadow-md z-10 sticky top-0">
+      <div className="flex-1 flex flex-col min-h-0">
+        <nav className="bg-white shadow-md">
           <div className="px-4 py-3 flex items-center justify-between lg:justify-end">
             <button
               onClick={toggleSidebar}
-              className="p-2 rounded-md lg:hidden hover:bg-gray-100 focus:outline-none"
+              className="p-2 rounded-md hover:bg-gray-100 lg:hidden"
             >
               <Menu className="h-6 w-6 text-gray-700" />
             </button>
             <Navbar />
           </div>
         </nav>
-
-        {/* Content */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-4 bg-[#eceff1]">
+        <main className="flex-1 p-4 md:p-6 bg-[#eceff1] overflow-y-auto">
           {children}
         </main>
       </div>

@@ -1,5 +1,4 @@
 "use client";
-
 import RadioInput from "@/utils/Form_Inputs/RadioInput";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
 import React from "react";
@@ -27,8 +26,8 @@ const NewsType = <T extends FieldValues>({
       <SelectInput
         control={form.control}
         name={name}
-        placeholder="নিউজ টাইপ নির্বাচন করুন"
-        rules={{ required: "News Category is required" }}
+        placeholder="কোথায় প্রদর্শন করতে চাচ্ছেন ?"
+        rules={{ required: "News type is required" }}
         options={[
           { label: "Lead-1", value: "Lead-1" },
           { label: "Lead-2", value: "Lead-2" },

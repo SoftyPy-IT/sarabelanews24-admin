@@ -1,10 +1,10 @@
 import React from "react";
-import BangladeshNewsData from "./_components/BangladeshNewsData";
+import LeadNewsDataTable from "./_components/NewsDataTable";
 
 const Page = () => {
   return (
     <div>
-      <BangladeshNewsData />
+      <LeadNewsDataTable />
     </div>
   );
 };

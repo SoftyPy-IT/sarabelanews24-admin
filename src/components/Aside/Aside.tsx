@@ -14,14 +14,15 @@ import {
   PlusIcon,
   List,
   ChartNetworkIcon,
-  ChartNoAxesCombined,
-  Zap,
   ImageIcon,
   VideoIcon,
   Folder,
   UserRoundCog,
   GalleryThumbnailsIcon,
   ChartLine,
+  Settings2Icon,
+  Settings2,
+  SectionIcon,
 } from "lucide-react";
 
 const Aside = () => {
@@ -39,48 +40,10 @@ const Aside = () => {
       icon: ChartNetworkIcon,
       children: [
         { href: "/dashboard/add-news", label: "Add News", icon: PlusIcon },
-        {
-          href: "/dashboard/add-news-category",
-          label: "Add News Category",
-          icon: PlusIcon,
-        },
+
         {
           href: "/dashboard/list-lead-news",
           label: "List Lead News",
-          icon: List,
-        },
-      ],
-    },
-    {
-      href: "/all-tranding",
-      label: "Trending News",
-      icon: ChartNoAxesCombined,
-      children: [
-        {
-          href: "/dashboard/add-tranding-news",
-          label: "Add News",
-          icon: PlusIcon,
-        },
-        {
-          href: "/dashboard/list-tranding-news",
-          label: "List Trending News",
-          icon: List,
-        },
-      ],
-    },
-    {
-      href: "/all-bangladesh",
-      label: "Bangladesh",
-      icon: Zap,
-      children: [
-        {
-          href: "/dashboard/add-bangladesh-news",
-          label: "Add News",
-          icon: PlusIcon,
-        },
-        {
-          href: "/dashboard/list-bangladesh-news",
-          label: "List Bangladesh News",
           icon: List,
         },
       ],
@@ -132,6 +95,18 @@ const Aside = () => {
       href: "/dashboard/user",
       label: "User Management",
       icon: UserRoundCog,
+    },
+    {
+      href: "/dashboard/settings",
+      label: "Settings",
+      icon: Settings2,
+      children: [
+        {
+          href: "/dashboard/add-news-category",
+          label: "Add News Category",
+          icon: PlusIcon,
+        },
+      ],
     },
   ];
 

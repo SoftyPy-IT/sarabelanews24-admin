@@ -1,6 +1,4 @@
 "use client";
-
-
 import Modal from "@/utils/Form_Inputs/Modal";
 import Image from "next/image";
 import React from "react";

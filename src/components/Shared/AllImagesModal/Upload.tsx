@@ -1,8 +1,9 @@
+"use client";
+import React from 'react';
 import SelectInput from '@/utils/Form_Inputs/SelectInput';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import Image from 'next/image';
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import upload from "../../../assests/images/upload.webp";
 
