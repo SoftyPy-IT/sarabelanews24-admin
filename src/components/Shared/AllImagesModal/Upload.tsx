@@ -1,15 +1,14 @@
 "use client";
+import Image from 'next/image';
 import React from 'react';
 import SelectInput from '@/utils/Form_Inputs/SelectInput';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import Image from 'next/image';
 import { useForm } from 'react-hook-form';
-import upload from "../../../assests/images/upload.webp";
+import upload from "@public/assets/images/product-01.png";
 
 const Upload = () => {
       const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-    //   const [open, setOpen] = React.useState(false);
       const [dragOver, setDragOver] = React.useState(false);
     
       const handleButtonClick = () => {
@@ -22,7 +21,6 @@ const Upload = () => {
         const file = event.target.files?.[0];
         if (file) {
           console.log("File selected:", file);
-          // Add upload logic here
         }
       };
     
@@ -70,7 +68,6 @@ const Upload = () => {
         const file = event.dataTransfer.files?.[0];
         if (file) {
           console.log("File dropped:", file);
-          // Add upload logic here
         }
       };
     return (

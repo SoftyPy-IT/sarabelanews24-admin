@@ -1,8 +1,6 @@
 import * as React from "react";
 import { Search } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
-
 import {
   Sheet,
   SheetContent,
@@ -11,7 +9,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Image from "next/image";
-import upload from "../../../../../../assests/images/upload.webp";
+import upload from "@public/assets/images/upload.webp";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 

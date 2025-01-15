@@ -1,18 +1,18 @@
 "use client";
 import * as React from "react";
 import Image from "next/image";
-import img1 from "../../../../../../assests/images/product-01.png";
-import img2 from "../../../../../../assests/images/product-02.png";
-import img3 from "../../../../../../assests/images/product-03.png";
-import img4 from "../../../../../../assests/images/product-04.png";
-import img5 from "../../../../../../assests/images/product-01.png";
-import img6 from "../../../../../../assests/images/product-02.png";
-import img7 from "../../../../../../assests/images/product-03.png";
-import img8 from "../../../../../../assests/images/product-04.png";
-import img9 from "../../../../../../assests/images/product-01.png";
-import img10 from "../../../../../../assests/images/product-01.png";
-import img11 from "../../../../../../assests/images/product-02.png";
-import img12 from "../../../../../../assests/images/product-03.png";
+import img1 from "@public/assets/images/product-01.png";
+import img2 from "@public/assets/images/product-02.png";
+import img3 from "@public/assets/images/product-03.png";
+import img4 from "@public/assets/images/product-04.png";
+import img5 from "@public/assets/images/product-01.png";
+import img6 from "@public/assets/images/product-02.png";
+import img7 from "@public/assets/images/product-03.png";
+import img8 from "@public/assets/images/product-04.png";
+import img9 from "@public/assets/images/product-01.png";
+import img10 from "@public/assets/images/product-01.png";
+import img11 from "@public/assets/images/product-02.png";
+import img12 from "@public/assets/images/product-03.png";
 
 import {
   Pagination,
@@ -23,9 +23,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-// import TopBar from "./TopBar";
 import ImgZoomModal from "./ImgZoomModal";
-import { Trash2 } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
+import ImageOptionModal from "./ImageOptionModal";
 
 const initialImages = [
   { id: 1, image: img1.src },
@@ -44,22 +44,30 @@ const initialImages = [
 
 const AllImages = () => {
   const [images, setImages] = React.useState(initialImages);
-  const [open, setOpen] = React.useState(false);
+  const [openZoom, setOpenZoom] = React.useState(false);
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
+  const [openOptions, setOpenOptions] = React.useState(false);
+  const [selectedImageId, setSelectedImageId] = React.useState<number | null>(
+    null
+  );
 
   const handleImageClick = (image: string) => {
     setSelectedImage(image);
-    setOpen(true);
+    setOpenZoom(true);
+  };
+
+  const handleEllipsisClick = (id: number) => {
+    setSelectedImageId(id);
+    setOpenOptions(true);
   };
 
   const handleDeleteImage = (id: number) => {
     setImages((prevImages) => prevImages.filter((img) => img.id !== id));
+    setOpenOptions(false);
   };
 
   return (
     <>
-      {/* <TopBar /> */}
-
       <div className="w-full">
         <div className="text-gray-900">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 p-1 md:p-4">
@@ -73,11 +81,12 @@ const AllImages = () => {
                   width={100}
                   height={100}
                 />
+
                 <button
-                  className="absolute top-2 right-2 bg-red-500 text-white  p-2 rounded-full opacity-0 group-hover:opacity-100 transition"
-                  onClick={() => handleDeleteImage(row.id)}
+                  onClick={() => handleEllipsisClick(row.id)}
+                  className="absolute top-2 left-2 bg-gray-800 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition"
                 >
-                  <Trash2 />
+                  <EllipsisVertical />
                 </button>
               </div>
             ))}
@@ -110,9 +119,19 @@ const AllImages = () => {
         </Pagination>
       </div>
 
+      {/* Options Modal */}
+      {openOptions && selectedImageId && (
+        <ImageOptionModal
+          isOpen={openOptions}
+          onClose={() => setOpenOptions(false)}
+          onDelete={() => handleDeleteImage(selectedImageId)}
+        />
+      )}
+
+      {/* Zoom Modal */}
       <ImgZoomModal
-        isOpen={open}
-        onOpenChange={setOpen}
+        isOpen={openZoom}
+        onOpenChange={setOpenZoom}
         selectedImage={selectedImage}
       />
     </>
