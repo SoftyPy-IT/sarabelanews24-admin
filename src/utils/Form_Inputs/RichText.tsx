@@ -5,20 +5,18 @@ import dynamic from "next/dynamic";
 import { Jodit } from "jodit-react";
 import { joditConfig as baseConfig } from "@/lib/jodit-editor-config";
 
-// Dynamically import JoditEditor for client-side rendering
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 interface JoditEditorProps {
-  name: string; // Form field name
-  label?: string; // Optional label for the field
-  placeholder?: string; // Placeholder text for the editor
+  name: string; 
+  label?: string; 
+  placeholder?: string; 
 }
 
 const RichText: React.FC<JoditEditorProps> = ({ name, label, placeholder }) => {
   const { control } = useFormContext();
   const editor = useRef<Jodit | null>(null);
 
-  // Customize Jodit editor configuration
   const joditConfig = {
     ...baseConfig,
     placeholder: placeholder || "Start typing here...",

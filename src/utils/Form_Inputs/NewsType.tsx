@@ -8,17 +8,18 @@ interface NewsTypeProps<T extends FieldValues> {
   form: { control: Control<T> };
   name: Path<T>;
   className?: string;
+  setFirstPage: (value: string) => void;
 }
 
 const NewsType = <T extends FieldValues>({
   form,
   name,
   className,
+  setFirstPage,
 }: NewsTypeProps<T>) => {
-  
   const selectedNewsType = useWatch({
     control: form.control,
-    name, 
+    name,
   });
 
   return (
@@ -35,15 +36,12 @@ const NewsType = <T extends FieldValues>({
         ]}
       />
 
-     
       {selectedNewsType === "Lead-1" || selectedNewsType === "Lead-2" ? (
         <div className="">
           <RadioInput
             title="প্রথম পৃষ্ঠায় দেখবেন ?"
-            defaultValue="false"
             onChange={(value) => {
-              console.log("Radio selection:", value);
-           
+              setFirstPage(value);
             }}
           />
         </div>

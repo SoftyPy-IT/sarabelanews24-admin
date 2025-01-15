@@ -1,9 +1,10 @@
 import React from "react";
+import AddAdvertisementForm from "./__components/AddAdvertisementForm";
 
 const Page = () => {
   return (
     <div>
-      <h1>This is Advertisement</h1>
+      <AddAdvertisementForm />
     </div>
   );
 };

@@ -25,32 +25,35 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useState } from "react";
 
 type Inputs = {
   admin_name: string;
   published_date: string;
+  reported_date: string;
   reporterType: string;
   reporter_name: string;
   newsArea: string;
   news_showing_position: string;
-  news_tags: string;
-  reported_date: string;
+  firstPage:boolean;
   reporter_type: string;
   selectedImage: string;
   imageTagline: string;
   photo_journalist_name: string;
   international_news_area: string;
+  news_area_division: string;
+  news_area_district: string;
+  news_area_upozilla: string;
   news_type: string;
   news_category: string;
   news_title: string;
   short_description: string;
   adminName: string;
-  postDate: Date;
   slug: string;
   publishedDate: string;
-  newsTitle: string;
   shortDescription: string;
   description: string;
+  news_tags: string | string[];
 
   tags: {
     image_tagline: string;
@@ -71,6 +74,7 @@ type CourseFormProps = {
 const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
   const [createNews] = useCreateNewsMutation({});
   const router = useRouter();
+  const [firstPage,setFirstPage] = useState("");
 
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
   console.log(data);
@@ -80,19 +84,21 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       reporter_type: "",
       reporter_name: "",
       admin_name: "",
-      newsArea: "",
       reported_date: "",
+      news_area_division: "",
+      news_area_district: "",
+      news_area_upozilla: "",
+      international_news_area: "",
       photo_journalist_name: "",
       news_showing_position: "",
-      news_tags: "",
       news_category: "",
       news_type: "",
       news_title: "",
-      slug: "",
+      slug:"",
       published_date: "",
-      newsTitle: "",
       short_description: "",
       description: "",
+      news_tags: "",
       tags: [
         { image_tagline: "", photo_journalist_name: "", selected_image: "" },
       ],
@@ -112,20 +118,21 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
     name: "news_type",
   });
 
-  console.log(news_type);
-
   if (isLoading) {
     return <h1>loading</h1>;
   }
 
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
-      // ...data,
+      ...data,
+      firstPage,
       // news_category: data.news_category,
       // postDate: new Date().toISOString(),
       // reporterType: data.reporterType.value,
       // reportedDate: new Date().toISOString(),
     };
+
+    console.log(modifyData);
 
     try {
       const res = await createNews(modifyData).unwrap();
@@ -137,8 +144,6 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       console.error(error);
     }
   };
-
-  // console.log(data);
 
   return (
     <>
@@ -386,6 +391,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         form={form}
                         name="news_showing_position"
                         className="mb-4"
+                        setFirstPage={setFirstPage}
                       />
                     </div>
 
@@ -534,7 +540,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                       <div className="grid grid-cols-1  gap-4">
                         <DateTimeInput
                           control={form.control}
-                          name="postDate"
+                          name="published_date"
                           label="Post Date"
                           type="datetime-local"
                           rules={{ required: "Post date is required" }}
