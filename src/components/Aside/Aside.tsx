@@ -21,6 +21,8 @@ import {
   GalleryThumbnailsIcon,
   ChartLine,
   Settings2,
+  BananaIcon,
+  NotebookIcon,
 } from "lucide-react";
 
 const Aside = () => {
@@ -38,7 +40,11 @@ const Aside = () => {
       icon: ChartNetworkIcon,
       children: [
         { href: "/dashboard/add-news", label: "Add News", icon: PlusIcon },
-
+        {
+          href: "/dashboard/add-news-category",
+          label: "Add News Category",
+          icon: PlusIcon,
+        },
         {
           href: "/dashboard/list-lead-news",
           label: "List Lead News",
@@ -77,6 +83,23 @@ const Aside = () => {
       ],
     },
     {
+      href: "/Advertisement",
+      label: "Advertisement",
+      icon: NotebookIcon,
+      children: [
+        {
+          href: "/dashboard/add-advertisement",
+          label: "Add Advertisement",
+          icon: PlusIcon,
+        },
+        {
+          href: "/dashboard/list-advertisement",
+          label: "Advertisement List",
+          icon: List,
+        },
+      ],
+    },
+    {
       href: "/img",
       label: "Gallery",
       icon: GalleryThumbnailsIcon,
@@ -98,13 +121,6 @@ const Aside = () => {
       href: "/dashboard/settings",
       label: "Settings",
       icon: Settings2,
-      children: [
-        {
-          href: "/dashboard/add-news-category",
-          label: "Add News Category",
-          icon: PlusIcon,
-        },
-      ],
     },
   ];
 

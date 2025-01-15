@@ -1,14 +1,7 @@
 import React from "react";
 import { Trash2 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent} from "@/components/ui/dialog";
 import { Label } from "@radix-ui/react-label";
 
 type ImageOptionModalProps = {
@@ -47,7 +40,7 @@ const ImageOptionModal: React.FC<ImageOptionModalProps> = ({
               <Label htmlFor="Yes">Yes</Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem id="No" value="false" />
+              <RadioGroupItem id="No" value="false"  />
               <Label htmlFor="No">No</Label>
             </div>
           </RadioGroup>
