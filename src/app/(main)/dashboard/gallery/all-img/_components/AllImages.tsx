@@ -24,8 +24,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import ImgZoomModal from "./ImgZoomModal";
-import { EllipsisVertical } from "lucide-react";
-import ImageOptionModal from "./ImageOptionModal";
+import {Trash2 } from "lucide-react";
+
 
 const initialImages = [
   { id: 1, image: img1.src },
@@ -46,24 +46,15 @@ const AllImages = () => {
   const [images, setImages] = React.useState(initialImages);
   const [openZoom, setOpenZoom] = React.useState(false);
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
-  const [openOptions, setOpenOptions] = React.useState(false);
-  const [selectedImageId, setSelectedImageId] = React.useState<number | null>(
-    null
-  );
+
 
   const handleImageClick = (image: string) => {
     setSelectedImage(image);
     setOpenZoom(true);
   };
 
-  const handleEllipsisClick = (id: number) => {
-    setSelectedImageId(id);
-    setOpenOptions(true);
-  };
-
   const handleDeleteImage = (id: number) => {
     setImages((prevImages) => prevImages.filter((img) => img.id !== id));
-    setOpenOptions(false);
   };
 
   return (
@@ -83,10 +74,10 @@ const AllImages = () => {
                 />
 
                 <button
-                  onClick={() => handleEllipsisClick(row.id)}
+                  onClick={() => handleDeleteImage(row.id)}
                   className="absolute top-2 left-2 bg-gray-800 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition"
                 >
-                  <EllipsisVertical />
+                  <Trash2 color="red" />
                 </button>
               </div>
             ))}
@@ -119,15 +110,7 @@ const AllImages = () => {
         </Pagination>
       </div>
 
-      {/* Options Modal */}
-      {openOptions && selectedImageId && (
-        <ImageOptionModal
-          isOpen={openOptions}
-          onClose={() => setOpenOptions(false)}
-          onDelete={() => handleDeleteImage(selectedImageId)}
-        />
-      )}
-
+  
       {/* Zoom Modal */}
       <ImgZoomModal
         isOpen={openZoom}
