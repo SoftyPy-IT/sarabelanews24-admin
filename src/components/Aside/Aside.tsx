@@ -21,7 +21,6 @@ import {
   GalleryThumbnailsIcon,
   ChartLine,
   Settings2,
-  BananaIcon,
   NotebookIcon,
 } from "lucide-react";
 

@@ -27,15 +27,10 @@ import {
 type Inputs = {
   admin_name: string;
   published_date: string;
-  reporterType: string;
   reporter_name: string;
-  newsArea: string;
-  news_showing_position: string;
-  news_tags: string;
   reported_date: string;
   reporter_type: string;
   selectedImage: string;
-  imageTagline: string;
   photo_journalist_name: string;
   international_news_area: string;
   news_type: string;
@@ -43,11 +38,8 @@ type Inputs = {
   news_title: string;
   short_description: string;
   adminName: string;
-  postDate: Date;
   slug: string;
   publishedDate: string;
-  newsTitle: string;
-  shortDescription: string;
   description: string;
 
   tags: {
@@ -78,22 +70,16 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
       reporter_type: "",
       reporter_name: "",
       admin_name: "",
-      newsArea: "",
       reported_date: "",
       photo_journalist_name: "",
-      news_showing_position: "",
-      news_tags: "",
       news_category: "",
       news_type: "",
       news_title: "",
       slug: "",
       published_date: "",
-      newsTitle: "",
       short_description: "",
       description: "",
-      tags: [
-        { video_tagline: "", video_journalist_name: "", video_link: "" },
-      ],
+      tags: [{ video_tagline: "", video_journalist_name: "", video_link: "" }],
       metaTitle: "",
       metaKeywords: "",
       metaDescription: "",
@@ -411,7 +397,9 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
               <div className="lg:col-span-4 col-span-full space-y-5">
                 {/* Tags Section */}
                 <section className="bg-white border border-black p-5">
-                  <h1 className="mb-2 font-semibold text-blue-500">ভিডিও ট্যাগ:</h1>
+                  <h1 className="mb-2 font-semibold text-blue-500">
+                    ভিডিও ট্যাগ:
+                  </h1>
                   <div className="col-span-2">
                     {fields.map((field, index) => (
                       <div key={field.id}>
@@ -481,7 +469,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                       <div className="grid grid-cols-1  gap-4">
                         <DateTimeInput
                           control={form.control}
-                          name="postDate"
+                          name="published_date"
                           label="Post Date"
                           type="datetime-local"
                           rules={{ required: "Post date is required" }}

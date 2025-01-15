@@ -27,7 +27,6 @@ import {
 type Inputs = {
   admin_name: string;
   published_date: string;
-  reporterType: string;
   reporter_name: string;
   newsArea: string;
   news_showing_position: string;
@@ -35,19 +34,13 @@ type Inputs = {
   reported_date: string;
   reporter_type: string;
   selectedImage: string;
-  imageTagline: string;
   photo_journalist_name: string;
   international_news_area: string;
   news_type: string;
   news_category: string;
   news_title: string;
   short_description: string;
-  adminName: string;
-  postDate: Date;
   slug: string;
-  publishedDate: string;
-  newsTitle: string;
-  shortDescription: string;
   description: string;
 
   tags: {
@@ -78,7 +71,7 @@ const AddImageForm = ({ editingId, initialData }: CourseFormProps) => {
       reporter_type: "",
       reporter_name: "",
       admin_name: "",
-      newsArea: "",
+      international_news_area: "",
       reported_date: "",
       photo_journalist_name: "",
       news_showing_position: "",
@@ -88,7 +81,6 @@ const AddImageForm = ({ editingId, initialData }: CourseFormProps) => {
       news_title: "",
       slug: "",
       published_date: "",
-      newsTitle: "",
       short_description: "",
       description: "",
       tags: [
@@ -125,6 +117,7 @@ const AddImageForm = ({ editingId, initialData }: CourseFormProps) => {
       // reportedDate: new Date().toISOString(),
     };
 
+    console.log(data);
     try {
       const res = await createNews(modifyData).unwrap();
       if (res.success) {
@@ -497,8 +490,8 @@ const AddImageForm = ({ editingId, initialData }: CourseFormProps) => {
                       <div className="grid grid-cols-1  gap-4">
                         <DateTimeInput
                           control={form.control}
-                          name="postDate"
-                          label="Post Date"
+                          name="published_date"
+                          label="Publish Date"
                           type="datetime-local"
                           rules={{ required: "Post date is required" }}
                         />
