@@ -45,8 +45,8 @@ const Aside = () => {
           icon: PlusIcon,
         },
         {
-          href: "/dashboard/list-lead-news",
-          label: "List Lead News",
+          href: "/dashboard/list-news",
+          label: "List News",
           icon: List,
         },
       ],
@@ -75,7 +75,7 @@ const Aside = () => {
       children: [
         { href: "/dashboard/add-video", label: "Add Video", icon: PlusIcon },
         {
-          href: "/dashboard/list-video-gallery",
+          href: "/dashboard/list-video-news",
           label: "Video List",
           icon: List,
         },
