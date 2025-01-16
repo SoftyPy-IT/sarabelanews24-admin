@@ -24,7 +24,7 @@ const AddNewsCategory = () => {
   return (
     <div className="max-w-xl mx-auto">
       <Form {...form}>
-        <div className="space-y-4 border p-6 bg-white">
+        <div className="space-y-4 border border-black p-6 bg-white ">
           <h1 className="font-semibold text-blue-500 text-lg">Add New News Category :</h1>
           <div>
             <TextInput

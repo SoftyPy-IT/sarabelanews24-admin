@@ -1,4 +1,5 @@
 "use client";
+
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,27 +22,38 @@ type Inputs = {
 };
 
 const AddAdvertisementForm = () => {
-  
   const form = useForm<Inputs>({
     defaultValues: {
       additional_link: "",
-      popup: "false",
+      popup: "popup", // Set a default value corresponding to a radio item value
     },
   });
 
   const onSubmit = async (data: Inputs) => {
-    console.log(data);
+    // Transforming the data to match your desired output
+    const transformedData = {
+      additional_link: data.additional_link,
+      visibility: {
+        popup: data.popup === "popup",
+        header: data.popup === "header",
+        firstPage: data.popup === "first-page",
+        categoryPage: data.popup === "category-page",
+        detailsPage: data.popup === "details-page",
+      },
+    };
+
+    console.log(transformedData);
   };
 
   return (
     <div className="max-w-xl mx-auto">
-      <div className="bg-white border p-8">
+      <div className="bg-white border border-black p-8">
         <div className="mb-8">
           <h2 className="text-2xl font-semibold text-gray-800 mb-2">
             Add New Advertisement
           </h2>
           <p className="text-gray-600">
-            Upload an image and provide additional details for your advertisement
+            Upload an image and provide additional details for your advertisement.
           </p>
         </div>
 
@@ -90,8 +102,8 @@ const AddAdvertisementForm = () => {
 
             {/* Popup Option Section */}
             <div>
-              <h1 className="text-blue-500 font-semibold">
-                ওয়েবসাইট পপ-আপ হিসাবে রাখবেন?
+              <h1 className="text-blue-500 font-semibold my-2">
+                কোথায় দৃশ্যমান করবেন ?
               </h1>
               <Controller
                 name="popup"
@@ -101,15 +113,36 @@ const AddAdvertisementForm = () => {
                     {...field}
                     value={field.value}
                     onValueChange={field.onChange}
-                    className="flex my-2"
+                    className="grid lg:grid-cols-2 gap-4"
                   >
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="true" id="popup-yes" />
-                      <Label htmlFor="popup-yes">Yes</Label>
+                      <RadioGroupItem value="popup" id="popup" />
+                      <Label htmlFor="popup">
+                        ওয়েবসাইট পপ-আপ হিসাবে রাখবেন ?
+                      </Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="false" id="popup-no" />
-                      <Label htmlFor="popup-no">No</Label>
+                      <RadioGroupItem value="header" id="header" />
+                      <Label htmlFor="header">ওয়েবসাইট হেডার রাখবেন ?</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="first-page" id="first-page" />
+                      <Label htmlFor="first-page">প্রথম পৃষ্ঠায় রাখবেন ?</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="category-page"
+                        id="category-page"
+                      />
+                      <Label htmlFor="category-page">
+                        ক্যাটাগরি পৃষ্ঠায় রাখবেন ?
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="details-page" id="details-page" />
+                      <Label htmlFor="details-page">
+                        বিস্তারিত পৃষ্ঠায় রাখবেন ?
+                      </Label>
                     </div>
                   </RadioGroup>
                 )}
