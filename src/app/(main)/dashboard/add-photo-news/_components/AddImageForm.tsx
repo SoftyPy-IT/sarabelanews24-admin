@@ -28,14 +28,15 @@ type Inputs = {
   admin_name: string;
   published_date: string;
   reporter_name: string;
-  newsArea: string;
   news_showing_position: string;
-  news_tags: string;
   reported_date: string;
   reporter_type: string;
   selectedImage: string;
   photo_journalist_name: string;
   international_news_area: string;
+  news_area_division:string;
+  news_area_district:string;
+  news_area_upozilla:string;
   news_type: string;
   news_category: string;
   news_title: string;
@@ -72,10 +73,12 @@ const AddImageForm = ({ editingId, initialData }: CourseFormProps) => {
       reporter_name: "",
       admin_name: "",
       international_news_area: "",
+      news_area_division: "",
+      news_area_district: "",
+      news_area_upozilla: "",
       reported_date: "",
       photo_journalist_name: "",
       news_showing_position: "",
-      news_tags: "",
       news_category: "",
       news_type: "",
       news_title: "",
@@ -101,8 +104,6 @@ const AddImageForm = ({ editingId, initialData }: CourseFormProps) => {
     control: form.control,
     name: "news_type",
   });
-
-  console.log(news_type);
 
   if (isLoading) {
     return <h1>loading</h1>;

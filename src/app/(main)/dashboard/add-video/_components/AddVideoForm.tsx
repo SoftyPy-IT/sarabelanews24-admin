@@ -96,20 +96,19 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
     name: "news_type",
   });
 
-  console.log(news_type);
-
   if (isLoading) {
     return <h1>loading</h1>;
   }
 
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
-      // ...data,
+      ...data,
       // news_category: data.news_category,
       // postDate: new Date().toISOString(),
       // reporterType: data.reporterType.value,
       // reportedDate: new Date().toISOString(),
     };
+    console.log(modifyData);
 
     try {
       const res = await createNews(modifyData).unwrap();

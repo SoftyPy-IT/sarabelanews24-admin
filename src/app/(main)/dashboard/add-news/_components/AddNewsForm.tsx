@@ -35,7 +35,7 @@ type Inputs = {
   reporter_name: string;
   newsArea: string;
   news_showing_position: string;
-  firstPage:boolean;
+  firstPage: boolean;
   reporter_type: string;
   selectedImage: string;
   imageTagline: string;
@@ -74,10 +74,9 @@ type CourseFormProps = {
 const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
   const [createNews] = useCreateNewsMutation({});
   const router = useRouter();
-  const [firstPage,setFirstPage] = useState("");
-
+  const [firstPage, setFirstPage] = useState("");
+  const [current_news, setCurrentNews] = useState("");
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
-  console.log(data);
 
   const form = useForm<Inputs>({
     defaultValues: {
@@ -126,12 +125,13 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
     const modifyData = {
       ...data,
       firstPage,
+      current_news,
       // news_category: data.news_category,
       // postDate: new Date().toISOString(),
       // reporterType: data.reporterType.value,
       // reportedDate: new Date().toISOString(),
     };
-
+    
     console.log(modifyData);
 
     try {
@@ -380,11 +380,11 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         placeholder="নিউজ ক্যাটাগরি নির্বাচন করুন"
                         rules={{ required: "News Sub Category is required" }}
                         options={[
-                          { label: "রাজনীতি", value: "রাজনীতি" },
-                          { label: "অর্থনীতি", value: "অর্থনীতি" },
-                          { label: "খেলাধুলা", value: "খেলাধুলা" },
-                          { label: "বিনোদন", value: "বিনোদন" },
-                          { label: "শিক্ষা", value: "শিক্ষা" },
+                          { label: "রাজনীতি", value: "Politics" },
+                          { label: "অর্থনীতি", value: "Ecomony" },
+                          { label: "খেলাধুলা", value: "Sports" },
+                          { label: "বিনোদন", value: "Entertainment" },
+                          { label: "শিক্ষা", value: "Education" },
                         ]}
                       />
                       <NewsType
@@ -527,7 +527,10 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                 </section>
 
                 <section className="bg-white border border-black p-5">
-                  <RadioInput title={"ক্যারেন্ট নিউজ হিসেবে রাখতে চাচ্ছেন ?"} />
+                  <RadioInput
+                    title={"ক্যারেন্ট নিউজ হিসেবে রাখতে চাচ্ছেন ?"}
+                    onChange={setCurrentNews}
+                  />
                 </section>
 
                 {/* Admin Section */}

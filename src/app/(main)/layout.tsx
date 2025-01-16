@@ -9,7 +9,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen overflow-hidden bg-gray-100">
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-sky-950/50 z-20 lg:hidden"
@@ -17,20 +17,28 @@ const Layout = ({ children }: { children: ReactNode }) => {
         />
       )}
 
+      {/* Sidebar */}
       <aside
-        className={`fixed lg:static w-64 h-full bg-sky-950 text-white z-30
-          transition-transform duration-300 lg:translate-x-0
+        className={`fixed lg:static w-64 h-screen bg-sky-950 text-white z-30 
+          transition-transform duration-300 lg:translate-x-0 
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="flex items-center justify-between p-4 lg:hidden">
           <h1 className="text-xl font-bold">Dashboard</h1>
-          <button onClick={toggleSidebar} className="p-2">
+          <button 
+            onClick={toggleSidebar} 
+            className="p-2 hover:bg-sky-900 rounded-md"
+          >
             <X className="h-6 w-6" />
           </button>
         </div>
-        <Aside />
+        <div className="h-[calc(100vh-64px)] overflow-y-auto">
+          <Aside />
+        </div>
       </aside>
-      <div className="flex-1 flex flex-col min-h-0">
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col w-full overflow-hidden">
         <nav className="bg-white shadow-md">
           <div className="px-4 py-3 flex items-center justify-between lg:justify-end">
             <button
@@ -42,6 +50,8 @@ const Layout = ({ children }: { children: ReactNode }) => {
             <Navbar />
           </div>
         </nav>
+
+        {/* Main Content Area */}
         <main className="flex-1 p-4 md:p-6 bg-[#eceff1] overflow-y-auto">
           {children}
         </main>
