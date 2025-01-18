@@ -14,7 +14,7 @@ import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import { useCreateNewsMutation } from "@/redux/dailynews/news.api";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
-import SelectMultiValue from "@/utils/Form_Inputs/SelectMultiValue";
+import SelectMultiValue from "@/utils/Form_Inputs/SelectorWithSearch";
 import TagSelector from "@/utils/Form_Inputs/TagSelector";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import {

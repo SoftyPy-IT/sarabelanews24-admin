@@ -15,7 +15,7 @@ import TagSelector from "@/utils/Form_Inputs/TagSelector";
 import { Delete, ImageUpIcon, PlusIcon } from "lucide-react";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import { useCreateNewsMutation } from "@/redux/dailynews/news.api";
-import SelectMultiValue from "@/utils/Form_Inputs/SelectMultiValue";
+import SelectMultiValue from "@/utils/Form_Inputs/SelectorWithSearch";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";

@@ -64,6 +64,7 @@
     "lottie-react": "^2.4.0",
     "lowlight": "^3.3.0",
     "lucide-react": "^0.469.0",
+    "multiselect-react-dropdown": "^2.0.25",
     "next": "15.1.2",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",

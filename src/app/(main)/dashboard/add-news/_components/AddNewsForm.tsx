@@ -14,7 +14,7 @@ import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import { useCreateNewsMutation } from "@/redux/dailynews/news.api";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
-import SelectMultiValue from "@/utils/Form_Inputs/SelectMultiValue";
+import SelectorWithSearch from "@/utils/Form_Inputs/SelectorWithSearch";
 import TagSelector from "@/utils/Form_Inputs/TagSelector";
 import NewsType from "../../../../../utils/Form_Inputs/NewsType";
 import RadioInput from "@/utils/Form_Inputs/RadioInput";
@@ -26,6 +26,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useState } from "react";
+import MultiSelector from "@/utils/Form_Inputs/MultiSelector";
 
 type Inputs = {
   admin_name: string;
@@ -76,6 +77,9 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
   const router = useRouter();
   const [firstPage, setFirstPage] = useState("");
   const [current_news, setCurrentNews] = useState("");
+  const [selectedOptions, setSelectedOptions] = useState<
+    Array<{value: string }>
+  >([]);
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
 
   const form = useForm<Inputs>({
@@ -93,11 +97,10 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       news_category: "",
       news_type: "",
       news_title: "",
-      slug:"",
+      slug: "",
       published_date: "",
       short_description: "",
       description: "",
-      news_tags: "",
       tags: [
         { image_tagline: "", photo_journalist_name: "", selected_image: "" },
       ],
@@ -126,12 +129,13 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       ...data,
       firstPage,
       current_news,
+      news_tags:selectedOptions
       // news_category: data.news_category,
       // postDate: new Date().toISOString(),
       // reporterType: data.reporterType.value,
       // reportedDate: new Date().toISOString(),
     };
-    
+
     console.log(modifyData);
 
     try {
@@ -271,7 +275,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                           নিউজ এলাকা
                         </h1>
                         <div className="col-span-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
-                          <SelectMultiValue
+                          <SelectorWithSearch
                             name={`news_area_division`}
                             options={[
                               { label: "বাংলাদেশ", value: "Bangladesh" },
@@ -286,7 +290,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                             ]}
                             label="বিভাগ নির্বাচন করুন"
                           />
-                          <SelectMultiValue
+                          <SelectorWithSearch
                             name={`news_area_district`}
                             options={[
                               { label: "বাংলাদেশ", value: "Bangladesh" },
@@ -301,7 +305,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                             ]}
                             label="জেলা নির্বাচন করুন"
                           />
-                          <SelectMultiValue
+                          <SelectorWithSearch
                             name={`news_area_upozilla`}
                             options={[
                               { label: "বাংলাদেশ", value: "Bangladesh" },
@@ -507,9 +511,10 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                   <h1 className="mb-2 font-semibold text-blue-500">
                     কোথায় ট্যাগ করতে চাচ্ছেন ?
                   </h1>
-                  <SelectMultiValue
-                    isMultiple={true}
-                    name={"news_tags"}
+                  <MultiSelector
+                    placeholder="ট্যাগ নির্বাচন করুন"
+                    selectedValues={selectedOptions}
+                    onChange={setSelectedOptions}
                     options={[
                       { label: "গুরুত্বপূর্ণ", value: "important" },
                       { label: "দৈনিক ইসলাম", value: "daily-islam" },
@@ -522,8 +527,8 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                       { label: "সুখবর", value: "good-news" },
                       { label: "চাকরি", value: "job" },
                     ]}
-                    label={"অবস্থান নির্বাচন করুন"}
                   />
+
                 </section>
 
                 <section className="bg-white border border-black p-5">
