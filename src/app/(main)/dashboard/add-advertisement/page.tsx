@@ -1,5 +1,5 @@
 import React from "react";
-import AddAdvertisementForm from "./__components/AddAdvertisementForm";
+import AddAdvertisementForm from "./_components/AddAdvertisementForm";
 
 const Page = () => {
   return (
