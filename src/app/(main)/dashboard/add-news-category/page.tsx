@@ -1,5 +1,5 @@
 import React from "react";
-import AddNewsCategory from "./__components/AddNewsCategory";
+import AddNewsCategory from "./_components/AddNewsCategory";
 
 const Page = () => {
   return (

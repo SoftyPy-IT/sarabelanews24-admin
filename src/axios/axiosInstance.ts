@@ -33,7 +33,7 @@ instance.interceptors.response.use(
   //@ts-ignore
   function (response) {
     const responseObject: ResponseSuccessType = {
-      data: response?.data,
+      data: response?.data?.data,
       meta: response?.data?.meta,
     };
     return responseObject;
@@ -44,6 +44,7 @@ instance.interceptors.response.use(
       config.sent = true;
       const response = await getNewAccessToken();
       const accessToken = response?.data?.accessToken;
+      console.log('from axios header',accessToken)
       config.headers["Authorization"] = accessToken;
       setToLocalStorage(authKey, accessToken);
       setAccessToken(accessToken);

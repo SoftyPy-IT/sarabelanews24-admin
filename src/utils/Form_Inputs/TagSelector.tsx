@@ -87,9 +87,9 @@ export default function TagSelector({
         render={({ field: { onChange }, fieldState: { error } }) => (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <div className="relative flex-grow">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <Tag className="text-gray-400 w-5 h-5" />
+              <div className="relative flex-grow ">
+                <div className=" absolute p-2 ">
+                  <Tag className="text-gray-400  " />
                 </div>
                 <Input
                   value={inputValue}
@@ -102,7 +102,7 @@ export default function TagSelector({
                   }}
                   placeholder={`Add a ${label}`}
                   className={cn(
-                    "pl-10 pr-4 py-2 w-full text-sm",
+                    "pl-10 py-2 w-full text-sm",
                     error && "focus-visible:ring-red-500"
                   )}
                 />

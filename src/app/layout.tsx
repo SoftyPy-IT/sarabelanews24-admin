@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Hind_Siliguri } from "next/font/google";
 import "./globals.css";
 import Providers from "@/lib/Provider";
+import { Toaster } from "react-hot-toast";
 
 const siliguri = Hind_Siliguri({
   weight: "400",
@@ -20,9 +21,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Providers>
-        <body className={`${siliguri.className}`}>{children}</body>
-      </Providers>
+      <body className={`${siliguri.className}`}>
+        <Providers>
+          {children}
+        </Providers>
+        <Toaster position="top-right" reverseOrder={false} />
+      </body>
     </html>
   );
 }

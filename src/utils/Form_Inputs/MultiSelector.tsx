@@ -1,39 +1,46 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import Multiselect from "multiselect-react-dropdown";
+import { Controller, useFormContext } from "react-hook-form";
 
 type MultiSelectorProps = {
+  name: string;
   options: Array<{ label: string; value: string }>;
-  selectedValues: Array<{ label: string; value: string }>;
   placeholder: string;
-  onChange: (values: Array<{ label: string; value: string }>) => void;
 };
 
 const MultiSelector: React.FC<MultiSelectorProps> = ({
-  placeholder,
+  name,
   options,
-  selectedValues,
-  onChange,
+  placeholder,
 }) => {
-  const handleSelect = (selectedList: []) => {
-    onChange(selectedList);
-  };
-
-  const handleRemove = (selectedList: []) => {
-    onChange(selectedList);
-  };
+  const { control } = useFormContext();
 
   return (
-    <div>
-      <Multiselect
-        placeholder={placeholder}
-        options={options}
-        selectedValues={selectedValues}
-        displayValue="label"
-        onSelect={handleSelect}
-        onRemove={handleRemove}
-      />
-    </div>
+    <Controller
+      name={name}
+      control={control}
+      defaultValue={[]} // Default value as an empty array
+      render={({ field: { value, onChange }, fieldState: { error } }) => (
+        <div>
+          <Multiselect
+            placeholder={placeholder}
+            options={options}
+            selectedValues={options.filter((option) =>
+              value?.includes(option.value)
+            )} // Match selected values to the full objects
+            displayValue="label"
+            onSelect={(selectedList) =>
+              onChange(selectedList.map((item: any) => item.value))
+            } // Update form state with array of values
+            onRemove={(selectedList) =>
+              onChange(selectedList.map((item: any) => item.value))
+            } // Update form state with array of values
+          />
+          {error && <p className="mt-1 text-sm text-red-600">{error.message}</p>}
+        </div>
+      )}
+    />
   );
 };
 
