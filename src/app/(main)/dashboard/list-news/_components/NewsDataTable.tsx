@@ -2,103 +2,145 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useGetAllNewsQuery } from "@/redux/dailynews/news.api";
+import { useDeleteNewsMutation, useGetAllNewsQuery } from "@/redux/dailynews/news.api";
 import ActionDropdown from "@/utils/Action/ActionDropdown";
 import { DataTable } from "@/utils/Table/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 
 const NewsDataTable = () => {
   const router = useRouter();
 
+
   // API call
   const { data, isLoading, isError } = useGetAllNewsQuery({});
+  const [deleteNews] = useDeleteNewsMutation();
 
   if (isLoading) {
     return <h1>Loading...</h1>;
   }
 
-  console.log("News data fetched successfully", data);
+  // console.log("News data fetched successfully", data);
 
   // Map data to match the columns
   // Ensure `newsData` is always an array
-const newsData = data?.news?.map((item: any) => ({
-  id: item._id,
-  adminName: item.adminName || "N/A",
-  category: item.category?.name || "N/A",
-  createdAt: new Date(item.createdAt).toLocaleString(),
-  date: new Date(item.date).toLocaleDateString(),
-  description: item.description || "N/A",
-  imageTagline: item.imageTagline || "N/A",
-  metaTitle: item.metaTitle || "N/A",
-  metaDescription: item.metaDescription || "N/A",
-  newsCategory: item.newsCategory || "N/A",
-  newsType: item.newsType || "N/A",
-  shortDescription: item.shortDescription || "N/A",
-  slug: item.slug || "N/A",
-  title: item.title || "N/A",
-})) || []; // Fallback to an empty array
-
+  const newsData =
+    data?.news?.map((item: any) => ({
+      id: item._id,
+      adminName: item.adminName || "N/A",      
+      title: item.newsTitle || "N/A",
+      category: item.category?.name || "N/A",
+      // createdAt: new Date(item.createdAt).toLocaleString(),
+      // date: new Date(item.date).toLocaleDateString(),
+      description: item.description || "N/A",
+      // imageTagline: item.imageTagline || "N/A",
+      // metaTitle: item.metaTitle || "N/A",
+      // metaDescription: item.metaDescription || "N/A",
+      newsCategory: item.newsCategory || "N/A",
+      newsType: item.newsType || "N/A",
+      shortDescription: item.shortDescription || "N/A",
+      // slug: item.slug || "N/A",
+    })) || []; // Fallback to an empty array
 
   const handleEdit = (rowData: any) => {
-    router.push(`/dashboard/list-lead-news/update-details/${rowData.id}`);
+    router.push(`/dashboard/list-news/update-details/${rowData.id}`);
   };
+  
+  const handleDelete = async (id: string) => {
+    try {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          await deleteNews(id).unwrap();
+          Swal.fire("Deleted!", "Your activity has been deleted.", "success");
+        }
+      });
+    } catch (err: any) {
+      console.error("Error deleting news:", err);
+      toast.error(err.message || "Failed to delete news.");
+    }
+  };
+  
 
-  const handleDelete = (rowData: any) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire("Deleted!", "Delete Successful", "success");
-        console.log("Deleting row:", rowData);
-      }
-    });
-  };
+  // const handleDelete = async (id: string) => {
+  //   Swal.fire({
+  //     title: "Are you sure?",
+  //     text: "You won't be able to revert this!",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#3085d6",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Yes, delete it!",
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       try {
+  //           await deleteNews(id).unwrap();
+
+  //           Swal.fire({
+  //               title: "Deleted!",
+  //               text: "Your activity has been deleted.",
+  //               icon: "success"
+  //           });
+  //       } catch (err: any) {
+  //           toast.error(err.message);
+  //       }
+  //   }
+
+  //     if (result.isConfirmed) {
+  //       Swal.fire("Deleted!", "Delete Successful", "success");
+  //       console.log("Deleting row:", id);
+  //     }
+  //   });
+  // };
 
   const handleView = (rowData: any) => {
-    router.push(`/dashboard/list-lead-news/view-details/${rowData.id}`);
+    router.push(`/dashboard/list-news/view-details/${rowData.id}`);
   };
 
   const columns: ColumnDef<any, any>[] = [
+    
     {
       accessorKey: "adminName",
       header: () => <span className="font-bold">Admin Name</span>,
     },
     {
+      accessorKey: "title",
+      header: () => <span className="font-bold">Title</span>,
+    },
+    {
       accessorKey: "category",
       header: () => <span className="font-bold">Category</span>,
     },
-    {
-      accessorKey: "createdAt",
-      header: () => <span className="font-bold">Created At</span>,
-    },
-    {
-      accessorKey: "date",
-      header: () => <span className="font-bold">Date</span>,
-    },
-    {
-      accessorKey: "description",
-      header: () => <span className="font-bold">Description</span>,
-    },
-    {
-      accessorKey: "imageTagline",
-      header: () => <span className="font-bold">Image Tagline</span>,
-    },
-    {
-      accessorKey: "metaTitle",
-      header: () => <span className="font-bold">Meta Title</span>,
-    },
-    {
-      accessorKey: "metaDescription",
-      header: () => <span className="font-bold">Meta Description</span>,
-    },
+    // {
+    //   accessorKey: "createdAt",
+    //   header: () => <span className="font-bold">Created At</span>,
+    // },
+    // {
+    //   accessorKey: "date",
+    //   header: () => <span className="font-bold">Date</span>,
+    // },
+    
+    // {
+    //   accessorKey: "imageTagline",
+    //   header: () => <span className="font-bold">Image Tagline</span>,
+    // },
+    // {
+    //   accessorKey: "metaTitle",
+    //   header: () => <span className="font-bold">Meta Title</span>,
+    // },
+    // {
+    //   accessorKey: "metaDescription",
+    //   header: () => <span className="font-bold">Meta Description</span>,
+    // },
     {
       accessorKey: "newsCategory",
       header: () => <span className="font-bold">News Category</span>,
@@ -112,13 +154,14 @@ const newsData = data?.news?.map((item: any) => ({
       header: () => <span className="font-bold">Short Description</span>,
     },
     {
-      accessorKey: "slug",
-      header: () => <span className="font-bold">Slug</span>,
+      accessorKey: "description",
+      header: () => <span className="font-bold">Description</span>,
     },
-    {
-      accessorKey: "title",
-      header: () => <span className="font-bold">Title</span>,
-    },
+    // {
+    //   accessorKey: "slug",
+    //   header: () => <span className="font-bold">Slug</span>,
+    // },
+    
     {
       accessorKey: "Action",
       header: () => <span className="font-bold">Action</span>,
@@ -127,34 +170,32 @@ const newsData = data?.news?.map((item: any) => ({
           row={row}
           onView={handleView}
           onUpdate={handleEdit}
-          onDelete={handleDelete}
+          onDelete={() => handleDelete(row.original.id)}
         />
       ),
     },
   ];
-  
 
   return (
     <div className="overflow-x-auto bg-white p-2">
       <DataTable
-  columns={columns}
-  data={newsData ?? []} // Ensure `data` is always an array
-  filterKey="adminName"
-  filterPlaceholder="Search by Admin Name"
-  pageSize={10}
-  selectOptions={{
-    key: "newsType",
-    options: [
-      { label: "Politics", value: "Politics" },
-      { label: "Economy", value: "Economy" },
-      { label: "Sports", value: "Sports" },
-      { label: "Entertainment", value: "Entertainment" },
-      { label: "Education", value: "Education" },
-    ],
-    placeholder: "Select News Type",
-  }}
-/>
-
+        columns={columns}
+        data={newsData ?? []} 
+        filterKey="adminName"
+        filterPlaceholder="Search by Admin Name"
+        pageSize={10}
+        selectOptions={{
+          key: "newsType",
+          options: [
+            { label: "Politics", value: "Politics" },
+            { label: "Economy", value: "Economy" },
+            { label: "Sports", value: "Sports" },
+            { label: "Entertainment", value: "Entertainment" },
+            { label: "Education", value: "Education" },
+          ],
+          placeholder: "Select News Type",
+        }}
+      />
     </div>
   );
 };

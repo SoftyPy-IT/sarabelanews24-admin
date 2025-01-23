@@ -63,8 +63,10 @@ const AddAdvertisementForm = () => {
   const onSubmit = async (data: Inputs) => {
     // Transforming the data to match your desired output
     const transformedData = {
+      scheduleAdvertisements: data.scheduleAdvertisements,
       advertisementLink: data.advertisementLink,
       displayLocation: data.displayLocation, 
+      adminName: data.adminName, 
       visibility: {
         popup: data.displayLocation === "popup",
         header: data.displayLocation === "header",
