@@ -1,9 +1,10 @@
 import React from "react";
+import ListAdvertisement from "./_components/ListAdvertisement";
 
 const Page = () => {
   return (
     <div>
-      <h1>This is list-advertisement</h1>
+      <ListAdvertisement/>
     </div>
   );
 };

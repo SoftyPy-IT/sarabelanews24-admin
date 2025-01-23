@@ -1,10 +1,10 @@
 import React from "react";
-import AddNewsCategory from "./_components/AddNewsCategory";
+import CategoryList from "./_components/CategoryList";
 
 const Page = () => {
   return (
     <div>
-      <AddNewsCategory />
+      <CategoryList />
     </div>
   );
 };

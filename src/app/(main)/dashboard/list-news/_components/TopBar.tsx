@@ -86,7 +86,7 @@ const TopBar = () => {
     <>
       <div className="flex justify-between items-center content-center bg-white p-3  border rounded-md shadow-sm mb-5 gap-2 md:gap-0  ">
         <div className="space-y-2">
-          <h2 className="text-sm md:text-3xl pl-2 font-semibold">Update</h2>
+          <h2 className="text-sm md:text-3xl pl-2 font-semibold">Update News</h2>
         </div>
 
         {/* <div className="relative border md:w-[300px] py-1">

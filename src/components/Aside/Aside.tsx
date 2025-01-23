@@ -40,8 +40,8 @@ const Aside = () => {
       children: [
         { href: "/dashboard/add-news", label: "Add News", icon: PlusIcon },
         {
-          href: "/dashboard/add-news-category",
-          label: "Add News Category",
+          href: "/dashboard/news-category",
+          label: "News Category",
           icon: PlusIcon,
         },
         {

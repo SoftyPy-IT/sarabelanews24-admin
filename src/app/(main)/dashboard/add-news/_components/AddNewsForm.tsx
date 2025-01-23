@@ -16,7 +16,6 @@ import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
 import SelectorWithSearch from "@/utils/Form_Inputs/SelectorWithSearch";
 import TagSelector from "@/utils/Form_Inputs/TagSelector";
-import NewsType from "../../../../../utils/Form_Inputs/NewsType";
 import RadioInput from "@/utils/Form_Inputs/RadioInput";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import {
@@ -35,6 +34,8 @@ import {
   upazilaOption,
 } from "@/utils/options";
 import toast from "react-hot-toast";
+import NewsType from "@/utils/Form_Inputs/NewsType";
+
 
 type Inputs = {
   reportedDate: string;
@@ -51,7 +52,7 @@ type Inputs = {
   division: string;
   district: string;
   upazila: string;
-  newsTag: string[];
+  newsTag: string;
   newsType: string;
   newsCategory: string;
   newsTitle: string;
@@ -83,12 +84,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
   const [createNews] = useCreateNewsMutation({});
   const router = useRouter();
   const [firstPage, setFirstPage] = useState("");
-  // const [currentNews, setCurrentNews] = useState("");
   const [currentNews, setCurrentNews] = useState<boolean>(false);
-  const [selectedOptions, setSelectedOptions] = useState<
-    // Array<{ value: string }>
-    Array<{ label: string; value: string }>
-  >([]);
 
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
 
@@ -100,7 +96,6 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
       currentNews: true || false,
       displayLocation: "",
-      // firstPage: "",
       selectedImage: "",
       imageTagline: "",
       photojournalistName: "",
@@ -108,7 +103,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       division: "",
       district: "",
       upazila: "",
-      newsTag: [],
+      newsTag: "",
       newsType: "",
       newsCategory: "",
       newsTitle: "",
@@ -140,25 +135,6 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
     return <h1>loading</h1>;
   }
 
-  // const onSubmit = async (data: Inputs) => {
-  //   const modifyData = {
-  //     ...data,
-  //     postDate: new Date().toISOString(),
-  //   };
-  
-  //   try {
-  //     const res = await createNews(modifyData).unwrap();
-  //     if (res.success) {
-  //       toast.success("News created successfully!");
-  //       router.push("/dashboard/list-lead-news");
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error("Failed to create news.");
-  //   }
-  // };
-  
-
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
       // ...data,
@@ -178,10 +154,11 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
     try {
       const res = await createNews(modifyData).unwrap();
-      if (res.success) {
+      // console.log("response:",res)
+      if (res) {
         toast.success("News Create Successfully!");
+        router.push("/dashboard/list-news");
       }
-      router.push("/dashboard/list-lead-news");
     } catch (error) {
       console.error(error);
     }
