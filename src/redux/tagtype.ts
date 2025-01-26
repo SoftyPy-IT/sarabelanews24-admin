@@ -3,6 +3,7 @@ export const tagTypesList = [
     "categories",
     "advertisement",
     "videoNews",
-    "user"
+    "user",
+    "folder"
   ];
   

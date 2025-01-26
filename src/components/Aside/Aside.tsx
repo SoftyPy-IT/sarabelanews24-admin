@@ -29,12 +29,12 @@ const Aside = () => {
 
   const routes = [
     {
-      href: "/dashboard/dashboard",
+      href: "/dashboard",
       label: "Dashboard",
       icon: ChartLine,
     },
     {
-      href: "/dashboard",
+      href: "/news",
       label: "News",
       icon: ChartNetworkIcon,
       children: [

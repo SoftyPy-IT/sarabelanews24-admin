@@ -28,12 +28,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, SearchIcon } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filterKey?: string;
+  button?: string;
   filterPlaceholder?: string;
   selectOptions?: {
     key: string;
@@ -41,6 +42,10 @@ interface DataTableProps<TData, TValue> {
     placeholder: string;
   };
   pageSize?: number;
+  customButton?: {
+    label: string;
+    onClick: () => void;
+  };
 }
 
 export function DataTable<TData, TValue>({
@@ -50,9 +55,12 @@ export function DataTable<TData, TValue>({
   filterPlaceholder = "Search...",
   selectOptions,
   pageSize = 10,
+  customButton,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
   const [selectedType, setSelectedType] = React.useState<string>("all");
 
   const table = useReactTable({
@@ -77,16 +85,37 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="">
-      <div className="flex items-center justify-between gap-4 pb-2">
+      <div className="flex items-center justify-between gap-4 pb-3">
+        {/* Search Bar */}
         {filterKey && (
-          <Input
-            placeholder={filterPlaceholder}
-            value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn(filterKey)?.setFilterValue(event.target.value)
-            }
-            className="max-w-xs border border-blue-400 focus:border-blue-800 focus:ring-1 "
-          />
+          <div className="relative flex-grow mb-2 p-2">
+            <div className="absolute p-3">
+              <SearchIcon className="text-gray-400" />
+            </div>
+            <Input
+              placeholder={filterPlaceholder}
+              value={
+                (table.getColumn(filterKey)?.getFilterValue() as string) ?? ""
+              }
+              onChange={(event) =>
+                table.getColumn(filterKey)?.setFilterValue(event.target.value)
+              }
+              className="pl-10 py-3 w-[300px] border border-blue-400 focus:border-blue-800 focus:ring-1 rounded"
+            />
+          </div>
+        )}
+
+        {/* Button */}
+
+        {customButton && (
+          <Button
+            variant="outline"
+            size="default"
+            onClick={customButton.onClick}
+            className="text-sm font-medium bg-black text-white"
+          >
+            {customButton.label}
+          </Button>
         )}
 
         {selectOptions && (
@@ -100,8 +129,9 @@ export function DataTable<TData, TValue>({
                 table.getColumn(selectOptions.key)?.setFilterValue(value);
               }
             }}
+            
           >
-            <SelectTrigger className="w-[200px] border  border-blue-400 focus:border-blue-800 focus:ring-1 ">
+            <SelectTrigger className="w-[200px] border border-blue-400 focus:border-blue-800 focus:ring-1 rounded">
               <SelectValue placeholder={selectOptions.placeholder} />
             </SelectTrigger>
             <SelectContent className="bg-white border border-blue-200">
@@ -117,13 +147,16 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* Rest of the component remains the same */}
-      <div className="overflow-x-auto border border-blue-200 bg-white">
+      <div className="overflow-x-auto border border-blue-200 rounded">
         <Table>
-          <TableHeader className="bg-blue-200">
+          <TableHeader className="">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="bg-gray-100">
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="py-3 px-4 text-left text-black">
+                  <TableHead
+                    key={header.id}
+                    className="py-3 px-4 text-left text-black font-semibold"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -136,7 +169,7 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
 
-          <TableBody className="divide-y divide-gray-300">
+          <TableBody className="divide-y divide-gray-300 ">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
@@ -190,7 +223,9 @@ export function DataTable<TData, TValue>({
           <span className="font-medium text-emerald-900">
             {table.getState().pagination.pageIndex + 1}
           </span>
-          <span className="text-sm text-blue-600">of {table.getPageCount()}</span>
+          <span className="text-sm text-blue-600">
+            of {table.getPageCount()}
+          </span>
         </div>
 
         <Button

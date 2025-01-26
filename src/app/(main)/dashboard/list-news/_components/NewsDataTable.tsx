@@ -9,6 +9,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import TopBar from "./TopBar";
+import Loading from "@/app/loading";
 
 const NewsDataTable = () => {
   const router = useRouter();
@@ -19,7 +21,7 @@ const NewsDataTable = () => {
   const [deleteNews] = useDeleteNewsMutation();
 
   if (isLoading) {
-    return <h1>Loading...</h1>;
+    return <Loading/>;
   }
 
   // console.log("News data fetched successfully", data);
@@ -27,8 +29,9 @@ const NewsDataTable = () => {
   // Map data to match the columns
   // Ensure `newsData` is always an array
   const newsData =
-    data?.news?.map((item: any) => ({
+    data?.news?.map((item: any, index: any) => ({
       id: item._id,
+      slNo:index + 1,
       adminName: item.adminName || "N/A",      
       title: item.newsTitle || "N/A",
       category: item.category?.name || "N/A",
@@ -42,7 +45,7 @@ const NewsDataTable = () => {
       newsType: item.newsType || "N/A",
       shortDescription: item.shortDescription || "N/A",
       // slug: item.slug || "N/A",
-    })) || []; // Fallback to an empty array
+    })) || []; 
 
   const handleEdit = (rowData: any) => {
     router.push(`/dashboard/list-news/update-details/${rowData.id}`);
@@ -109,6 +112,10 @@ const NewsDataTable = () => {
   const columns: ColumnDef<any, any>[] = [
     
     {
+      accessorKey: "slNo",
+      header: () => <span className="font-bold">SL. No.</span>,
+    },
+    {
       accessorKey: "adminName",
       header: () => <span className="font-bold">Admin Name</span>,
     },
@@ -119,35 +126,10 @@ const NewsDataTable = () => {
     {
       accessorKey: "category",
       header: () => <span className="font-bold">Category</span>,
-    },
-    // {
-    //   accessorKey: "createdAt",
-    //   header: () => <span className="font-bold">Created At</span>,
-    // },
-    // {
-    //   accessorKey: "date",
-    //   header: () => <span className="font-bold">Date</span>,
-    // },
-    
-    // {
-    //   accessorKey: "imageTagline",
-    //   header: () => <span className="font-bold">Image Tagline</span>,
-    // },
-    // {
-    //   accessorKey: "metaTitle",
-    //   header: () => <span className="font-bold">Meta Title</span>,
-    // },
-    // {
-    //   accessorKey: "metaDescription",
-    //   header: () => <span className="font-bold">Meta Description</span>,
-    // },
+    },   
     {
       accessorKey: "newsCategory",
       header: () => <span className="font-bold">News Category</span>,
-    },
-    {
-      accessorKey: "newsType",
-      header: () => <span className="font-bold">News Type</span>,
     },
     {
       accessorKey: "shortDescription",
@@ -157,10 +139,7 @@ const NewsDataTable = () => {
       accessorKey: "description",
       header: () => <span className="font-bold">Description</span>,
     },
-    // {
-    //   accessorKey: "slug",
-    //   header: () => <span className="font-bold">Slug</span>,
-    // },
+   
     
     {
       accessorKey: "Action",
@@ -177,7 +156,10 @@ const NewsDataTable = () => {
   ];
 
   return (
-    <div className="overflow-x-auto bg-white p-2">
+    <>
+    <TopBar/>
+    <div className="overflow-x-auto bg-white p-2 rounded">
+      
       <DataTable
         columns={columns}
         data={newsData ?? []} 
@@ -197,6 +179,7 @@ const NewsDataTable = () => {
         }}
       />
     </div>
+    </>
   );
 };
 

@@ -13,47 +13,10 @@ import {
 } from "@/redux/dailynews/users.api";
 import toast from "react-hot-toast";
 
-// const data = [
-//   {
-//     id: 1,
-//     reporterType: "Ibrahim",
-//     name: "ibrahim@gmail.com",
-//     newsArea: "Admin",
-//     reportedDateAndTime: "Active",
-//   },
-//   {
-//     id: 2,
-//     reporterType: "Bablu",
-//     name: "bablu@gmail.com",
-//     newsArea: "Admin",
-//     reportedDateAndTime: "Active",
-//   },
-//   {
-//     id: 3,
-//     reporterType: "Liton",
-//     name: "liton@gmail.com",
-//     newsArea: "Admin",
-//     reportedDateAndTime: "Active",
-//   },
-//   {
-//     id: 4,
-//     reporterType: "Talukder",
-//     name: "talukder@gmail.com",
-//     newsArea: "Admin",
-//     reportedDateAndTime: "Active",
-//   },
-//   {
-//     id: 5,
-//     reporterType: "Khairul",
-//     name: "khairul@gmail.com",
-//     newsArea: "Modaretor",
-//     reportedDateAndTime: "Active",
-//   },
-// ];
 
 const Page = () => {
   const router = useRouter();
-  // API call
+
   const { data, isLoading, isError } = useGetAllUserQuery({});
   const [deleteUser] = useDeleteUserMutation();
 
@@ -63,8 +26,7 @@ const Page = () => {
 
   // console.log("News data fetched successfully", data);
 
-  // Map data to match the columns
-  // Ensure `newsData` is always an array
+  
   const usersData =
     data?.map((item: any) => ({
       id: item._id,
