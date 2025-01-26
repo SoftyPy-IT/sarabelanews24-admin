@@ -5,7 +5,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
 import TextInput from "@/utils/Form_Inputs/TextInput";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import TextArea from "@/utils/Form_Inputs/TextArea";
 import { Delete, ImageUpIcon, PlusIcon } from "lucide-react";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
@@ -120,6 +120,9 @@ const Page = () => {
                         </Button>
                       </SheetTrigger>
                       <SheetContent side="right" style={{ maxWidth: "800px" }}>
+                      <SheetTitle className="sr-only">
+                         news
+                        </SheetTitle>
                         <AllImgModal />
                       </SheetContent>
                     </Sheet>

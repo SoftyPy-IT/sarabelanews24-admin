@@ -1,7 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { Form } from "@/components/ui/form";
+import {
+  Form,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormMessage,
+} from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
@@ -28,7 +35,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import MultiSelector from "@/utils/Form_Inputs/MultiSelector";
 import {
   districtOption,
@@ -54,7 +61,7 @@ type Inputs = {
   division: string;
   district: string;
   upazila: string;
-  newsTag: string;
+  newsTag: string | string[];
   newsType: string;
   newsCategory: string;
   newsTitle: string;
@@ -64,13 +71,11 @@ type Inputs = {
   publishedDate: string;
   shortDescription: string;
   description: string;
-
   tags: {
     imageTagline: string;
     photojournalistName: string;
     selectedImage: string;
   }[];
-
   metaTitle: string;
   metaKeywords: string | string[];
   metaDescription: string;
@@ -83,27 +88,21 @@ type newsProps = {
 const Page = ({ params }: newsProps) => {
   const { id } = use(params);
 
-  console.log(id);
-
-  const [createNews] = useCreateNewsMutation({});
+  const [createNews] = useCreateNewsMutation();
   const router = useRouter();
   const [firstPage, setFirstPage] = useState("");
   const [currentNews, setCurrentNews] = useState<boolean>(false);
 
-  // const { data, isLoading, isError } = useGetAllCategoriesQuery({});
-
-  // update
   const [updateNews] = useUpdateNewsMutation();
-  const { data, isLoading } = useGetSingleNewsQuery(id);
-
-  console.log(data);
+  const { data: singleData, isLoading } = useGetSingleNewsQuery(id);
+  console.log(singleData);
 
   const form = useForm<Inputs>({
     defaultValues: {
       reportedDate: "",
-      reporterType: "",
+      reporterType: "own_representative",
       reporterName: "",
-      currentNews: true || false,
+      currentNews: false,
       displayLocation: "",
       selectedImage: "",
       imageTagline: "",
@@ -112,7 +111,7 @@ const Page = ({ params }: newsProps) => {
       division: "",
       district: "",
       upazila: "",
-      newsTag: "",
+      newsTag: [],
       newsType: "",
       newsCategory: "",
       newsTitle: "",
@@ -124,10 +123,46 @@ const Page = ({ params }: newsProps) => {
       description: "",
       tags: [{ imageTagline: "", photojournalistName: "", selectedImage: "" }],
       metaTitle: "",
-      metaKeywords: "",
+      metaKeywords: [],
       metaDescription: "",
     },
   });
+
+  useEffect(() => {
+    if (singleData) {
+      form.reset({
+        ...form.getValues(),
+        reportedDate: singleData.reportedDate || "",
+        reporterType: singleData.reporterType || "own_representative",
+        reporterName: singleData.reporterName || "",
+        currentNews: singleData.currentNews || false,
+        displayLocation: singleData.displayLocation || "",
+        selectedImage: singleData.images?.[0] || "",
+        imageTagline: singleData.imageTagline || "",
+        photojournalistName: singleData.photojournalistName || "",
+        internationalArea: singleData.internationalArea || "",
+        division: singleData.division || "",
+        district: singleData.district || "",
+        upazila: singleData.upazila || "",
+        newsTag: singleData.newsTag || [],
+        newsType: singleData.newsType || "",
+        newsCategory: singleData.newsCategory || "",
+        newsTitle: singleData.newsTitle || "",
+        adminName: singleData.adminName || "",
+        slug: singleData.slug || "",
+        category: singleData.category?._id || "",
+        publishedDate: singleData.publishedDate || "",
+        shortDescription: singleData.shortDescription || "",
+        description: singleData.description || "",
+        tags: singleData.tags || [
+          { imageTagline: "", photojournalistName: "", selectedImage: "" },
+        ],
+        metaTitle: singleData.metaTitle || "",
+        metaKeywords: singleData.metaKeywords || [],
+        metaDescription: singleData.metaDescription || "",
+      });
+    }
+  }, [singleData, form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -139,87 +174,45 @@ const Page = ({ params }: newsProps) => {
     name: "newsType",
   });
 
-  if (isLoading) {
-    return <h1>loading</h1>;
-  }
-
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
       ...data,
       category: data.category,
       postDate: new Date().toISOString(),
     };
-    // console.log("modify value:",modifyData);
-    // console.log(data);
 
     try {
       const res = await createNews(modifyData).unwrap();
-      // console.log("response:",res)
       if (res) {
-        toast.success("News Create Successfully!");
+        toast.success("News Created Successfully!");
         router.push("/dashboard/list-news");
       }
     } catch (error) {
       console.error(error);
+      toast.error("Failed to create news");
     }
   };
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: Inputs) => {
     try {
       const res = await updateNews({ ...data, id }).unwrap();
-
       toast.success(res.message);
-
-      // setOpen(false);
     } catch (err: any) {
       console.error("Error:", err);
       toast.error(err.message);
     }
   };
 
-  const singleData = data?.data;
   if (isLoading) {
     return <p>Loading............</p>;
   }
-  console.log(singleData);
-
-  const defaultValues = {
-    reporterName: singleData?.reporterName || "",
-    reporterType: singleData?.reporterType || "",
-    reportedDate: singleData?.reportedDate || "",
-    newsType: singleData?.newsType || "",
-    division: singleData?.division || "",
-    district: singleData?.district || "",
-    upazila: singleData?.upazila || "",
-    internationalArea: singleData?.internationalArea || "",
-    displayLocation: singleData?.displayLocation || "",
-    images: singleData?.images || "",
-    photojournalistName: singleData?.photojournalistName || "",
-    category: singleData?.category || "",
-    newsCategory: singleData?.newsCategory || "",
-    newsTitle: singleData?.newsTitle || "",
-    slug: singleData?.slug || "",
-    shortDescription: singleData?.shortDescription || "",
-    description: singleData?.description || "",
-    imageTagline: singleData?.imageTagline || "",
-    currentNews: singleData?.currentNews || "",
-    adminName: singleData?.adminName || "",
-    postDate: singleData?.postDate || "",
-    publishedDate: singleData?.publishedDate || "",
-    publishedNews: singleData?.publishedNews || "",
-    metaTitle: singleData?.metaTitle || "",
-    metaKeywords: singleData?.metaKeywords || "",
-    metaDescription: singleData?.metaDescription || "",
-    createdAt: singleData?.createdAt || "",
-    updatedAt: singleData?.updatedAt || "",
-  };
 
   return (
     <>
       <TopBar />
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(id ? handleSubmit : onSubmit)}>
             <div className="grid grid-cols-12 gap-4 xl:6">
               <div className="lg:col-span-8 col-span-full space-y-3">
                 {/* Reporter Info Section */}
@@ -233,14 +226,12 @@ const Page = ({ params }: newsProps) => {
                       options={reporterTypeOption}
                       rules={{ required: "Reporter type is required" }}
                     />
-
                     <DateTimeInput
                       control={form.control}
                       type="datetime-local"
                       name="reportedDate"
                       rules={{ required: "Reported date and time is required" }}
                     />
-
                     <div className="col-span-2">
                       <TextInput
                         control={form.control}
@@ -252,10 +243,9 @@ const Page = ({ params }: newsProps) => {
                   </div>
                 </section>
 
-                {/* news type and area */}
+                {/* News type and area */}
                 <section className="bg-white border border-gray-300 rounded p-5">
-                  <h1 className="mb-2 font-semibold  ">নিউজ টাইপ:</h1>
-
+                  <h1 className="mb-2 font-semibold">নিউজ টাইপ:</h1>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div className="col-span-2">
                       <SelectInput
@@ -269,10 +259,9 @@ const Page = ({ params }: newsProps) => {
                         ]}
                       />
                     </div>
-
                     {newsType === "Bangladesh" && (
                       <>
-                        <h1 className="mb-1 font-semibold ">নিউজ এলাকা</h1>
+                        <h1 className="mb-1 font-semibold">নিউজ এলাকা</h1>
                         <div className="col-span-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
                           <SelectorWithSearch
                             name="division"
@@ -292,14 +281,13 @@ const Page = ({ params }: newsProps) => {
                         </div>
                       </>
                     )}
-
                     {newsType === "International" && (
                       <>
-                        <h1 className="mb-1 font-semibold ">নিউজ এলাকা</h1>
+                        <h1 className="mb-1 font-semibold">নিউজ এলাকা</h1>
                         <div className="col-span-2">
                           <TextInput
                             control={form.control}
-                            name={"internationalArea"}
+                            name="internationalArea"
                             placeholder="আন্তর্জাতিক এলাকা"
                             rules={{
                               required: "International area is required",
@@ -313,13 +301,13 @@ const Page = ({ params }: newsProps) => {
 
                 {/* News Info Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
-                  <h1 className="mb-2 font-semibold  ">সংবাদের তথ্য:</h1>
+                  <h1 className="mb-2 font-semibold">সংবাদের তথ্য:</h1>
                   <div>
                     <Sheet>
                       <SheetTrigger asChild>
                         <Button
                           variant="outline"
-                          className="p-8 border  rounded-full mb-5"
+                          className="p-8 border rounded-full mb-5"
                         >
                           <ImageUpIcon color="red" size={50} /> Add Image
                         </Button>
@@ -337,19 +325,18 @@ const Page = ({ params }: newsProps) => {
                       <div className="col-span-2">
                         <TextInput
                           control={form.control}
-                          rules={{ required: "Photographer name is required" }}
                           name="photojournalistName"
                           placeholder="ফটো সাংবাদিক নাম"
+                          rules={{ required: "Photographer name is required" }}
                         />
                       </div>
-
                       <SelectInput
                         control={form.control}
                         name="category"
                         placeholder="নিউজ ক্যাটাগরি নির্বাচন করুন"
                         rules={{ required: "News Category is required" }}
                         options={
-                          data?.categories?.map(
+                          singleData?.categories?.map(
                             (program: { name: string; _id: string }) => ({
                               label: program.name,
                               value: program._id,
@@ -357,7 +344,6 @@ const Page = ({ params }: newsProps) => {
                           ) || []
                         }
                       />
-
                       <NewsType
                         form={form}
                         name="displayLocation"
@@ -365,7 +351,6 @@ const Page = ({ params }: newsProps) => {
                         setFirstPage={setFirstPage}
                       />
                     </div>
-
                     <div className="col-span-2">
                       <TextInput
                         control={form.control}
@@ -374,7 +359,6 @@ const Page = ({ params }: newsProps) => {
                         rules={{ required: "News title is required" }}
                       />
                     </div>
-
                     <div className="col-span-2">
                       <TextArea
                         control={form.control}
@@ -383,11 +367,10 @@ const Page = ({ params }: newsProps) => {
                         rules={{ required: "Short Description is required" }}
                       />
                     </div>
-
                     <div className="col-span-2">
                       <RichText
                         name="description"
-                        placeholder={"বিস্তারিত বর্ণনা "}
+                        placeholder="বিস্তারিত বর্ণনা"
                       />
                     </div>
                   </div>
@@ -397,7 +380,7 @@ const Page = ({ params }: newsProps) => {
               <div className="lg:col-span-4 col-span-full space-y-5">
                 {/* Tags Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
-                  <h1 className="mb-2 font-semibold  ">সংবাদ ট্যাগ:</h1>
+                  <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
                   <div className="col-span-2">
                     {fields.map((field, index) => (
                       <div key={field.id} className="flex flex-col space-y-3">
@@ -419,7 +402,6 @@ const Page = ({ params }: newsProps) => {
                               <AllImgModal />
                             </SheetContent>
                           </Sheet>
-
                           <div className="flex justify-end gap-2">
                             {fields.length > 1 && (
                               <Button
@@ -461,8 +443,7 @@ const Page = ({ params }: newsProps) => {
                             name="photojournalistName"
                             placeholder="ফটো সাংবাদিক নাম"
                             rules={{
-                              required:
-                                "Photo Journalist Name name is required",
+                              required: "Photo Journalist Name is required",
                             }}
                           />
                         </div>
@@ -471,7 +452,7 @@ const Page = ({ params }: newsProps) => {
                   </div>
                 </section>
 
-                {/* news showing position */}
+                {/* News showing position */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">
                     কোথায় ট্যাগ করতে চাচ্ছেন ?
@@ -485,7 +466,7 @@ const Page = ({ params }: newsProps) => {
 
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <RadioInput
-                    title={"ক্যারেন্ট নিউজ হিসেবে রাখতে চাচ্ছেন ?"}
+                    title="ক্যারেন্ট নিউজ হিসেবে রাখতে চাচ্ছেন ?"
                     name="currentNews"
                     value={currentNews}
                     onChange={(value: boolean) => setCurrentNews(value)}
@@ -494,7 +475,7 @@ const Page = ({ params }: newsProps) => {
 
                 {/* Admin Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
-                  <h1 className="mb-2 font-semibold ">Admin Section:</h1>
+                  <h1 className="mb-2 font-semibold">Admin Section:</h1>
                   <div className="col-span-2">
                     <div className="col-span-2">
                       <TextInput
@@ -504,8 +485,7 @@ const Page = ({ params }: newsProps) => {
                         rules={{ required: "Admin name is required" }}
                       />
                     </div>
-
-                    <div className="grid grid-cols-1  gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                       <DateTimeInput
                         control={form.control}
                         name="publishedDate"
@@ -519,7 +499,7 @@ const Page = ({ params }: newsProps) => {
 
                 {/* SEO Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
-                  <h1 className="mb-2 font-semibold ">SEO Section:</h1>
+                  <h1 className="mb-2 font-semibold">SEO Section:</h1>
                   <CardContent className="space-y-5">
                     <TextInput
                       control={form.control}
@@ -534,12 +514,7 @@ const Page = ({ params }: newsProps) => {
                       label="Meta Description"
                       placeholder="Enter Meta Description"
                     />
-
-                    <TagSelector
-                      name="metaKeywords"
-                      label="Meta Keywords"
-                      // defaultValues={metaKeywords || []}
-                    />
+                    <TagSelector name="metaKeywords" label="Meta Keywords"  />
                   </CardContent>
                 </section>
               </div>
@@ -547,12 +522,8 @@ const Page = ({ params }: newsProps) => {
 
             {/* Submit Section */}
             <section className="my-4 flex justify-end">
-              <Button
-                type="submit"
-                className="w-[400px] text-white "
-                onSubmit={handleSubmit}
-              >
-                {/* {isUpdating ? "Updating..." : "Submit"} */}Submit
+              <Button type="submit" className="w-[400px] text-white">
+                Submit
               </Button>
             </section>
           </form>

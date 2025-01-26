@@ -13,11 +13,9 @@ import {
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
-import { Input } from "@/components/ui/input";
 import { useCreateUserMutation } from "@/redux/dailynews/users.api";
 import toast from "react-hot-toast";
 import TextInput from "@/utils/Form_Inputs/TextInput";
-// import { Router } from "lucide-react";
 
 type Inputs = {
   name: string;
@@ -45,6 +43,7 @@ const TopBar = () => {
       ...data,
       name: data.name,
       postDate: new Date().toISOString(),
+      
     };
     console.log("modify value:", modifyData);
     // console.log(data);
@@ -54,6 +53,8 @@ const TopBar = () => {
       console.log("response:", res);
       if (res) {
         toast.success("User Create Successfully!");
+        form.reset();
+        // document.querySelector("button[data-state='open']")?.click();
         // Router.push("/dashboard/user");
       }
     } catch (error) {

@@ -245,7 +245,7 @@ const VideoList = () => {
   ];
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto bg-white p-3">
       <DataTable
         columns={columns}
         data={videoNewsData ?? []}

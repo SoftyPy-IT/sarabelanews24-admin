@@ -137,14 +137,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
-      // ...data,
-      // firstPage,
-      // current_news,
-      // news_tags: selectedOptions.map((option) => option.value), // Extract only the values
-      // news_category: data.news_category,
-      // postDate: new Date().toISOString(),
-      // reporterType: data.reporterType?.value || "",
-      // reportedDate: new Date().toISOString(),
+      
       ...data,
       category: data.category,
       postDate: new Date().toISOString(),
@@ -366,6 +359,8 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                               side="right"
                               style={{ maxWidth: "800px" }}
                             >
+                              <SheetTitle className="">Select News Image</SheetTitle>
+                              <hr/>
                               <AllImgModal />
                             </SheetContent>
                           </Sheet>

@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import TopBar from "./TopBar";
 import { Form } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import RichText from "@/utils/Form_Inputs/RichText";
 import TextArea from "@/utils/Form_Inputs/TextArea";
-import { DialogTitle } from "@/components/ui/dialog";
 import TextInput from "@/utils/Form_Inputs/TextInput";
 import { newsCategory, newsType } from "@/types/select";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -17,10 +15,16 @@ import TagSelector from "@/utils/Form_Inputs/TagSelector";
 import { Delete, ImageUpIcon, PlusIcon } from "lucide-react";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import { useCreateNewsMutation } from "@/redux/dailynews/news.api";
-import SelectMultiValue from "@/utils/Form_Inputs/SelectMultiValue";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import TopBar from "./TopBar";
+import SelectMultiValue from "@/utils/Form_Inputs/SelectorWithSearch";
 
 type Inputs = {
   reporterType: string;
@@ -105,7 +109,7 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
       ...data,
-      category: data.category.value,
+      category: data.category,
       postDate: new Date().toISOString(),
 
       // reporterType: data.reporterType.value,
@@ -188,9 +192,10 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                         </Button>
                       </SheetTrigger>
                       <SheetContent side="right" style={{ maxWidth: "800px" }}>
-                        <DialogTitle className="sr-only">
+                        <SheetTitle className="text-xl font-semibold mb-6">
                           Image Selection Modal
-                        </DialogTitle>
+                        </SheetTitle>
+
                         <AllImgModal />
                       </SheetContent>
                     </Sheet>
@@ -336,9 +341,9 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                               side="right"
                               style={{ maxWidth: "800px" }}
                             >
-                              <DialogTitle className="sr-only">
+                              <SheetTitle className="sr-only">
                                 Image Selection Modal
-                              </DialogTitle>
+                              </SheetTitle>
                               <AllImgModal />
                             </SheetContent>
                           </Sheet>

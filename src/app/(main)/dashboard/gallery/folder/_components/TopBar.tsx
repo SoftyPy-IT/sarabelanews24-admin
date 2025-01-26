@@ -12,6 +12,7 @@ import Image from "next/image";
 import upload from "@public/assets/images/upload.webp";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
 
 const TopBar = () => {
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
@@ -89,24 +90,22 @@ const TopBar = () => {
           </h2>
         </div>
 
-        <div className="relative border  md:w-[300px] py-1">
-          <span className="absolute inset-y-0 left-0 flex items-center py-4">
-            <button type="submit" className="p-2 focus:outline-none focus:ring">
+        <div>
+          <div className="relative flex-grow">
+            <div className="absolute p-3">
               <Search className="h-4 md:h-5 w-4 md:w-5" />
-            </button>
-          </span>
-          <input
-            type="search"
-            name="Search"
-            placeholder="Search..."
-            className="w-full md:py-[10px] pl-7 md:pl-10 text-sm dark:border- focus:outline-none dark:bg-gray-100 dark:text-gray-800 focus:dark:bg-gray-50"
-          />
+            </div>
+            <Input
+              placeholder="Search..."
+              className="pl-10 py-3 w-[300px] border  focus:ring-1 rounded"
+            />
+          </div>
         </div>
 
         <Sheet>
           <SheetTrigger asChild>
-            <Button className="bg-blue-500">
-              Add Image
+            <Button className="">
+              + Add Image
             </Button>
           </SheetTrigger>
           <SheetContent side="right" className="pt-20">
@@ -116,24 +115,7 @@ const TopBar = () => {
             </SheetHeader>
             <Form {...form}>
               <div className="space-y-5">
-                {/* <div className="flex flex-col justify-center content-center items-center lg:mt-[100px] my-4 space-y-4 border rounded-2xl p-2">
-                  <Image
-                    src={upload}
-                    alt="Upload Placeholder"
-                    className="h-32 w-32"
-                  />
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFileChange}
-                  />
-                  <Button onClick={handleButtonClick}>Browse</Button>
-                  <h3>or drag a Image here </h3>
-                </div> */}
-
-                {/* <div className="flex flex-col justify-center content-center items-center lg:mt-[100px] my-4 space-y-4 border rounded-2xl p-2"> */}
+               
                 <div
                   className={`flex flex-col items-center justify-center border-dashed border-2 rounded-xl p-6 my-4 space-y-4 ${
                     dragOver

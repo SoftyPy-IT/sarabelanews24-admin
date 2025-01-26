@@ -16,6 +16,7 @@ import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
 import CreateFolderModal from "./CreateFolderModal";
+import { Input } from "@/components/ui/input";
 
 const TopBar = () => {
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
@@ -32,7 +33,6 @@ const TopBar = () => {
     const file = event.target.files?.[0];
     if (file) {
       console.log("File selected:", file);
-      
     }
   };
 
@@ -80,49 +80,45 @@ const TopBar = () => {
     const file = event.dataTransfer.files?.[0];
     if (file) {
       console.log("File dropped:", file);
-      
     }
   };
   return (
     <>
-      <div className="flex justify-between items-center content-center bg-white p-2  border shadow-sm mb-5 gap-2 md:gap-0 ">
+      <div className="flex justify-between items-center content-center bg-white p-2 border rounded shadow-sm mb-5 gap-2 md:gap-0 ">
+
         <div className="space-y-2">
           <h2 className="text-sm md:text-3xl pl-2 font-semibold">Image</h2>
         </div>
 
-        <div className="relative border md:w-[300px] py-1">
-          <span className="absolute inset-y-0 left-0 flex items-center py-4">
-            <button type="submit" className="p-2 focus:outline-none focus:ring">
+        <div>
+          <div className="relative flex-grow">
+            <div className="absolute p-3">
               <Search className="h-4 md:h-5 w-4 md:w-5" />
-            </button>
-          </span>
-          <input
-            type="search"
-            name="Search"
-            placeholder="Search..."
-            className="w-full md:py-[10px] pl-7 md:pl-10 text-sm dark:border- focus:outline-none dark:bg-gray-100 dark:text-gray-800 focus:dark:bg-gray-50"
-          />
+            </div>
+            <Input
+              placeholder="Search..."
+              className="pl-10 py-3 w-[300px] border  focus:ring-1 rounded"
+            />
+          </div>
         </div>
 
         <Sheet>
           <SheetTrigger asChild>
-            <Button className="bg-blue-500" >
-              Add Image
-            </Button>
+            <Button className="">+ Add Image</Button>
           </SheetTrigger>
-          <SheetContent side="right" className="pt-20">
+          <SheetContent side="right" className="pt-20" style={{ maxWidth: "500px" }}>
             <SheetHeader>
               <SheetTitle className="text-center">Add Image</SheetTitle>
               <hr />
             </SheetHeader>
             <Form {...form}>
               <div className="space-y-5">
-                <div className="w-full mt-5 flex gap-2">
+                <div className="w-full mt-5 flex items-center gap-2">
                   <div className="w-[400px]">
                     <SelectInput
                       control={form.control}
                       name="img_type"
-                      placeholder="Select Folder"
+                      placeholder="Select From Folder"
                       options={[
                         { label: "Folder1", value: "Folder1" },
                         { label: "Folder1", value: "Folder2" },
@@ -132,12 +128,12 @@ const TopBar = () => {
                       ]}
                     />
                   </div>
+                  <h1>OR</h1>
                   <Button className="h-[46px] " onClick={() => setOpen(true)}>
-                    Create Folder
+                    Create New Folder
                   </Button>
                 </div>
 
-               
                 <div
                   className={`flex flex-col items-center justify-center border-dashed border-2 rounded-xl p-6 my-4 space-y-4 ${
                     dragOver
@@ -163,10 +159,9 @@ const TopBar = () => {
                   <Button onClick={handleButtonClick}>Browse</Button>
                   <h3>or drag an image here</h3>
                 </div>
-               
               </div>
               <div className="mt-4 flex justify-end ">
-              <Button className="mt-4 bg-green-500">Upload</Button>
+                <Button className="mt-4 bg-green-500">Upload</Button>
               </div>
             </Form>
           </SheetContent>
