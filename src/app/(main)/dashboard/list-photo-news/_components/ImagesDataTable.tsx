@@ -1,219 +1,159 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+
+import { useDeleteNewsMutation, useGetAllNewsQuery } from "@/redux/dailynews/news.api";
 import ActionDropdown from "@/utils/Action/ActionDropdown";
 import { DataTable } from "@/utils/Table/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import Swal from "sweetalert2";
-
-const data = [
-  {
-    id: "1",
-    reporterType: "নিজস্ব প্রতিনিধি",
-    reporterName: "জন ডো",
-    newsArea: "মুন্সিগঞ্জ, ঢাকা",
-    reportedDateAndTime: "২০২৪-১২-২৮ ১২:০০",
-    photoJournalistName: "জেন স্মিথ",
-    newsType: "Politics",
-    publishedDate: "২০২৪-১২-২৮",
-    newsTitle: "রাজনৈতিক সংবাদ আপডেট",
-  },
-  {
-    id: "2",
-    reporterType: "প্রতিনিধি",
-    reporterName: "এলিস জনসন",
-    newsArea: "সোনাডাঙ্গা, খুলনা",
-    reportedDateAndTime: "২০২৪-১২-২৭ ১৫:৩০",
-    photoJournalistName: "টম ক্লার্ক",
-    newsType: "Sports",
-    publishedDate: "২০২৪-১২-২৭",
-    newsTitle: "খেলার ইভেন্টের প্রধান দিক",
-  },
-  {
-    id: "3",
-    reporterType: "প্রতিনিধি",
-    reporterName: "এলিস জনসন",
-    newsArea: "সোনাডাঙ্গা, খুলনা",
-    reportedDateAndTime: "২০২৪-১২-২৭ ১৫:৩০",
-    photoJournalistName: "টম ক্লার্ক",
-    newsType: "Economy",
-    publishedDate: "২০২৪-১২-২৭",
-    newsTitle: "খেলার ইভেন্টের প্রধান দিক",
-  },
-  {
-    id: "4",
-    reporterType: "প্রতিনিধি",
-    reporterName: "এলিস জনসন",
-    newsArea: "খেলা",
-    reportedDateAndTime: "২০২৪-১২-২৭ ১৫:৩০",
-    photoJournalistName: "টম ক্লার্ক",
-    newsType: "Entertainment",
-    publishedDate: "২০২৪-১২-২৭",
-    newsTitle: "খেলার ইভেন্টের প্রধান দিক",
-  },
-  {
-    id: "5",
-    reporterType: "প্রতিনিধি",
-    reporterName: "এলিস জনসন",
-    newsArea: "খেলা",
-    reportedDateAndTime: "২০২৪-১২-২৭ ১৫:৩০",
-    photoJournalistName: "টম ক্লার্ক",
-    newsType: "Politics",
-    publishedDate: "২০২৪-১২-২৭",
-    newsTitle: "খেলার ইভেন্টের প্রধান দিক",
-  },
-  {
-    id: "6",
-    reporterType: "প্রতিনিধি",
-    reporterName: "এলিস জনসন",
-    newsArea: "খেলা",
-    reportedDateAndTime: "২০২৪-১২-২৭ ১৫:৩০",
-    photoJournalistName: "টম ক্লার্ক",
-    newsType: "Bangladesh",
-    publishedDate: "২০২৪-১২-২৭",
-    newsTitle: "খেলার ইভেন্টের প্রধান দিক",
-  },
-  {
-    id: "7",
-    reporterType: "প্রতিনিধি",
-    reporterName: "এলিস জনসন",
-    newsArea: "খেলা",
-    reportedDateAndTime: "২০২৪-১২-২৭ ১৫:৩০",
-    photoJournalistName: "টম ক্লার্ক",
-    newsType: "Economy",
-    publishedDate: "২০২৪-১২-২৭",
-    newsTitle: "খেলার ইভেন্টের প্রধান দিক",
-  },
-  {
-    id: "8",
-    reporterType: "প্রতিনিধি",
-    reporterName: "এলিস জনসন",
-    newsArea: "খেলা",
-    reportedDateAndTime: "২০২৪-১২-২৭ ১৫:৩০",
-    photoJournalistName: "টম ক্লার্ক",
-    newsType: "Sports",
-    publishedDate: "২০২৪-১২-২৭",
-    newsTitle: "খেলার ইভেন্টের প্রধান দিক",
-  },
-  {
-    id: "9",
-    reporterType: "প্রতিনিধি",
-    reporterName: "এলিস জনসন",
-    newsArea: "খেলা",
-    reportedDateAndTime: "২০২৪-১২-২৭ ১৫:৩০",
-    photoJournalistName: "টম ক্লার্ক",
-    newsType: "Education",
-    publishedDate: "২০২৪-১২-২৭",
-    newsTitle: "খেলার ইভেন্টের প্রধান দিক",
-  },
-  {
-    id: "10",
-    reporterType: "প্রতিনিধি",
-    reporterName: "এলিস জনসন",
-    newsArea: "খেলা",
-    reportedDateAndTime: "২০২৪-১২-২৭ ১৫:৩০",
-    photoJournalistName: "টম ক্লার্ক",
-    newsType: "Education",
-    publishedDate: "২০২৪-১২-২৭",
-    newsTitle: "খেলার ইভেন্টের প্রধান দিক",
-  },
-];
+import Loading from "@/app/loading";
+import { useDeletePhotoNewsMutation, useGetAllPhotoNewsQuery } from "@/redux/dailynews/photoNews.api";
 
 const ImagesDataTable = () => {
   const router = useRouter();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+  // API call
+  const { data, isLoading, isError } = useGetAllPhotoNewsQuery({});
+  const [deletePhotoNews] = useDeletePhotoNewsMutation();
+
+  if (isLoading) {
+    return <Loading/>;
+  }
+
+  // console.log("News data fetched successfully", data);
+
+  // Map data to match the columns
+  // Ensure `newsData` is always an array
+  const newsData =
+    data?.categories?.map((item: any, index: any) => ({
+      id: item._id,
+      slNo:index + 1,
+      title: item.title || "N/A",
+      description: item.description || "N/A",
+      imgTagline: item.imgTagline || "N/A",
+      adminName: item.adminName || "N/A",      
+      postDate: new Date(item.postDate).toLocaleDateString(),
+    
+    })) || []; 
+
   const handleEdit = (rowData: any) => {
-    router.push(
-      `/dashboard/list-photo-news/update-details/${rowData?.id}`
-    );
-    // console.log("Editing row:", rowData);
+    router.push(`/dashboard/list-news/update-details/${rowData.id}`);
   };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleDelete = (rowData: any) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: "Deleted!",
-          text: "Delete Successful",
-          icon: "success",
-        });
-      }
-    });
-    console.log("Deleting row:", rowData);
+  
+  const handleDelete = async (id: string) => {
+    try {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          await deletePhotoNews(id).unwrap();
+          Swal.fire("Deleted!", "Your activity has been deleted.", "success");
+        }
+      });
+    } catch (err: any) {
+      console.error("Error deleting news:", err);
+      toast.error(err.message || "Failed to delete news.");
+    }
   };
+  
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // const handleDelete = async (id: string) => {
+  //   Swal.fire({
+  //     title: "Are you sure?",
+  //     text: "You won't be able to revert this!",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#3085d6",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Yes, delete it!",
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       try {
+  //           await deleteNews(id).unwrap();
+
+  //           Swal.fire({
+  //               title: "Deleted!",
+  //               text: "Your activity has been deleted.",
+  //               icon: "success"
+  //           });
+  //       } catch (err: any) {
+  //           toast.error(err.message);
+  //       }
+  //   }
+
+  //     if (result.isConfirmed) {
+  //       Swal.fire("Deleted!", "Delete Successful", "success");
+  //       console.log("Deleting row:", id);
+  //     }
+  //   });
+  // };
+
   const handleView = (rowData: any) => {
-    router.push(`/dashboard/list-photo-news/view-details/${rowData?.id}`);
-    // console.log("Viewing row:", rowData);
+    router.push(`/dashboard/list-news/view-details/${rowData.id}`);
   };
 
-  //the columns :
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const columns: ColumnDef<any, any>[] = [
+    
     {
-      accessorKey: "reporterType",
-      header: "Reporter Type",
+      accessorKey: "slNo",
+      header: () => <span className="font-bold">SL. No.</span>,
     },
     {
-      accessorKey: "reporterName",
-      header: "Reporter Name",
+      accessorKey: "adminName",
+      header: () => <span className="font-bold">Admin Name</span>,
     },
     {
-      accessorKey: "newsArea",
-      header: "News Area",
+      accessorKey: "title",
+      header: () => <span className="font-bold">Title</span>,
     },
     {
-      accessorKey: "reportedDateAndTime",
-      header: "Reported Date & Time",
-    },
+      accessorKey: "description",
+      header: () => <span className="font-bold">Description</span>,
+    }, 
     {
-      accessorKey: "photoJournalistName",
-      header: "Photo Journalist Name",
+      accessorKey: "imgTagline",
+      header: () => <span className="font-bold">Image Tag Line</span>,
     },
+
     {
-      accessorKey: "newsType",
-      header: "News Type",
-    },
-    {
-      accessorKey: "publishedDate",
-      header: "Published Date",
-    },
-    {
-      accessorKey: "newsTitle",
-      header: "News Title",
-    },
+      accessorKey: "postDate",
+      header: () => <span className="font-bold">Post Date</span>,
+    },      
+       
     {
       accessorKey: "Action",
-      header: "Action",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      header: () => <span className="font-bold">Action</span>,
       cell: ({ row }: any) => (
         <ActionDropdown
           row={row}
           onView={handleView}
           onUpdate={handleEdit}
-          onDelete={handleDelete}
+          onDelete={() => handleDelete(row.original.id)}
         />
       ),
     },
   ];
 
   return (
-    <div className="overflow-x-auto">
+    <>
+   
+    <div className="overflow-x-auto bg-white p-2 rounded">
+      
       <DataTable
         columns={columns}
-        data={data}
-        filterKey="reporterName"
-        filterPlaceholder="Search by Reporter Name"
+        data={newsData ?? []} 
+        filterKey="adminName"
+        filterPlaceholder="Search by Admin Name"
         pageSize={10}
         selectOptions={{
           key: "newsType",
@@ -228,7 +168,11 @@ const ImagesDataTable = () => {
         }}
       />
     </div>
+    </>
   );
 };
 
 export default ImagesDataTable;
+
+
+
