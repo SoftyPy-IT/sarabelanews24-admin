@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import * as React from "react";
 import Image from "next/image";
@@ -31,15 +32,6 @@ const initialImages = [
   { id: 1, image: img1.src },
   { id: 2, image: img2.src },
   { id: 3, image: img3.src },
-  { id: 4, image: img4.src },
-  { id: 5, image: img5.src },
-  { id: 6, image: img6.src },
-  { id: 7, image: img7.src },
-  { id: 8, image: img8.src },
-  { id: 9, image: img9.src },
-  { id: 10, image: img10.src },
-  { id: 11, image: img11.src },
-  { id: 12, image: img12.src },
 ];
 
 const AllImages = () => {

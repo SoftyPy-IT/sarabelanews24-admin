@@ -21,18 +21,15 @@ const NewsDataTable = () => {
   const [deleteNews] = useDeleteNewsMutation();
 
   if (isLoading) {
-    return <Loading/>;
+    return <Loading />;
   }
-
-  // console.log("News data fetched successfully", data);
-
   // Map data to match the columns
   // Ensure `newsData` is always an array
   const newsData =
     data?.news?.map((item: any, index: any) => ({
       id: item._id,
-      slNo:index + 1,
-      adminName: item.adminName || "N/A",      
+      slNo: index + 1,
+      adminName: item.adminName || "N/A",
       title: item.newsTitle || "N/A",
       category: item.category?.name || "N/A",
       // createdAt: new Date(item.createdAt).toLocaleString(),
@@ -45,12 +42,12 @@ const NewsDataTable = () => {
       newsType: item.newsType || "N/A",
       shortDescription: item.shortDescription || "N/A",
       // slug: item.slug || "N/A",
-    })) || []; 
+    })) || [];
 
   const handleEdit = (rowData: any) => {
     router.push(`/dashboard/list-news/update-details/${rowData.id}`);
   };
-  
+
   const handleDelete = async (id: string) => {
     try {
       Swal.fire({
@@ -72,7 +69,7 @@ const NewsDataTable = () => {
       toast.error(err.message || "Failed to delete news.");
     }
   };
-  
+
 
   // const handleDelete = async (id: string) => {
   //   Swal.fire({
@@ -110,7 +107,7 @@ const NewsDataTable = () => {
   };
 
   const columns: ColumnDef<any, any>[] = [
-    
+
     {
       accessorKey: "slNo",
       header: () => <span className="font-bold">SL. No.</span>,
@@ -126,7 +123,7 @@ const NewsDataTable = () => {
     {
       accessorKey: "category",
       header: () => <span className="font-bold">Category</span>,
-    },   
+    },
     {
       accessorKey: "newsCategory",
       header: () => <span className="font-bold">News Category</span>,
@@ -139,8 +136,8 @@ const NewsDataTable = () => {
       accessorKey: "description",
       header: () => <span className="font-bold">Description</span>,
     },
-   
-    
+
+
     {
       accessorKey: "Action",
       header: () => <span className="font-bold">Action</span>,
@@ -157,28 +154,28 @@ const NewsDataTable = () => {
 
   return (
     <>
-    <TopBar/>
-    <div className="overflow-x-auto bg-white p-2 rounded">
-      
-      <DataTable
-        columns={columns}
-        data={newsData ?? []} 
-        filterKey="adminName"
-        filterPlaceholder="Search by Admin Name"
-        pageSize={10}
-        selectOptions={{
-          key: "newsType",
-          options: [
-            { label: "Politics", value: "Politics" },
-            { label: "Economy", value: "Economy" },
-            { label: "Sports", value: "Sports" },
-            { label: "Entertainment", value: "Entertainment" },
-            { label: "Education", value: "Education" },
-          ],
-          placeholder: "Select News Type",
-        }}
-      />
-    </div>
+      <TopBar />
+      <div className="overflow-x-auto bg-white p-2 rounded">
+
+        <DataTable
+          columns={columns}
+          data={newsData ?? []}
+          filterKey="adminName"
+          filterPlaceholder="Search by Admin Name"
+          pageSize={10}
+          selectOptions={{
+            key: "newsType",
+            options: [
+              { label: "Politics", value: "Politics" },
+              { label: "Economy", value: "Economy" },
+              { label: "Sports", value: "Sports" },
+              { label: "Entertainment", value: "Entertainment" },
+              { label: "Education", value: "Education" },
+            ],
+            placeholder: "Select News Type",
+          }}
+        />
+      </div>
     </>
   );
 };
