@@ -143,7 +143,7 @@ const FileInput = <T extends FieldValues>({
             </FormControl>
 
             {selectedFiles.length > 0 && (
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-4 gap-4">
                 {selectedFiles.map((file, index) => (
                   <div
                     key={index}
@@ -154,7 +154,7 @@ const FileInput = <T extends FieldValues>({
                       alt={file.file.name}
                       fill
                       className="object-cover"
-                      sizes="(max-width: 768px) 100px, 150px"
+                      sizes="(max-width: 768px) 80px, 100px"
                     />
                   </div>
                 ))}

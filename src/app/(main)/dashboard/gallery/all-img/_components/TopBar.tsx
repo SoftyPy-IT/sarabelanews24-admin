@@ -36,7 +36,6 @@ export type TProps = {
 };
 
 const TopBar = ({ isOpen, onOpenChange }: TProps) => {
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [open, setOpen] = React.useState(false);
   const [dragOver, setDragOver] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = React.useState<FileWithPreview[]>(
@@ -58,90 +57,124 @@ const TopBar = ({ isOpen, onOpenChange }: TProps) => {
   //   }
   // };
 
-  const onSubmit = async (data: Inputs) => {
-    console.log(data)
-    try {
-      const res = await createImages(data).unwrap();
-      console.log("response:", res);
+  // const onSubmit = async (data: Inputs) => {
+  //   console.log(data)
+  //   try {
+  //     const res = await createImages(data).unwrap();
+  //     console.log("response:", res);
 
-      if (res) {
-        toast.success("Image Upload Successfully!");
-        // router.push("/dashboard/list-news");
-      }
-      form.reset();
-      onOpenChange(false);
-    } catch (error) {
-      console.error(error);
+  //     if (res) {
+  //       toast.success("Image Upload Successfully!");
+  //       // router.push("/dashboard/list-news");
+  //     }
+  //     form.reset();
+  //     onOpenChange(false);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+  // -----------------------
+
+  // axios
+  // ---------------
+  // const onSubmit = async (data: any) => {
+  //   const toastId = toast.loading('Uploading images...');
+  //   const formData = new FormData();
+  //   if (Array.isArray(data.images) && data.images.length > 0) {
+  //     data.images.forEach((file: File) => {
+  //       formData.append('images', file);
+  //     });
+  //   } else {
+  //     toast.error('Please select at least one image');
+  //     return;
+  //   }
+  //   formData.append('folder', data.folder);
+  //   try {
+  //     const res = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/gallery/upload`, formData, {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //         Authorization:token
+  //       },
+  //     });
+  //     toast.success(res.data.message || 'Images uploaded successfully!', {
+  //       id: toastId,
+  //     });
+  //   } catch (error: any) {
+  //     toast.error(
+  //       error.response?.data?.message || error.message || 'An error occurred',
+  //       { id: toastId },
+  //     );
+  //   }
+  // };
+  // --------------------------
+
+  // redux
+  // const onSubmit = async (data: any) => {
+  //   const toastId = toast.loading("Uploading images...");
+  //   const formData = new FormData();
+  //   if (Array.isArray(data.images) && data.images.length > 0) {
+  //     data.images.forEach((file: File) => {
+  //       formData.append("images", file);
+  //     });
+  //   } else {
+  //     toast.error("Please select at least one image");
+  //     return;
+  //   }
+  //   formData.append("folder", data.folder);
+  //   try {
+  //     const res = await createImages(formData).unwrap();
+  //     console.log("response image upload", res);
+  //     toast.success(res.message || "Images uploaded successfully!", {
+  //       id: toastId,
+  //     });
+  //   } catch (err: any) {
+  //     toast.error(err?.data?.message || err.message || "An error occurred", {
+  //       id: toastId,
+  //     });
+  //   }
+  // };
+
+  const onSubmit = async (data: any) => {
+    // const toastId = toast.loading("Uploading images...");
+    const formData = new FormData();
+
+    if (!data.images || data.images.length === 0) {
+      toast.error("Please select at least one image");
+      return;
     }
-  };
 
-  const handleButtonClick = () => {
-    fileInputRef.current?.click();
-  };
+    try {
+      // Append files to FormData
+      data.images.forEach((file: File) => {
+        formData.append("images", file);
+      });
+      formData.append("folder", data.folder);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const newFiles = Array.from(files).map((file) => ({
-        file,
-        preview: URL.createObjectURL(file),
-      }));
-      setSelectedFiles((prev) => [...prev, ...newFiles]);
+      const result = await createImages(formData).unwrap();
+
+      if (result) {
+        toast.success(result.message || "Images Uploaded Successfully!");
+       
+      }
+    } catch (err: any) {
+      // Handle error
+      const errorMessage =
+        err.data?.message || err.data?.errorMessages?.[0] || "Upload failed";
+      toast.error(errorMessage);
     }
   };
 
   type Inputs = {
     folder: string;
-    // reporterName: string;
-    // newsArea: string;
-    // reportedDateAndTime: string;
-    // selectedImage: string;
-    // photoJournalistName: string;
-    // img_type: string;
-    // publishedDate: string;
-    // newsTitle: string;
-    // description: string;
-    // newsTags: string[];
     images: FileWithPreview[];
   };
 
   const form = useForm<Inputs>({
     defaultValues: {
       folder: "",
-      // reporterName: "",
-      // newsArea: "",
-      // reportedDateAndTime: "",
-      // photoJournalistName: "",
-      // img_type: "",
-      // publishedDate: "",
-      // newsTitle: "",
-      // description: "",
-      // newsTags: [""],
       images: [],
     },
   });
-
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    setDragOver(true);
-  };
-
-  const handleDragLeave = () => {
-    setDragOver(false);
-  };
-
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    setDragOver(false);
-    const files = event.dataTransfer.files;
-    if (files) {
-      const newFiles = Array.from(files).map((file) => ({
-        file,
-        preview: URL.createObjectURL(file),
-      }));
-      setSelectedFiles((prev) => [...prev, ...newFiles]);
-    }
-  };
 
   if (isLoading) {
     return <Loading />;
@@ -171,7 +204,7 @@ const TopBar = ({ isOpen, onOpenChange }: TProps) => {
           </SheetTrigger>
           <SheetContent
             side="right"
-            className="pt-4"
+            className="pt-4 overflow-y-auto"
             style={{ maxWidth: "500px" }}
           >
             <SheetHeader>
@@ -180,7 +213,7 @@ const TopBar = ({ isOpen, onOpenChange }: TProps) => {
             </SheetHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
-                <div className="space-y-5">
+                <div className="space-y-5 ">
                   <div className="w-full mt-5 flex items-center gap-2">
                     <div className="w-[400px]">
                       <SelectInput
@@ -195,6 +228,7 @@ const TopBar = ({ isOpen, onOpenChange }: TProps) => {
                             })
                           ) || []
                         }
+                        rules={{ required: "Please Select Folder" }}
                         // options={[
                         //   { label: "Folder1", value: "Folder1" },
                         //   { label: "Folder1", value: "Folder2" },
@@ -215,44 +249,10 @@ const TopBar = ({ isOpen, onOpenChange }: TProps) => {
                     label="Upload Images"
                     accept="image/*"
                     multiple
-                    maxFiles={5}
+                    maxFiles={10}
                   />
-                  {/* <div
-                  className={`flex flex-col items-center justify-center border-dashed border-2 rounded-xl p-6 my-4 space-y-4 ${
-                    dragOver
-                      ? "border-green-500 bg-green-50"
-                      : "border-gray-300"
-                  }`}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                >
-                  <Image
-                    src={upload}
-                    alt="Upload Placeholder"
-                    className="h-32 w-32"
-                  />
-                 
-                  <Button onClick={handleButtonClick}>Browse</Button>
-                  <h3>or drag images here</h3>
-                </div> */}
                 </div>
-                {/* Image previews grid */}
-                {selectedFiles.length > 0 && (
-                  <div className="grid grid-cols-3 gap-4 mt-4">
-                    {selectedFiles.map((fileWithPreview, index) => (
-                      <div key={index} className="relative group">
-                        <Image
-                          src={fileWithPreview.preview}
-                          alt={`Preview ${index}`}
-                          className="w-full h-32 object-cover rounded"
-                          width={100}
-                          height={100}                                                    
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
+
                 <div className="mt-4 flex justify-end ">
                   <Button className="mt-4 bg-green-500" type="submit">
                     Upload

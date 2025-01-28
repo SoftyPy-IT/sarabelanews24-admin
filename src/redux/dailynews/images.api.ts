@@ -2,13 +2,24 @@ import { baseApi } from "../api/baseApi";
 
 const imagesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    // createImages: builder.mutation({
+    //   query: (data) => ({
+    //     url: "/gallery/upload",
+    //     method: "POST",
+    //     data,
+    //   }),
+    //   invalidatesTags: ["images"],
+    // }),
+
+
     createImages: builder.mutation({
-      query: (data) => ({
-        url: "/gallery/upload",
-        method: "POST",
-        data,
+      query: (formData) => ({
+        url: '/gallery/upload',
+        method: 'POST',
+        data: formData,
+        contentType: 'multipart/form-data', // Set content type for files
       }),
-      invalidatesTags: ["images"],
+      invalidatesTags: ['images'],
     }),
 
     deleteImages: builder.mutation({
