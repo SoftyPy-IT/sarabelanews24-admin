@@ -19,6 +19,7 @@ import {
 
 import toast from "react-hot-toast";
 import { useCreatePhotoNewsMutation } from "@/redux/dailynews/photoNews.api";
+import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 
 type Inputs = {
   title: string;
@@ -29,6 +30,7 @@ type Inputs = {
   tags: {
     imageTagline: string;   
   }[];
+  postDate: string;   
 };
 
 const AddImageForm = () => {
@@ -42,6 +44,7 @@ const AddImageForm = () => {
       imgTagline: "",
       images: "",
       adminName: "",
+      postDate: "",
       
   tags: [{ imageTagline: "" }],
     },
@@ -57,15 +60,15 @@ const AddImageForm = () => {
       ...data,
       title: data.title,
     };
-    // console.log("modify value:",modifyData);
-    // console.log(data);
+    console.log("modify value:",modifyData);
+    console.log(data);
 
     try {
       const res = await createPhotoNews(modifyData).unwrap();
-      // console.log("response:",res)
+      console.log("response:",res)
       if (res) {
-        toast.success("News Create Successfully!");
-        router.push("/dashboard/list-news");
+        toast.success("Photo News Create Successfully!");
+        router.push("/dashboard/list-photo-news");
       }
     } catch (error) {
       console.error(error);
@@ -204,6 +207,15 @@ const AddImageForm = () => {
                         name="adminName"
                         placeholder="Admin Name"
                         rules={{ required: "Admin name is required" }}
+                      />
+                    </div>
+                    <div className="grid grid-cols-1  gap-4 mt-2">
+                      <DateTimeInput
+                        control={form.control}
+                        name="postDate"
+                        label="Post Date"
+                        type="datetime-local"
+                        rules={{ required: "Post date is required" }}
                       />
                     </div>
 
