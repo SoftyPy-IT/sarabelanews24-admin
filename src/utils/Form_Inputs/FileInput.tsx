@@ -41,6 +41,7 @@ const FileInput = <T extends FieldValues>({
   multiple = false,
   maxFiles,
 }: FileInputProps<T>) => {
+   
   const [dragActive, setDragActive] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = React.useState<FileWithPreview[]>(
     []
@@ -63,18 +64,17 @@ const FileInput = <T extends FieldValues>({
     },
   });
 
-  const handleFileChange = (files: FileList | null) => {
-    if (!files) return;
-
-    const newFiles = Array.from(files).map((file) => ({
-      file,
-      preview: URL.createObjectURL(file),
-    }));
-
-    const updatedFiles = multiple ? [...selectedFiles, ...newFiles] : newFiles;
-    setSelectedFiles(updatedFiles);
-    field.onChange(updatedFiles.map((f) => f.file));
-  };
+    const handleFileChange = (files: FileList | null) => {
+      if (!files) return;
+  
+      const newFiles = Array.from(files).map((file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+      }));
+  
+      const updatedFiles = multiple ? [...(field.value || []), ...newFiles] : newFiles;
+      field.onChange(updatedFiles);
+    };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -142,24 +142,24 @@ const FileInput = <T extends FieldValues>({
               />
             </FormControl>
 
-            {selectedFiles.length > 0 && (
-              <div className="grid grid-cols-4 gap-4">
-                {selectedFiles.map((file, index) => (
-                  <div
-                    key={index}
-                    className="relative aspect-square rounded-md overflow-hidden border"
-                  >
-                    <Image
-                      src={file.preview}
-                      alt={file.file.name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 80px, 100px"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+            {field.value?.length > 0 && (
+            <div className="grid grid-cols-4 gap-4">
+              {field.value.map((file: FileWithPreview, index: number) => (
+                <div
+                  key={index}
+                  className="relative aspect-square rounded-md overflow-hidden border"
+                >
+                  <Image
+                    src={file.preview}
+                    alt={file.file.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 80px, 100px"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
 
             <FormMessage />
           </div>

@@ -43,6 +43,7 @@ const TopBar = ({ isOpen, onOpenChange }: TProps) => {
   );
   const [createImages] = useCreateImagesMutation();
   const { data, isLoading, isError } = useGetAllFolderQuery({});
+  const [sheetOpen, setSheetOpen] = React.useState(false);
 
   // Cleanup object URLs
   React.useEffect(() => {
@@ -51,90 +52,7 @@ const TopBar = ({ isOpen, onOpenChange }: TProps) => {
     };
   }, [selectedFiles]);
 
-  // const handleButtonClick = () => {
-  //   if (fileInputRef.current) {
-  //     fileInputRef.current.click();
-  //   }
-  // };
-
-  // const onSubmit = async (data: Inputs) => {
-  //   console.log(data)
-  //   try {
-  //     const res = await createImages(data).unwrap();
-  //     console.log("response:", res);
-
-  //     if (res) {
-  //       toast.success("Image Upload Successfully!");
-  //       // router.push("/dashboard/list-news");
-  //     }
-  //     form.reset();
-  //     onOpenChange(false);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-  // -----------------------
-
-  // axios
-  // ---------------
-  // const onSubmit = async (data: any) => {
-  //   const toastId = toast.loading('Uploading images...');
-  //   const formData = new FormData();
-  //   if (Array.isArray(data.images) && data.images.length > 0) {
-  //     data.images.forEach((file: File) => {
-  //       formData.append('images', file);
-  //     });
-  //   } else {
-  //     toast.error('Please select at least one image');
-  //     return;
-  //   }
-  //   formData.append('folder', data.folder);
-  //   try {
-  //     const res = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/gallery/upload`, formData, {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //         Authorization:token
-  //       },
-  //     });
-  //     toast.success(res.data.message || 'Images uploaded successfully!', {
-  //       id: toastId,
-  //     });
-  //   } catch (error: any) {
-  //     toast.error(
-  //       error.response?.data?.message || error.message || 'An error occurred',
-  //       { id: toastId },
-  //     );
-  //   }
-  // };
-  // --------------------------
-
-  // redux
-  // const onSubmit = async (data: any) => {
-  //   const toastId = toast.loading("Uploading images...");
-  //   const formData = new FormData();
-  //   if (Array.isArray(data.images) && data.images.length > 0) {
-  //     data.images.forEach((file: File) => {
-  //       formData.append("images", file);
-  //     });
-  //   } else {
-  //     toast.error("Please select at least one image");
-  //     return;
-  //   }
-  //   formData.append("folder", data.folder);
-  //   try {
-  //     const res = await createImages(formData).unwrap();
-  //     console.log("response image upload", res);
-  //     toast.success(res.message || "Images uploaded successfully!", {
-  //       id: toastId,
-  //     });
-  //   } catch (err: any) {
-  //     toast.error(err?.data?.message || err.message || "An error occurred", {
-  //       id: toastId,
-  //     });
-  //   }
-  // };
-
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: Inputs) => {
     // const toastId = toast.loading("Uploading images...");
     const formData = new FormData();
 
@@ -144,20 +62,22 @@ const TopBar = ({ isOpen, onOpenChange }: TProps) => {
     }
 
     try {
-      // Append files to FormData
-      data.images.forEach((file: File) => {
-        formData.append("images", file);
+      data.images.forEach((fileWithPreview: FileWithPreview) => {
+        formData.append("images", fileWithPreview.file);
       });
       formData.append("folder", data.folder);
 
       const result = await createImages(formData).unwrap();
 
-      if (result) {
-        toast.success(result.message || "Images Uploaded Successfully!");
-       
-      }
+      toast.success(result.message || "Images Uploaded Successfully!");
+
+      // Reset form and close sheet
+      form.reset();
+      setSheetOpen(false);
+      // onOpenChange(false);
+
+
     } catch (err: any) {
-      // Handle error
       const errorMessage =
         err.data?.message || err.data?.errorMessages?.[0] || "Upload failed";
       toast.error(errorMessage);
@@ -198,9 +118,9 @@ const TopBar = ({ isOpen, onOpenChange }: TProps) => {
           </div>
         </div>
 
-        <Sheet>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger asChild>
-            <Button className="">+ Add Image</Button>
+            <Button onClick={() => setSheetOpen(true)}>+ Add Image</Button>
           </SheetTrigger>
           <SheetContent
             side="right"

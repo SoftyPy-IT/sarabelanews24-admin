@@ -23,15 +23,15 @@ const imagesApi = baseApi.injectEndpoints({
     }),
 
     deleteImages: builder.mutation({
-      query: (id) => ({
-        url: `/news/${id}`,
+      query: () => ({
+        url: "/gallery/delete",
         method: "DELETE",
       }),
       invalidatesTags: ["images"],
     }),
     getAllImages: builder.query({
       query: () => ({
-        url: "/news",
+        url: "/gallery/all",
         method: "GET",
     
       }),
