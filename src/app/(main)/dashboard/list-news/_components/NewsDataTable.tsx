@@ -135,13 +135,7 @@ const NewsDataTable = () => {
     {
       accessorKey: "description",
       header: () => <span className="font-bold">Description</span>,
-<<<<<<< HEAD
-    },
-
-
-=======
     },    
->>>>>>> 9b8def52888377157f65305d29bf01e42e6846ce
     {
       accessorKey: "Action",
       header: () => <span className="font-bold">Action</span>,

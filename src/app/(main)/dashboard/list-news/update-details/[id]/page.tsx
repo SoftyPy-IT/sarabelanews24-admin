@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
-import { Form, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form"
+import { Form } from "@/components/ui/form"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { CardContent } from "@/components/ui/card"
@@ -11,7 +11,7 @@ import TextInput from "@/utils/Form_Inputs/TextInput"
 import SelectInput from "@/utils/Form_Inputs/SelectInput"
 import { Delete, ImageUpIcon, PlusIcon } from "lucide-react"
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput"
-import { useCreateNewsMutation, useGetSingleNewsQuery, useUpdateNewsMutation } from "@/redux/dailynews/news.api"
+import { useGetSingleNewsQuery, useUpdateNewsMutation } from "@/redux/dailynews/news.api"
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal"
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api"
 import SelectorWithSearch from "@/utils/Form_Inputs/SelectorWithSearch"
@@ -65,14 +65,12 @@ type newsProps = {
 
 const Page = ({ params }: newsProps) => {
   const { id } = use(params);
-
-  const [createNews] = useCreateNewsMutation()
+  const { data, isLoading, isError } = useGetAllCategoriesQuery({});
   const router = useRouter()
   const [firstPage, setFirstPage] = useState("")
   const [currentNews, setCurrentNews] = useState<boolean>(false)
-
   const [updateNews] = useUpdateNewsMutation()
-  const { data: singleData, isLoading } = useGetSingleNewsQuery(id)
+  const { data: singleData } = useGetSingleNewsQuery(id)
 
 
   const form = useForm<Inputs>({
@@ -153,33 +151,23 @@ const Page = ({ params }: newsProps) => {
       ...data,
       category: data.category,
       postDate: new Date().toISOString(),
-    }
-
+    };
     try {
-      const res = await createNews(modifyData).unwrap()
+      const res = await updateNews({ ...modifyData, id }).unwrap();
+      // console.log("response:",res)
       if (res) {
-        toast.success("News Created Successfully!")
-        router.push("/dashboard/list-news")
+        toast.success("News Update Successfully!");
+        router.push("/dashboard/list-news");
       }
     } catch (error) {
-      console.error(error)
-      toast.error("Failed to create news")
+      console.error(error);
     }
-  }
-
-  const handleSubmit = async (data: Inputs) => {
-    try {
-      const res = await updateNews({ ...data, id }).unwrap()
-      toast.success(res.message)
-    } catch (err: any) {
-      console.error("Error:", err)
-      toast.error(err.message)
-    }
-  }
+  };
 
   if (isLoading) {
     return <p>Loading............</p>
   }
+
 
 
   return (
@@ -187,7 +175,7 @@ const Page = ({ params }: newsProps) => {
       <TopBar />
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(id ? handleSubmit : onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="grid grid-cols-12 gap-4 xl:6">
               <div className="lg:col-span-8 col-span-full space-y-3">
                 {/* Reporter Info Section */}
@@ -199,7 +187,6 @@ const Page = ({ params }: newsProps) => {
                       name="reporterType"
                       placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
                       options={reporterTypeOption}
-                      rules={{ required: "Reporter type is required" }}
                     />
 
 
@@ -207,14 +194,12 @@ const Page = ({ params }: newsProps) => {
                       control={form.control}
                       type="datetime-local"
                       name="reportedDate"
-                      rules={{ required: "Reported date and time is required" }}
                     />
                     <div className="col-span-2">
                       <TextInput
                         control={form.control}
                         name="reporterName"
                         placeholder="প্রতিনিধি নাম"
-                        rules={{ required: "Reporter name is required" }}
                       />
                     </div>
                   </div>
@@ -229,7 +214,6 @@ const Page = ({ params }: newsProps) => {
                         control={form.control}
                         name="newsType"
                         placeholder="নিউজ টাইপ নির্বাচন করুন"
-                        rules={{ required: "News Type is required" }}
                         options={[
                           { label: "Bangladesh", value: "Bangladesh" },
                           { label: "International", value: "International" },
@@ -254,9 +238,7 @@ const Page = ({ params }: newsProps) => {
                             control={form.control}
                             name="internationalArea"
                             placeholder="আন্তর্জাতিক এলাকা"
-                            rules={{
-                              required: "International area is required",
-                            }}
+
                           />
                         </div>
                       </>
@@ -287,7 +269,6 @@ const Page = ({ params }: newsProps) => {
                           control={form.control}
                           name="photojournalistName"
                           placeholder="ফটো সাংবাদিক নাম"
-                          rules={{ required: "Photographer name is required" }}
                         />
                       </div>
                       <SelectInput
@@ -296,10 +277,12 @@ const Page = ({ params }: newsProps) => {
                         placeholder="নিউজ ক্যাটাগরি নির্বাচন করুন"
                         rules={{ required: "News Category is required" }}
                         options={
-                          singleData?.categories?.map((program: { name: string; _id: string }) => ({
-                            label: program.name,
-                            value: program._id,
-                          })) || []
+                          data?.categories?.map(
+                            (program: { name: string; _id: string }) => ({
+                              label: program.name,
+                              value: program._id,
+                            })
+                          ) || []
                         }
                       />
                       <NewsType form={form} name="displayLocation" className="mb-4" setFirstPage={setFirstPage} />
@@ -309,7 +292,6 @@ const Page = ({ params }: newsProps) => {
                         control={form.control}
                         name="newsTitle"
                         placeholder="শিরোনাম"
-                        rules={{ required: "News title is required" }}
                       />
                     </div>
                     <div className="col-span-2">
@@ -317,7 +299,6 @@ const Page = ({ params }: newsProps) => {
                         control={form.control}
                         name="shortDescription"
                         placeholder="সংক্ষিপ্ত বিবরণ"
-                        rules={{ required: "Short Description is required" }}
                       />
                     </div>
                     <div className="col-span-2">
@@ -375,15 +356,12 @@ const Page = ({ params }: newsProps) => {
                             control={form.control}
                             name="imageTagline"
                             placeholder="ইমেজ ট্যাগ লাইন"
-                            rules={{ required: "Image Tag Line is required" }}
                           />
                           <TextInput
                             control={form.control}
                             name="photojournalistName"
                             placeholder="ফটো সাংবাদিক নাম"
-                            rules={{
-                              required: "Photo Journalist Name is required",
-                            }}
+
                           />
                         </div>
                       </div>

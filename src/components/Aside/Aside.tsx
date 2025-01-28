@@ -139,7 +139,7 @@ const Aside = () => {
             priority
           />
         </Link>
-        <p className="text-lg   font-bold">সত্যের সন্ধানে সব সময়</p>
+        <p className="text-lg font-bold">সত্যের সন্ধানে সব সময়</p>
       </div>
 
       {/* Navigation Menu */}
