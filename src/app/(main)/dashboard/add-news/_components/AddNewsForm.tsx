@@ -36,7 +36,6 @@ import {
 import toast from "react-hot-toast";
 import NewsType from "@/utils/Form_Inputs/NewsType";
 
-
 type Inputs = {
   reportedDate: string;
   reporterType: string;
@@ -93,7 +92,6 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       reportedDate: "",
       reporterType: "",
       reporterName: "",
-
       currentNews: true || false,
       displayLocation: "",
       selectedImage: "",
@@ -113,7 +111,6 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       publishedDate: "",
       shortDescription: "",
       description: "",
-
       tags: [{ imageTagline: "", photojournalistName: "", selectedImage: "" }],
       metaTitle: "",
       metaKeywords: "",
@@ -137,7 +134,6 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
-      
       ...data,
       category: data.category,
       postDate: new Date().toISOString(),
@@ -267,7 +263,12 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                           <ImageUpIcon color="red" size={50} /> Add Image
                         </Button>
                       </SheetTrigger>
-                      <SheetContent side="right" style={{ maxWidth: "800px" }}>
+                      {/* <SheetContent side="right" style={{ maxWidth: "800px", overflow:"auto" }} className="overflow-y-auto"> */}
+                      <SheetContent
+                        side="right"
+                        className="pt-4 overflow-y-auto"
+                        style={{ maxWidth: "800px" }}
+                      >
                         <SheetTitle className="sr-only">
                           Image Selection Modal
                         </SheetTitle>
@@ -359,8 +360,10 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                               side="right"
                               style={{ maxWidth: "800px" }}
                             >
-                              <SheetTitle className="">Select News Image</SheetTitle>
-                              <hr/>
+                              <SheetTitle className="">
+                                Select News Image
+                              </SheetTitle>
+                              <hr />
                               <AllImgModal />
                             </SheetContent>
                           </Sheet>

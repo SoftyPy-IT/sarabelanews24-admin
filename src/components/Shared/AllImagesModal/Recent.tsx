@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React from 'react';
 import Image from "next/image";
@@ -17,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
+import { useGetAllFolderQuery } from '@/redux/dailynews/folder.api';
 
 const initialImages = [
   { id: 1, image: img1.src },
@@ -35,6 +37,7 @@ const initialImages = [
 
 const Recent = () => {
     const [selectedImages, setSelectedImages] = React.useState<number[]>([]);
+    const { data, isLoading, isError } = useGetAllFolderQuery({});
 
   const handleCheckboxChange = (id: number, checked: boolean) => {
     setSelectedImages((prev) =>
@@ -80,13 +83,15 @@ const Recent = () => {
                   control={form.control}
                   name="img_type"
                   placeholder="Select From Folder"
-                  options={[
-                    { label: "Folder1", value: "Folder1" },
-                    { label: "Folder1", value: "Folder2" },
-                    { label: "Folder1", value: "Folder3" },
-                    { label: "Folder1", value: "Folder4" },
-                    { label: "Folder1", value: "Folder5" },
-                  ]}
+                  options={
+                    data?.map(
+                      (program: { name: string; _id: string }) => ({
+                        label: program.name,
+                        value: program._id,
+                      })
+                    ) || []
+                  }
+                  rules={{ required: "Please Select Folder" }}
                 />
               </div>
              

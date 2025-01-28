@@ -154,7 +154,7 @@ const FileInput = <T extends FieldValues>({
                     alt={file.file.name}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 768px) 80px, 100px"
+                    sizes="(max-width: 868px) 80px, 100px"
                   />
                 </div>
               ))}

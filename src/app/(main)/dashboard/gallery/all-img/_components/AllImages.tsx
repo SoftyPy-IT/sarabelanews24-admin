@@ -118,7 +118,7 @@ const AllImages = () => {
 
   return (
     <>
-      <div className="w-full">
+      <div className="w-full overflow-hidden">
         <div className="text-gray-900">
           <motion.div
             className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 p-1 md:p-4"
@@ -133,14 +133,14 @@ const AllImages = () => {
                 whileHover={{ scale: 1.05 }}
                 className="relative group"
               >
-                <Image
+                {/* <Image
                   src={row.url}
                   className="w-full h-full rounded shadow-sm bg-gray-500 aspect-square cursor-pointer"
                   alt={`Image ${row.id}`}
                   onClick={() => handleImageClick(row.image)}
                   width={100}
                   height={100}
-                />
+                /> */}
 
                 <button
                   className="absolute top-2 right-2 text-red-500 p-2 hover:bg-gray-200 hover:rounded-full opacity-0 group-hover:opacity-100 transition"

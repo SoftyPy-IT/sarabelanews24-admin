@@ -35,7 +35,7 @@ export type TProps = {
   onOpenChange: (isOpen: boolean) => void;
 };
 
-const TopBar = ({ isOpen, onOpenChange }: TProps) => {
+const TopBar = () => {
   const [open, setOpen] = React.useState(false);
   const [dragOver, setDragOver] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = React.useState<FileWithPreview[]>(

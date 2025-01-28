@@ -8,15 +8,15 @@ const AllImgModal = () => {
   return (
     <>
       <div className="w-full mt-5">
-        <Tabs defaultValue="account" className="w-[750px]">
-          <TabsList className="grid w-full grid-cols-2">
+        <Tabs defaultValue="account" className="w-[750px] ">
+          <TabsList className="grid w-full grid-cols-2 ">
             <TabsTrigger value="account">Recent</TabsTrigger>
             <TabsTrigger value="password">New Upload</TabsTrigger>
           </TabsList>
           <TabsContent value="account">
             <Recent />
           </TabsContent>
-          <TabsContent value="password">
+          <TabsContent value="password" >
             <Upload />
           </TabsContent>
         </Tabs>
