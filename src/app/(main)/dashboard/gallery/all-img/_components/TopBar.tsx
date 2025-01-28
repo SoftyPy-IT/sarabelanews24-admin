@@ -44,12 +44,7 @@ const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
   );
   const [createImages] = useCreateImagesMutation();
   const { data, isLoading, isError } = useGetAllFolderQuery({});
-<<<<<<< HEAD
-  const token = localStorage.getItem("accessToken");
-
-=======
   const [sheetOpen, setSheetOpen] = React.useState(false);
->>>>>>> 8e955d21e736b039387aa9f216c41d531469ddb0
 
   // Cleanup object URLs
   React.useEffect(() => {
@@ -58,14 +53,8 @@ const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
     };
   }, [selectedFiles]);
 
-<<<<<<< HEAD
-
-  const onSubmit = async (data: any) => {
-    const toastId = toast.loading("Uploading images...");
-=======
   const onSubmit = async (data: Inputs) => {
     // const toastId = toast.loading("Uploading images...");
->>>>>>> 8e955d21e736b039387aa9f216c41d531469ddb0
     const formData = new FormData();
 
     if (Array.isArray(data.images) && data.images.length > 0) {
@@ -80,26 +69,10 @@ const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
     formData.append("folder", data.folder);
 
     try {
-<<<<<<< HEAD
-      const res = await createImages(formData).unwrap();
-      console.log("response image upload", res);
-
-      toast.success(res.message || "Images uploaded successfully!", {
-        id: toastId,
-=======
       data.images.forEach((fileWithPreview: FileWithPreview) => {
         formData.append("images", fileWithPreview.file);
->>>>>>> 8e955d21e736b039387aa9f216c41d531469ddb0
       });
 
-<<<<<<< HEAD
-      // Close the modal after successful submission
-      setIsOpen(false);
-    } catch (err: any) {
-      toast.error(err?.data?.message || err.message || "An error occurred", {
-        id: toastId,
-      });
-=======
       const result = await createImages(formData).unwrap();
 
       toast.success(result.message || "Images Uploaded Successfully!");
@@ -114,7 +87,6 @@ const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
       const errorMessage =
         err.data?.message || err.data?.errorMessages?.[0] || "Upload failed";
       toast.error(errorMessage);
->>>>>>> 8e955d21e736b039387aa9f216c41d531469ddb0
     }
   };
 

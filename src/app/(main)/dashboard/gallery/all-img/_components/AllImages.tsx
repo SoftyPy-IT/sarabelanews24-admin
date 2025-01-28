@@ -1,24 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-<<<<<<< HEAD
-=======
 /* eslint-disable @typescript-eslint/no-explicit-any */
->>>>>>> 8e955d21e736b039387aa9f216c41d531469ddb0
 "use client";
 import * as React from "react";
 import Image from "next/image";
-// import img1 from "@public/assets/images/product-01.png";
-// import img2 from "@public/assets/images/product-02.png";
-// import img3 from "@public/assets/images/product-03.png";
-// import img4 from "@public/assets/images/product-04.png";
-// import img5 from "@public/assets/images/product-01.png";
-// import img6 from "@public/assets/images/product-02.png";
-// import img7 from "@public/assets/images/product-03.png";
-// import img8 from "@public/assets/images/product-04.png";
-// import img9 from "@public/assets/images/product-01.png";
-// import img10 from "@public/assets/images/product-01.png";
-// import img11 from "@public/assets/images/product-02.png";
-// import img12 from "@public/assets/images/product-03.png";
-
 import {
   Pagination,
   PaginationContent,
@@ -29,68 +13,39 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import ImgZoomModal from "./ImgZoomModal";
-import { Trash2 } from "lucide-react";
-import { motion } from "framer-motion";
 import {
-  useDeleteImagesMutation,
   useGetAllImagesQuery,
 } from "@/redux/dailynews/images.api";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
+import { Trash2 } from "lucide-react";
+import axios from "axios";
 
-<<<<<<< HEAD
-const initialImages = [
-  { id: 1, image: img1.src },
-  { id: 2, image: img2.src },
-  { id: 3, image: img3.src },
-];
-=======
-// const initialImages = [
-//   { id: 1, image: img1.src },
-//   { id: 2, image: img2.src },
-//   { id: 3, image: img3.src },
-//   { id: 4, image: img4.src },
-//   { id: 5, image: img5.src },
-//   { id: 6, image: img6.src },
-//   { id: 7, image: img7.src },
-//   { id: 8, image: img8.src },
-//   { id: 9, image: img9.src },
-//   { id: 10, image: img10.src },
-//   { id: 11, image: img11.src },
-//   { id: 12, image: img12.src },
-// ];
->>>>>>> 8e955d21e736b039387aa9f216c41d531469ddb0
+
 
 const AllImages = () => {
-  // const [images, setImages] = React.useState(initialImages);
   const [openZoom, setOpenZoom] = React.useState(false);
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
   const { data, isLoading, isError } = useGetAllImagesQuery({});
-
-  const [deleteImage] = useDeleteImagesMutation();
 
   if (isLoading) {
     return <h1>Loading...</h1>;
   }
 
-  const imageData =
-    data?.map((item: any) => ({
-      id: item._id,
-      // url: item.public_id || "N/A",
-      // image: item.public_id || "N/A",
-    })) || [];
-
-  console.log(data);
-
+  const token = localStorage.getItem('accessToken')
 
   const handleImageClick = (image: string) => {
     setSelectedImage(image);
     setOpenZoom(true);
   };
 
-  const handleDelete = async (id: string) => {
+
+
+  const handleDelete = async (id: string, public_id: string) => {
+    const toastId = toast.loading("Deleting image...");
+
     try {
-      Swal.fire({
+      const result = await Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
         icon: "warning",
@@ -98,70 +53,71 @@ const AllImages = () => {
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         confirmButtonText: "Yes, delete it!",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          await deleteImage(id).unwrap();
-          Swal.fire("Deleted!", "Your activity has been deleted.", "success");
-        }
       });
+
+      if (result.isConfirmed) {
+        const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_API_URL}/gallery/delete`,
+          {
+            id,
+            public_id,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+          }
+        );
+        toast.success("Image deleted successfully!", {
+          id: toastId,
+          duration: 3000,
+        });
+
+        Swal.fire("Deleted!", "Your image has been deleted.", "success");
+      }
     } catch (err: any) {
       console.error("Error deleting Image:", err);
-      toast.error(err.message || "Failed to delete Image.");
+      const errorMessage =
+        err?.response?.data?.message || "Failed to delete Image.";
+      toast.error(errorMessage, {
+        id: toastId,
+        duration: 3000,
+      });
     }
   };
 
-  // motion
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3,
-      },
-    },
-  };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  };
+
 
   return (
     <>
+
       <div className="w-full">
         <div className="text-gray-900">
-          <motion.div
-            className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 p-1 md:p-4"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {imageData.map((row: any) => (
-              <motion.div
-                key={row.id}
-                variants={itemVariants}
-                whileHover={{ scale: 1.05 }}
-                className="relative group"
-              >
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 p-1 md:p-4">
+            {data?.map((image: any) => (
+              <div key={image._id} className="relative group">
+                {/* Image */}
                 <Image
-                  src={row.url}
+                  src={image.url}
                   className="w-full h-full rounded shadow-sm bg-gray-500 aspect-square cursor-pointer"
-                  alt={`Image ${row.id}`}
-                  onClick={() => handleImageClick(row.image)}
-                  width={100}
-                  height={100}
+                  alt={`Image ${image._id}`}
+                  onClick={() => handleImageClick(image.url)}
+                  width={200}
+                  height={200}
+                  priority
                 />
 
                 <button
                   className="absolute top-2 right-2 text-red-500 p-2 hover:bg-gray-200 hover:rounded-full opacity-0 group-hover:opacity-100 transition"
-                  onClick={() => handleDelete(row.id)}
+                  onClick={() => handleDelete(image._id, image.public_id)}
                 >
-                  <Trash2 />
+                  <Trash2 className="w-5 h-5" />
                 </button>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
 
         <Pagination className="my-10">
