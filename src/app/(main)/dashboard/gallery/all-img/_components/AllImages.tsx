@@ -25,8 +25,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import ImgZoomModal from "./ImgZoomModal";
-import {Trash2 } from "lucide-react";
-
+import { Trash2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 const initialImages = [
   { id: 1, image: img1.src },
@@ -39,7 +39,6 @@ const AllImages = () => {
   const [openZoom, setOpenZoom] = React.useState(false);
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
 
-
   const handleImageClick = (image: string) => {
     setSelectedImage(image);
     setOpenZoom(true);
@@ -49,13 +48,40 @@ const AllImages = () => {
     setImages((prevImages) => prevImages.filter((img) => img.id !== id));
   };
 
+  // motion
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.3,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
     <>
       <div className="w-full">
         <div className="text-gray-900">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 p-1 md:p-4">
+          <motion.div
+            className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 p-1 md:p-4"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {images.map((row) => (
-              <div key={row.id} className="relative group">
+              <motion.div
+                key={row.id}
+                variants={itemVariants}
+                whileHover={{ scale: 1.05 }}
+                className="relative group"
+              >
                 <Image
                   src={row.image}
                   className="w-full h-full rounded shadow-sm bg-gray-500 aspect-square cursor-pointer"
@@ -66,14 +92,14 @@ const AllImages = () => {
                 />
 
                 <button
+                  className="absolute top-2 right-2 text-red-500 p-2 hover:bg-gray-200 hover:rounded-full opacity-0 group-hover:opacity-100 transition"
                   onClick={() => handleDeleteImage(row.id)}
-                  className="absolute top-2 left-2 bg-gray-800 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition"
                 >
-                  <Trash2 color="red" />
+                  <Trash2 />
                 </button>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
         <Pagination className="my-10">
@@ -102,7 +128,6 @@ const AllImages = () => {
         </Pagination>
       </div>
 
-  
       {/* Zoom Modal */}
       <ImgZoomModal
         isOpen={openZoom}
