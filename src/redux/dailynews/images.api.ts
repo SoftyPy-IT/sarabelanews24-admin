@@ -17,10 +17,10 @@ const imagesApi = baseApi.injectEndpoints({
         return {
           url: `/gallery/delete`,
           method: "POST",
-          body: data,
-          credentials: "include",
+          data,
         };
       },
+      invalidatesTags: ["images"],
     }),
 
     getAllImages: builder.query({

@@ -14,26 +14,21 @@ import {
 } from "@/components/ui/pagination";
 import ImgZoomModal from "./ImgZoomModal";
 import {
+  useDeleteImagesMutation,
   useGetAllImagesQuery,
 } from "@/redux/dailynews/images.api";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { Trash2 } from "lucide-react";
-import axios from "axios";
-
-
-
 const AllImages = () => {
   const [openZoom, setOpenZoom] = React.useState(false);
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
   const { data, isLoading, isError } = useGetAllImagesQuery({});
 
+  const [deleteImage] = useDeleteImagesMutation();
   if (isLoading) {
     return <h1>Loading...</h1>;
   }
-
-  const token = localStorage.getItem('accessToken')
-
   const handleImageClick = (image: string) => {
     setSelectedImage(image);
     setOpenZoom(true);
@@ -43,7 +38,6 @@ const AllImages = () => {
 
   const handleDelete = async (id: string, public_id: string) => {
     const toastId = toast.loading("Deleting image...");
-
     try {
       const result = await Swal.fire({
         title: "Are you sure?",
@@ -56,19 +50,7 @@ const AllImages = () => {
       });
 
       if (result.isConfirmed) {
-        const res = await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_API_URL}/gallery/delete`,
-          {
-            id,
-            public_id,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: token,
-            },
-          }
-        );
+        const response = await deleteImage({ id, public_id }).unwrap();
         toast.success("Image deleted successfully!", {
           id: toastId,
           duration: 3000,
@@ -78,8 +60,10 @@ const AllImages = () => {
       }
     } catch (err: any) {
       console.error("Error deleting Image:", err);
+
+
       const errorMessage =
-        err?.response?.data?.message || "Failed to delete Image.";
+        err?.data?.message || "Failed to delete Image.";
       toast.error(errorMessage, {
         id: toastId,
         duration: 3000,
