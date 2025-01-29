@@ -54,39 +54,32 @@ const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
   }, [selectedFiles]);
 
   const onSubmit = async (data: Inputs) => {
-    // const toastId = toast.loading("Uploading images...");
+    const toastId = toast.loading("Uploading images...");
     const formData = new FormData();
-
-    if (Array.isArray(data.images) && data.images.length > 0) {
-      data.images.forEach((file: File) => {
-        formData.append("images", file);
-      });
-    } else {
-      toast.error("Please select at least one image");
-      return;
-    }
-
-    formData.append("folder", data.folder);
-
+  
     try {
+      // Validate files
+      if (!data.images || data.images.length === 0) {
+        toast.error("Please select at least one image");
+        return;
+      }
+  
+      // Append files correctly
       data.images.forEach((fileWithPreview: FileWithPreview) => {
         formData.append("images", fileWithPreview.file);
       });
-
+      formData.append("folder", data.folder);
+  
+      // Execute mutation
       const result = await createImages(formData).unwrap();
-
-      toast.success(result.message || "Images Uploaded Successfully!");
-
-      // Reset form and close sheet
+  
+      toast.success(result.message || "Images Uploaded Successfully!", { id: toastId });
       form.reset();
       setSheetOpen(false);
-      // onOpenChange(false);
-
-
+  
     } catch (err: any) {
-      const errorMessage =
-        err.data?.message || err.data?.errorMessages?.[0] || "Upload failed";
-      toast.error(errorMessage);
+      const errorMessage = err.data?.message || "Upload failed";
+      toast.error(errorMessage, { id: toastId });
     }
   };
 

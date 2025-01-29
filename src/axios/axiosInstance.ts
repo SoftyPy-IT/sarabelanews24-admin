@@ -13,17 +13,29 @@ instance.defaults.headers.post["Content-Type"] = "application/json";
 instance.defaults.headers["Accept"] = "application/json";
 instance.defaults.timeout = 60000;      
 
+// instance.interceptors.request.use(
+//   function (config) {
+//     const accessToken = getFromLocalStorage(authKey);
+   
+//     if (accessToken) {
+//       config.headers.Authorization = accessToken;
+//     }
+//     return config;
+//   },
+//   function (error) {
+
+//     return Promise.reject(error);
+//   }
+// );
 instance.interceptors.request.use(
   function (config) {
     const accessToken = getFromLocalStorage(authKey);
-   
     if (accessToken) {
-      config.headers.Authorization = accessToken;
+      config.headers.Authorization = `Bearer ${accessToken}`; // Add Bearer prefix
     }
     return config;
   },
   function (error) {
-
     return Promise.reject(error);
   }
 );

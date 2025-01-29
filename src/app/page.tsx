@@ -28,66 +28,7 @@ type FormData = {
   password: string;
 };
 
-const generateRandomPosition = () => ({
-  top: `${Math.random() * 100}%`,
-  left: `${Math.random() * 100}%`,
-  animationDelay: `${Math.random() * 3}s`,
-});
 
-// const ParticleBackground = () => {
-//   const backgroundTexts = ["সত্যের সন্ধানে সব সময়", "daytimes24"];
-
-//   const generateTextInstances = (count: number) => {
-//     const instances: {
-//       text: string;
-//       id: string;
-//       position: { top: string; left: string; animationDelay: string };
-//     }[] = [];
-//     for (let i = 0; i < count; i++) {
-//       backgroundTexts.forEach((text) => {
-//         instances.push({
-//           text,
-//           id: `${text}-${i}`,
-//           position: generateRandomPosition(),
-//         });
-//       });
-//     }
-//     return instances;
-//   };
-
-//   const textInstances = generateTextInstances(10);
-
-//   return (
-//     <div className="absolute inset-0 overflow-hidden">
-//       <div className="relative w-full h-full bg-gradient-to-br from-gray-800 to-gray-900">
-//         <div className="absolute inset-0 opacity-25">
-//           {textInstances.map((instance) => (
-//             <motion.div
-//               key={instance.id}
-//               className="absolute text-white text-4xl font-semibold opacity-40"
-//               style={instance.position}
-//               animate={{
-//                 opacity: [0.3, 0.6, 0.3],
-//                 scale: [1, 1.05, 1],
-//                 x: ["0%", "50%", "100%"],
-//                 y: ["0%", "50%", "100%"],
-//               }}
-//               transition={{
-//                 repeat: Infinity,
-//                 repeatDelay: 0.8,
-//                 duration: 4,
-//                 ease: "easeInOut",
-//                 delay: parseFloat(instance.position.animationDelay),
-//               }}
-//             >
-//               {instance.text}
-//             </motion.div>
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
 const ParticleBackground = () => {
   const backgroundTexts = ["সত্যের সন্ধানে সব সময়", "daytimes24"];
   const [textInstances, setTextInstances] = useState<
