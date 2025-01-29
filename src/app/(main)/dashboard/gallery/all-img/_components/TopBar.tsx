@@ -13,7 +13,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Image from "next/image";
-import upload from "@public/assets/images/upload.webp";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
@@ -33,9 +32,11 @@ interface FileWithPreview {
 export type TProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
+  setIsOpen: (isOpen: boolean) => void;
 };
 
-const TopBar = () => {
+const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [open, setOpen] = React.useState(false);
   const [dragOver, setDragOver] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = React.useState<FileWithPreview[]>(
@@ -56,16 +57,21 @@ const TopBar = () => {
     // const toastId = toast.loading("Uploading images...");
     const formData = new FormData();
 
-    if (!data.images || data.images.length === 0) {
+    if (Array.isArray(data.images) && data.images.length > 0) {
+      data.images.forEach((file: File) => {
+        formData.append("images", file);
+      });
+    } else {
       toast.error("Please select at least one image");
       return;
     }
+
+    formData.append("folder", data.folder);
 
     try {
       data.images.forEach((fileWithPreview: FileWithPreview) => {
         formData.append("images", fileWithPreview.file);
       });
-      formData.append("folder", data.folder);
 
       const result = await createImages(formData).unwrap();
 
@@ -92,9 +98,12 @@ const TopBar = () => {
   const form = useForm<Inputs>({
     defaultValues: {
       folder: "",
+
       images: [],
     },
   });
+
+
 
   if (isLoading) {
     return <Loading />;
@@ -133,7 +142,7 @@ const TopBar = () => {
             </SheetHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
-                <div className="space-y-5 ">
+                <div className="space-y-5">
                   <div className="w-full mt-5 flex items-center gap-2">
                     <div className="w-[400px]">
                       <SelectInput
@@ -148,14 +157,7 @@ const TopBar = () => {
                             })
                           ) || []
                         }
-                        rules={{ required: "Please Select Folder" }}
-                        // options={[
-                        //   { label: "Folder1", value: "Folder1" },
-                        //   { label: "Folder1", value: "Folder2" },
-                        //   { label: "Folder1", value: "Folder3" },
-                        //   { label: "Folder1", value: "Folder4" },
-                        //   { label: "Folder1", value: "Folder5" },
-                        // ]}
+
                       />
                     </div>
                     <h1>OR</h1>
@@ -169,10 +171,26 @@ const TopBar = () => {
                     label="Upload Images"
                     accept="image/*"
                     multiple
-                    maxFiles={10}
+                    maxFiles={20}
                   />
-                </div>
 
+                </div>
+                {/* Image previews grid */}
+                {/* {selectedFiles.length > 0 && (
+                  <div className="grid grid-cols-3 gap-4 mt-4">
+                    {selectedFiles.map((fileWithPreview, index) => (
+                      <div key={index} className="relative group">
+                        <Image
+                          src={fileWithPreview.preview}
+                          alt={`Preview ${index}`}
+                          className="w-full h-32 object-cover rounded"
+                          width={100}
+                          height={100}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )} */}
                 <div className="mt-4 flex justify-end ">
                   <Button className="mt-4 bg-green-500" type="submit">
                     Upload

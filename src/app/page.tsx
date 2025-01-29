@@ -34,7 +34,6 @@ const generateRandomPosition = () => ({
   animationDelay: `${Math.random() * 3}s`,
 });
 
-// Background animation component
 // const ParticleBackground = () => {
 //   const backgroundTexts = ["সত্যের সন্ধানে সব সময়", "daytimes24"];
 
@@ -174,23 +173,24 @@ const Page = () => {
   });
 
 
-  
+
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       const res = await axios.post("http://localhost:5000/api/v1/auth/login", data);
-  
+      console.log(res)
+
       // Correctly accessing the accessToken
       const accessToken = res?.data?.data?.accessToken;
-  
+
       if (accessToken) {
 
-  
+
         // Storing the accessToken in a cookie
         setCookie("accessToken", accessToken, { expires: 7 }); // Expires in 7 days
-  
+
         // Optional: Store in localStorage if needed
         localStorage.setItem("accessToken", accessToken);
-  
+
         // Optional: Navigate to a dashboard or display success message
         router.push("/dashboard");
         toast.success("Login successful!");
@@ -201,7 +201,7 @@ const Page = () => {
       console.error("Error during login:", error);
     }
   };
-  
+
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
