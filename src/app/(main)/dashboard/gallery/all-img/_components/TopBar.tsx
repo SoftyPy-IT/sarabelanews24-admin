@@ -58,7 +58,7 @@ const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
     const formData = new FormData();
 
     if (Array.isArray(data.images) && data.images.length > 0) {
-      data.images.forEach((file: File) => {
+      data.images.forEach((file: any) => {
         formData.append("images", file);
       });
     } else {
