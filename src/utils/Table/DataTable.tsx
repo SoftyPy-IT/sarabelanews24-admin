@@ -61,6 +61,8 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+
+  
   const [selectedType, setSelectedType] = React.useState<string>("all");
 
   const table = useReactTable({

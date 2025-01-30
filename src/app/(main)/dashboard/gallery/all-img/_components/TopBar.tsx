@@ -16,7 +16,6 @@ import Image from "next/image";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
-// import CreateFolderModal from "./CreateFolderModal";
 import { Input } from "@/components/ui/input";
 import AddFolderModal from "../../folder/_components/AddFolderModal";
 import { useGetAllFolderQuery } from "@/redux/dailynews/folder.api";
@@ -36,9 +35,7 @@ export type TProps = {
 };
 
 const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [open, setOpen] = React.useState(false);
-  const [dragOver, setDragOver] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = React.useState<FileWithPreview[]>(
     []
   );
@@ -46,7 +43,6 @@ const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
   const { data, isLoading, isError } = useGetAllFolderQuery({});
   const [sheetOpen, setSheetOpen] = React.useState(false);
 
-  // Cleanup object URLs
   React.useEffect(() => {
     return () => {
       selectedFiles.forEach((file) => URL.revokeObjectURL(file.preview));
@@ -56,30 +52,39 @@ const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
   const onSubmit = async (data: Inputs) => {
     const toastId = toast.loading("Uploading images...");
     const formData = new FormData();
-  
+    console.log(data);
+
+    if (Array.isArray(data.images) && data.images.length > 0) {
+      data.images.forEach((file: any) => {
+        formData.append("images", file);
+      });
+    } else {
+      toast.error("Please select at least one image");
+      return;
+    }
+
+    formData.append("folder", data.folder);
+
     try {
-      // Validate files
-      if (!data.images || data.images.length === 0) {
-        toast.error("Please select at least one image");
-        return;
-      }
-  
-      // Append files correctly
       data.images.forEach((fileWithPreview: FileWithPreview) => {
         formData.append("images", fileWithPreview.file);
       });
+
       formData.append("folder", data.folder);
-  
-      // Execute mutation
+
       const result = await createImages(formData).unwrap();
-  
-      toast.success(result.message || "Images Uploaded Successfully!", { id: toastId });
+
+      toast.success(result.message || "Images Uploaded Successfully!", {
+        id: toastId,
+        duration: 3000,
+      });
+
       form.reset();
       setSheetOpen(false);
-  
     } catch (err: any) {
-      const errorMessage = err.data?.message || "Upload failed";
-      toast.error(errorMessage, { id: toastId });
+      const errorMessage =
+        err.data?.message || err.data?.errorMessages?.[0] || "Upload failed";
+      toast.error(errorMessage);
     }
   };
 
@@ -96,11 +101,10 @@ const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
     },
   });
 
-
-
   if (isLoading) {
     return <Loading />;
   }
+
   return (
     <>
       <div className="flex justify-between items-center content-center bg-white p-2 border rounded shadow-sm mb-5 gap-2 md:gap-0 ">
@@ -126,7 +130,7 @@ const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
           </SheetTrigger>
           <SheetContent
             side="right"
-            className="pt-4 overflow-y-auto"
+            className="pt-4 overflow-auto"
             style={{ maxWidth: "500px" }}
           >
             <SheetHeader>
@@ -141,7 +145,7 @@ const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
                       <SelectInput
                         control={form.control}
                         name="folder"
-                        placeholder="Select From Folder"
+                        placeholder="Select Folder"
                         options={
                           data?.map(
                             (program: { name: string; _id: string }) => ({
@@ -150,7 +154,6 @@ const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
                             })
                           ) || []
                         }
-
                       />
                     </div>
                     <h1>OR</h1>
@@ -166,10 +169,9 @@ const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
                     multiple
                     maxFiles={20}
                   />
-
                 </div>
                 {/* Image previews grid */}
-                {/* {selectedFiles.length > 0 && (
+                {selectedFiles.length > 0 && (
                   <div className="grid grid-cols-3 gap-4 mt-4">
                     {selectedFiles.map((fileWithPreview, index) => (
                       <div key={index} className="relative group">
@@ -183,7 +185,7 @@ const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
                       </div>
                     ))}
                   </div>
-                )} */}
+                )}
                 <div className="mt-4 flex justify-end ">
                   <Button className="mt-4 bg-green-500" type="submit">
                     Upload

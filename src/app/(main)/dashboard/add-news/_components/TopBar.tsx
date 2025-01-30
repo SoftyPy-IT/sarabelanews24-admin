@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import * as React from "react";
 
 const TopBar = () => {
@@ -11,6 +13,11 @@ const TopBar = () => {
             Add News
           </h2>
         </div>
+        <Link href={"/dashboard/list-news"}>
+          <Button className="hover:bg-red-600 rounded border border-gray-300hover:text-white">
+            Close
+          </Button>
+        </Link>
       </div>
     </>
   );

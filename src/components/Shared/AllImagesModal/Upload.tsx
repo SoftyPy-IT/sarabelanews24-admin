@@ -12,13 +12,14 @@ import FileInput from "@/utils/Form_Inputs/FileInput";
 import { useGetAllFolderQuery } from "@/redux/dailynews/folder.api";
 import { useCreateImagesMutation } from "@/redux/dailynews/images.api";
 import toast from "react-hot-toast";
+import AddFolderModal from "@/app/(main)/dashboard/gallery/folder/_components/AddFolderModal";
 
 interface FileWithPreview {
   file: File;
   preview: string;
 }
 
-const Upload = () => {
+const Upload = ({ onSuccess }: { onSuccess: () => void }) => {
   // const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   // const [dragOver, setDragOver] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = React.useState<FileWithPreview[]>(
@@ -34,45 +35,41 @@ const Upload = () => {
 
   const [createImages] = useCreateImagesMutation();
   const [sheetOpen, setSheetOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
-  // const handleButtonClick = () => {
-  //   if (fileInputRef.current) {
-  //     fileInputRef.current.click();
-  //   }
-  // };
-
-  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = event.target.files?.[0];
-  //   if (file) {
-  //     console.log("File selected:", file);
-  //   }
-  // };
-
-  // Cleanup object URLs
   React.useEffect(() => {
-    return () => {
-      selectedFiles.forEach((file) => URL.revokeObjectURL(file.preview));
-    };
-  }, [selectedFiles]);
+     return () => {
+       selectedFiles.forEach((file) => URL.revokeObjectURL(file.preview));
+     };
+   }, [selectedFiles]);
 
   const onSubmit = async (data: Inputs) => {
-    // const toastId = toast.loading("Uploading images...");
+    const toastId = toast.loading("Uploading images...");
     const formData = new FormData();
+    console.log(data);
 
-    if (!data.images || data.images.length === 0) {
+    if (Array.isArray(data.images) && data.images.length > 0) {
+      data.images.forEach((file: any) => {
+        formData.append("images", file);
+      });
+    } else {
       toast.error("Please select at least one image");
       return;
     }
+
+    formData.append("folder", data.folder);
 
     try {
       data.images.forEach((fileWithPreview: FileWithPreview) => {
         formData.append("images", fileWithPreview.file);
       });
+      
       formData.append("folder", data.folder);
+  
 
       const result = await createImages(formData).unwrap();
 
-      toast.success(result.message || "Images Uploaded Successfully!");
+      toast.success(result.message || "Images Uploaded Successfully!", { id: toastId, duration: 3000 });
 
       // Reset form and close sheet
       form.reset();
@@ -96,7 +93,10 @@ const Upload = () => {
       images: [],
     },
   });
-
+  const handleUploadSuccess = () => {
+    // Your existing upload logic
+    onSuccess(); // Close the sheet
+  };
   // const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
   //   event.preventDefault();
   //   setDragOver(true);
@@ -117,36 +117,59 @@ const Upload = () => {
   return (
     <>
       <Form {...form}>
-        <div className="space-y-5 ">
-          <div className="w-full mt-5 flex justify-end gap-2 ">
-            <div className="w-[500px]">
-              <SelectInput
-                control={form.control}
-                name="folder"
-                placeholder="Select Folder"
-                options={
-                  data?.map((program: { name: string; _id: string }) => ({
-                    label: program.name,
-                    value: program._id,
-                  })) || []
-                }
-                rules={{ required: "Please Select Folder" }}
-              />
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="space-y-5">
+            <div className="w-full mt-5 flex items-center gap-2">
+              <div className="w-[400px]">
+                <SelectInput
+                  control={form.control}
+                  name="folder"
+                  placeholder="Select From Folder"
+                  options={
+                    data?.map((program: { name: string; _id: string }) => ({
+                      label: program.name,
+                      value: program._id,
+                    })) || []
+                  }
+                />
+              </div>
+              <h1>OR</h1>
+              <Button className="h-[46px] " onClick={() => setOpen(true)}>
+                Create New Folder
+              </Button>
             </div>
+            <FileInput
+              control={form.control}
+              name="images"
+              label="Upload Images"
+              accept="image/*"
+              multiple
+              maxFiles={20}
+            />
           </div>
-          <FileInput
-            control={form.control}
-            name="images"
-            label="Upload Images"
-            accept="image/*"
-            multiple
-            maxFiles={10}
-          />
-        </div>
-        <div className="mt-4 flex justify-end ">
-          <Button className="mt-4 bg-green-500">Upload</Button>
-        </div>
+          {/* Image previews grid */}
+          {selectedFiles.length > 0 && (
+            <div className="grid grid-cols-3 gap-4 mt-4">
+              {selectedFiles.map((fileWithPreview, index) => (
+                <div key={index} className="relative group">
+                  <Image
+                    src={fileWithPreview.preview}
+                    alt={`Preview ${index}`}
+                    className="w-full h-32 object-cover rounded"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="mt-4 flex justify-end ">
+          <Button onClick={handleUploadSuccess}>Upload</Button>
+           
+          </div>
+        </form>
       </Form>
+      <AddFolderModal isOpen={open} onOpenChange={setOpen} />
     </>
   );
 };

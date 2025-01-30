@@ -2,25 +2,20 @@ import { baseApi } from "../api/baseApi";
 
 const imagesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-
-
     createImages: builder.mutation({
       query: (formData) => ({
         url: "/gallery/upload",
         method: "POST",
-        body: formData, // Use body instead of data
-        // Remove explicit content-type header
+        data: formData,
+        contentType: "multipart/form-data",
       }),
       invalidatesTags: ["images"],
     }),
-
-
-
     deleteImages: builder.mutation({
       query: (data: { id: string; public_id: string }) => {
         console.log("Sending delete request with data:", data);
         return {
-          url: `/gallery/delete`,
+          url: "/gallery/delete",
           method: "POST",
           data,
         };

@@ -2,6 +2,7 @@ import { baseApi } from "../api/baseApi";
 
 const foldersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+
     createFolder: builder.mutation({
       query: (data) => ({
         url: "/gallery/folder",
@@ -18,6 +19,8 @@ const foldersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["folder"],
     }),
+
+
     getAllFolder: builder.query({
       query: () => ({
         url: "/gallery/folders",
@@ -50,4 +53,4 @@ export const {
   useGetAllFolderQuery,
   useGetSingleFolderQuery,
   useUpdateFolderMutation
-} = foldersApi;
+} = foldersApi; 

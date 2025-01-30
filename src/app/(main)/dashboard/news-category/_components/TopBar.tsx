@@ -34,7 +34,10 @@ const TopBar = () => {
    const onSubmit = async (data: Inputs) => {
     try {
       const res = await createCategories(data).unwrap();
-      toast.success("Category created Successfully!");
+      if (res) {
+        toast.success("Category created Successfully!");
+      }
+      
       form.reset();
       console.log(res);
     } catch (error) {

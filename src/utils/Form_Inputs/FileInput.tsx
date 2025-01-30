@@ -124,7 +124,7 @@ const FileInput = <T extends FieldValues>({
                 <Upload className="w-6 h-6 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">{placeholder}</p>
                 <p className="text-xs text-muted-foreground/70">
-                  {accept ? `Accepted formats: ${accept}` : "Any file type"}
+                  {`accept ? Accepted formats: ${accept} : "Any file type"`}
                 </p>
               </div>
             </div>
@@ -143,7 +143,7 @@ const FileInput = <T extends FieldValues>({
             </FormControl>
 
             {field.value?.length > 0 && (
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {field.value.map((file: FileWithPreview, index: number) => (
                 <div
                   key={index}
@@ -154,7 +154,7 @@ const FileInput = <T extends FieldValues>({
                     alt={file.file.name}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 868px) 80px, 100px"
+                    sizes="(max-width: 768px) 80px, 100px"
                   />
                 </div>
               ))}
