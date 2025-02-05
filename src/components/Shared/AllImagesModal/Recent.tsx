@@ -1,136 +1,151 @@
-import React from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState } from "react";
 import Image from "next/image";
-import img1 from "../../../assests/images/product-01.png";
-import img2 from "../../../assests/images/product-02.png";
-import img3 from "../../../assests/images/product-03.png";
-import img4 from "../../../assests/images/product-04.png";
-import img5 from "../../../assests/images/product-01.png";
-import img6 from "../../../assests/images/product-02.png";
-import img7 from "../../../assests/images/product-03.png";
-import img8 from "../../../assests/images/product-04.png";
-import img9 from "../../../assests/images/product-01.png";
-import img10 from "../../../assests/images/product-01.png";
-import img11 from "../../../assests/images/product-02.png";
-import img12 from "../../../assests/images/product-03.png";
 import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
+import { useGetAllFolderQuery } from "@/redux/dailynews/folder.api";
+import {
+  useGetAllImagesQuery,
+  useGetImagesByFolderQuery,
+} from "@/redux/dailynews/images.api";
+import { TQueryParam } from "@/types/api.types";
 
-const initialImages = [
-  { id: 1, image: img1.src },
-  { id: 2, image: img2.src },
-  { id: 3, image: img3.src },
-  { id: 4, image: img4.src },
-  { id: 5, image: img5.src },
-  { id: 6, image: img6.src },
-  { id: 7, image: img7.src },
-  { id: 8, image: img8.src },
-  { id: 9, image: img9.src },
-  { id: 10, image: img10.src },
-  { id: 11, image: img11.src },
-  { id: 12, image: img12.src },
-];
+interface RecentProps {
+  onImageSelect: (images: any[]) => void; // Add this prop
+  onClose: () => void;
+}
 
-const Recent = () => {
-    const [selectedImages, setSelectedImages] = React.useState<number[]>([]);
+const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
+  const [selectedImages, setSelectedImages] = useState<any[]>([]);
+  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
 
-  const handleCheckboxChange = (id: number, checked: boolean) => {
+  const { data: folders, isLoading: foldersLoading } = useGetAllFolderQuery({});
+
+  const [params, setParams] = useState<TQueryParam[]>([]);
+  const {
+    data: allImages,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useGetAllImagesQuery([...params]) as any;
+
+  const handleFolderChange = (value: any) => {
+    setParams([{ name: "folder", value: value }]);
+  };
+
+  const handleCheckboxChange = (image: any, checked: boolean) => {
     setSelectedImages((prev) =>
-      checked ? [...prev, id] : prev.filter((imageId) => imageId !== id)
+      checked ? [...prev, image] : prev.filter((img) => img._id !== image._id)
     );
   };
 
+  const handleUpload = () => {
+    // Pass selected images to parent before closing
+    onImageSelect(selectedImages);
+    onClose();
+  };
+
+
   type Inputs = {
-    reporterType: string;
-    reporterName: string;
-    newsArea: string;
-    reportedDateAndTime: string;
-    selectedImage: string;
-    photoJournalistName: string;
-    img_type: string;
-    publishedDate: string;
-    newsTitle: string;
-    description: string;
-    newsTags: string[];
+    folder: string;
   };
 
   const form = useForm<Inputs>({
     defaultValues: {
-      reporterType: "",
-      reporterName: "",
-      newsArea: "",
-      reportedDateAndTime: "",
-      photoJournalistName: "",
-      img_type: "",
-      publishedDate: "",
-      newsTitle: "",
-      description: "",
-      newsTags: [""],
+      folder: "",
     },
   });
-    return (
-        <>
-         <div className="text-gray-900">
-          <Form {...form}>
-            <div className="w-full mt-5 flex justify-end gap-2">
+
+  return (
+    <>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(() => {})}>
+          <div className="text-gray-900">
+            <div className="w-full mt-5 flex justify-end items-center gap-2">
               <div className="w-[400px]">
                 <SelectInput
                   control={form.control}
-                  name="img_type"
+                  name="folder"
                   placeholder="Select From Folder"
-                  options={[
-                    { label: "Folder1", value: "Folder1" },
-                    { label: "Folder1", value: "Folder2" },
-                    { label: "Folder1", value: "Folder3" },
-                    { label: "Folder1", value: "Folder4" },
-                    { label: "Folder1", value: "Folder5" },
-                  ]}
+                  options={
+                    folders?.map((folder: { name: string; _id: string }) => ({
+                      label: folder.name,
+                      value: folder._id,
+                    })) || []
+                  }
+                  onValueChange={handleFolderChange}
                 />
               </div>
-             
             </div>
-          </Form>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 p-1 md:p-1 my-4">
-            {initialImages.map((row) => (
-              <div key={row.id} className="relative group ">
-                <Image
-                  src={row.image}
-                  className={`w-full h-full rounded shadow-sm bg-gray-500 aspect-square cursor-pointer ${
-                    selectedImages.includes(row.id)
-                      ? "ring-4 ring-blue-500"
-                      : ""
-                  }`}
-                  alt={`Image ${row.id}`}
-                  width={100}
-                  height={100}
-                />
-                <div
-                  className={`absolute top-1 right-1 text-white rounded-full transition ${
-                    selectedImages.includes(row.id)
-                      ? "opacity-100"
-                      : "opacity-0 group-hover:opacity-100"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    className="w-5 h-5 cursor-pointer"
-                    checked={selectedImages.includes(row.id)}
-                    onChange={(e) =>
-                      handleCheckboxChange(row.id, e.target.checked)
-                    }
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        <div className="flex justify-end">
-          <Button className="bg-green-500">Upload</Button>
-        </div>   
-        </>
-    );
+            {!selectedFolder && (
+              <div className="text-center text-gray-500 my-4">
+                Please select a folder to view images.
+              </div>
+            )}
+
+            {selectedFolder || !selectedFolder ? (
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 p-1 my-4">
+                {allImages?.data?.map((row: any) => (
+                  <div key={row._id} className="relative group">
+                    <Image
+                      src={row.url}
+                      className={`w-full h-full rounded shadow-sm bg-gray-500 aspect-square cursor-pointer ${
+                        selectedImages.some((img) => img._id === row._id)
+                          ? "ring-4 ring-blue-500"
+                          : ""
+                      }`}
+                      alt={`Image ${row._id}`}
+                      width={100}
+                      height={100}
+                    />
+                    <div
+                      className={`absolute top-1 right-1 text-white rounded-full transition ${
+                        selectedImages.some((img) => img._id === row._id)
+                          ? "opacity-100"
+                          : "opacity-0"
+                      } group-hover:opacity-100`}
+                    >
+                      <input
+                        type="checkbox"
+                        className="w-5 h-5 cursor-pointer"
+                        checked={selectedImages.some(
+                          (img) => img._id === row._id
+                        )}
+                        onChange={(e) =>
+                          handleCheckboxChange(row, e.target.checked)
+                        }
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-gray-500 my-4">
+                No images found for the selected folder.
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end">
+          <Button 
+        className="bg-green-500" 
+        onClick={handleUpload}
+        disabled={selectedImages.length === 0}
+      >
+        Upload
+      </Button>
+            {/* <Button className="bg-green-500" onClick={handleUpload}>
+              Upload
+            </Button> */}
+          </div>
+        </form>
+      </Form>
+    </>
+  );
 };
 
 export default Recent;

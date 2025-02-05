@@ -23,6 +23,6 @@
       "@public/*": ["./public/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/(main)/dashboard/add-lead-news", "src/components/Shared/AllImagesModal"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/(main)/dashboard/add-news", "src/components/Shared/AllImagesModal"],
   "exclude": ["node_modules"]
 }

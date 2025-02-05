@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Tag, X } from "lucide-react";
+import { PlusIcon, Tag, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type TagSelectorProps = {
@@ -87,9 +87,9 @@ export default function TagSelector({
         render={({ field: { onChange }, fieldState: { error } }) => (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <div className="relative flex-grow">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <Tag className="text-gray-400 w-5 h-5" />
+              <div className="relative flex-grow ">
+                <div className=" absolute p-2 ">
+                  <Tag className="text-gray-400  " />
                 </div>
                 <Input
                   value={inputValue}
@@ -102,7 +102,7 @@ export default function TagSelector({
                   }}
                   placeholder={`Add a ${label}`}
                   className={cn(
-                    "pl-10 pr-4 py-2 w-full text-sm",
+                    "pl-10 py-2 w-full text-sm",
                     error && "focus-visible:ring-red-500"
                   )}
                 />
@@ -112,7 +112,7 @@ export default function TagSelector({
                 onClick={() => handleAddTag(onChange)}
                 className="whitespace-nowrap"
               >
-                Add Tag
+                <PlusIcon className="w-4 h-4" /> Add Tag
               </Button>
             </div>
             {error && <p className="text-sm text-red-600">{error.message}</p>}

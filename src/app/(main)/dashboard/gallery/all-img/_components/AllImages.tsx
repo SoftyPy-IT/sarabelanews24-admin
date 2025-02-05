@@ -1,118 +1,174 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import * as React from "react";
 import Image from "next/image";
-import img1 from "../../../../../../assests/images/product-01.png";
-import img2 from "../../../../../../assests/images/product-02.png";
-import img3 from "../../../../../../assests/images/product-03.png";
-import img4 from "../../../../../../assests/images/product-04.png";
-import img5 from "../../../../../../assests/images/product-01.png";
-import img6 from "../../../../../../assests/images/product-02.png";
-import img7 from "../../../../../../assests/images/product-03.png";
-import img8 from "../../../../../../assests/images/product-04.png";
-import img9 from "../../../../../../assests/images/product-01.png";
-import img10 from "../../../../../../assests/images/product-01.png";
-import img11 from "../../../../../../assests/images/product-02.png";
-import img12 from "../../../../../../assests/images/product-03.png";
-
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-// import TopBar from "./TopBar";
 import ImgZoomModal from "./ImgZoomModal";
+import {
+  useDeleteImagesMutation,
+  useGetAllImagesQuery,
+} from "@/redux/dailynews/images.api";
+import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 import { Trash2 } from "lucide-react";
-
-const initialImages = [
-  { id: 1, image: img1.src },
-  { id: 2, image: img2.src },
-  { id: 3, image: img3.src },
-  { id: 4, image: img4.src },
-  { id: 5, image: img5.src },
-  { id: 6, image: img6.src },
-  { id: 7, image: img7.src },
-  { id: 8, image: img8.src },
-  { id: 9, image: img9.src },
-  { id: 10, image: img10.src },
-  { id: 11, image: img11.src },
-  { id: 12, image: img12.src },
-];
+import { TQueryParam } from "@/types/api.types";
 
 const AllImages = () => {
-  const [images, setImages] = React.useState(initialImages);
-  const [open, setOpen] = React.useState(false);
+  const [openZoom, setOpenZoom] = React.useState(false);
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const limit = 20;
+
+  const [params, setParams] = React.useState<TQueryParam[]>([]);
+  const { data, isLoading, isFetching, refetch } = useGetAllImagesQuery([
+    ...params,
+  ]) as any;
+  console.log(data);
+
+  React.useEffect(() => {
+    refetch();
+  }, [currentPage]);
+
+  const [deleteImage] = useDeleteImagesMutation();
+
+  if (isLoading) return <h1>Loading...</h1>;
 
   const handleImageClick = (image: string) => {
     setSelectedImage(image);
-    setOpen(true);
+    setOpenZoom(true);
   };
 
-  const handleDeleteImage = (id: number) => {
-    setImages((prevImages) => prevImages.filter((img) => img.id !== id));
+  const handleDelete = async (id: string, public_id: string) => {
+    const toastId = toast.loading("Deleting image...");
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      });
+
+      if (result.isConfirmed) {
+        await deleteImage({ id, public_id }).unwrap();
+        toast.success("Image deleted successfully!", {
+          id: toastId,
+          duration: 3000,
+        });
+        Swal.fire("Deleted!", "Your image has been deleted.", "success");
+      }
+    } catch (err: any) {
+      console.error("Error deleting Image:", err);
+      toast.error(err?.data?.message || "Failed to delete Image.", {
+        id: toastId,
+        duration: 3000,
+      });
+    }
+  };
+
+  const images = data?.data || [];
+  const totalPages = data?.meta?.totalPages || 1;
+
+  const handlePageChange = (page: number) => {
+    if (page > 0 && page <= totalPages) setCurrentPage(page);
   };
 
   return (
     <>
-      {/* <TopBar /> */}
-
       <div className="w-full">
         <div className="text-gray-900">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 p-1 md:p-4">
-            {images.map((row) => (
-              <div key={row.id} className="relative group">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 p-1 md:p-4">
+            {images.map((image: any) => (
+              <div key={image._id} className="relative group">
                 <Image
-                  src={row.image}
+                  src={image.url}
                   className="w-full h-full rounded shadow-sm bg-gray-500 aspect-square cursor-pointer"
-                  alt={`Image ${row.id}`}
-                  onClick={() => handleImageClick(row.image)}
-                  width={100}
-                  height={100}
+                  alt={`Image ${image._id}`}
+                  onClick={() => handleImageClick(image.url)}
+                  width={200}
+                  height={200}
+                  priority
                 />
+
                 <button
-                  className="absolute top-2 right-2 bg-red-500 text-white  p-2 rounded-full opacity-0 group-hover:opacity-100 transition"
-                  onClick={() => handleDeleteImage(row.id)}
+                  className="absolute top-2 right-2 text-red-500 p-2 hover:bg-gray-200 hover:rounded-full opacity-0 group-hover:opacity-100 transition"
+                  onClick={() => handleDelete(image._id, image.public_id)}
                 >
-                  <Trash2 />
+                  <Trash2 className="w-5 h-5" />
                 </button>
               </div>
             ))}
           </div>
         </div>
 
-        <Pagination className="my-10">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href="#" />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" isActive>
-                2
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">3</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <Pagination className="my-10 flex justify-center">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(currentPage - 1);
+                  }}
+                  className={
+                    currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                  }
+                />
+              </PaginationItem>
+
+              {Array.from({ length: totalPages }, (_, index) => {
+                const page = index + 1;
+                return (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href="#"
+                      isActive={page === currentPage}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(page);
+                      }}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(currentPage + 1);
+                  }}
+                  className={
+                    currentPage === totalPages
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
 
+      {/* Zoom Modal */}
       <ImgZoomModal
-        isOpen={open}
-        onOpenChange={setOpen}
+        isOpen={openZoom}
+        onOpenChange={setOpenZoom}
         selectedImage={selectedImage}
       />
     </>

@@ -14,14 +14,14 @@ import {
   PlusIcon,
   List,
   ChartNetworkIcon,
-  ChartNoAxesCombined,
-  Zap,
   ImageIcon,
   VideoIcon,
   Folder,
   UserRoundCog,
   GalleryThumbnailsIcon,
-  ChartLine
+  ChartLine,
+  Settings2,
+  NotebookIcon,
 } from "lucide-react";
 
 const Aside = () => {
@@ -29,53 +29,24 @@ const Aside = () => {
 
   const routes = [
     {
-      href: "/dashboard/dashboard",
+      href: "/dashboard",
       label: "Dashboard",
       icon: ChartLine,
     },
     {
-      href: "/dashboard",
-      label: "Lead News",
+      href: "/news",
+      label: "News",
       icon: ChartNetworkIcon,
       children: [
-        { href: "/dashboard/add-lead-news", label: "Add News", icon: PlusIcon },
+        { href: "/dashboard/add-news", label: "Add News", icon: PlusIcon },
         {
-          href: "/dashboard/list-lead-news",
-          label: "List Lead News",
-          icon: List,
-        },
-      ],
-    },
-    {
-      href: "/all-tranding",
-      label: "Trending News",
-      icon: ChartNoAxesCombined,
-      children: [
-        {
-          href: "/dashboard/add-tranding-news",
-          label: "Add News",
+          href: "/dashboard/news-category",
+          label: "News Category",
           icon: PlusIcon,
         },
         {
-          href: "/dashboard/list-tranding-news",
-          label: "List Trending News",
-          icon: List,
-        },
-      ],
-    },
-    {
-      href: "/all-bangladesh",
-      label: "Bangladesh",
-      icon: Zap,
-      children: [
-        {
-          href: "/dashboard/add-bangladesh-news",
-          label: "Add News",
-          icon: PlusIcon,
-        },
-        {
-          href: "/dashboard/list-bangladesh-news",
-          label: "List Bangladesh News",
+          href: "/dashboard/list-news",
+          label: "List News",
           icon: List,
         },
       ],
@@ -87,12 +58,12 @@ const Aside = () => {
       children: [
         {
           href: "/dashboard/add-photo-news",
-          label: "Add Image",
+          label: "Add Photo News",
           icon: PlusIcon,
         },
         {
           href: "/dashboard/list-photo-news",
-          label: "Image List",
+          label: "Photo News List",
           icon: List,
         },
       ],
@@ -104,8 +75,25 @@ const Aside = () => {
       children: [
         { href: "/dashboard/add-video", label: "Add Video", icon: PlusIcon },
         {
-          href: "/dashboard/list-video-gallery",
+          href: "/dashboard/list-video-news",
           label: "Video List",
+          icon: List,
+        },
+      ],
+    },
+    {
+      href: "/Advertisement",
+      label: "Advertisement",
+      icon: NotebookIcon,
+      children: [
+        {
+          href: "/dashboard/add-advertisement",
+          label: "Add Advertisement",
+          icon: PlusIcon,
+        },
+        {
+          href: "/dashboard/list-advertisement",
+          label: "Advertisement List",
           icon: List,
         },
       ],
@@ -128,6 +116,11 @@ const Aside = () => {
       label: "User Management",
       icon: UserRoundCog,
     },
+    {
+      href: "/dashboard/settings",
+      label: "Settings",
+      icon: Settings2,
+    },
   ];
 
   return (
@@ -146,9 +139,7 @@ const Aside = () => {
             priority
           />
         </Link>
-        <p className="text-lg   font-bold">
-          সত্যের সন্ধানে সব সময়
-        </p>
+        <p className="text-lg font-bold">সত্যের সন্ধানে সব সময়</p>
       </div>
 
       {/* Navigation Menu */}

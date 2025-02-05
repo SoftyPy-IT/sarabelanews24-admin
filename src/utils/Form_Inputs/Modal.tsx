@@ -1,11 +1,9 @@
 import React from "react";
-
+import { Dialog, DialogTitle } from "@radix-ui/react-dialog";
 import {
-  Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 
 type ModalProps = {
@@ -33,10 +31,10 @@ const Modal: React.FC<ModalProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white  ">
-        <div className="bg-white  rounded-lg p-6 relative">
+      <DialogContent className="bg-white">      
+        <div className="bg-white  relative mt-4">
           <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle className="font-bold">{title}</DialogTitle>
             {description && (
               <DialogDescription>{description}</DialogDescription>
             )}

@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -17,22 +18,32 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import TextInput from "@/utils/Form_Inputs/TextInput";
-
+import axios from "axios";
+import toast from "react-hot-toast";
+import { storeUserInfo } from "@/services/actions/auth.services";
+import { setCookie } from "@/axios/Cookies";
 
 type FormData = {
-  username: string;
+  name: string;
   password: string;
 };
 
-const generateRandomPosition = () => ({
-  top: `${Math.random() * 100}%`,
-  left: `${Math.random() * 100}%`,
-  animationDelay: `${Math.random() * 3}s`,
-});
 
-// Background animation component
 const ParticleBackground = () => {
   const backgroundTexts = ["সত্যের সন্ধানে সব সময়", "daytimes24"];
+  const [textInstances, setTextInstances] = useState<
+    {
+      text: string;
+      id: string;
+      position: { top: string; left: string; animationDelay: string };
+    }[]
+  >([]);
+
+  const generateRandomPosition = () => ({
+    top: `${Math.random() * 100}%`,
+    left: `${Math.random() * 100}%`,
+    animationDelay: `${Math.random() * 3}s`,
+  });
 
   const generateTextInstances = (count: number) => {
     const instances: {
@@ -52,7 +63,11 @@ const ParticleBackground = () => {
     return instances;
   };
 
-  const textInstances = generateTextInstances(10);
+  useEffect(() => {
+    // Generate positions only on the client
+    const instances = generateTextInstances(10);
+    setTextInstances(instances);
+  }, []);
 
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -86,25 +101,48 @@ const ParticleBackground = () => {
   );
 };
 
+
 const Page = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<FormData>({
     defaultValues: {
-      username: "",
+      name: "",
       password: "",
     },
   });
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
-    const isUsernameValid = data.username === "admin";
-    const isPasswordValid = data.password === "123456";
 
-    if (isUsernameValid && isPasswordValid) {
-      router.push("/dashboard/dashboard");
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    try {
+      const res = await axios.post("http://localhost:5000/api/v1/auth/login", data);
+      console.log(res)
+
+      // Correctly accessing the accessToken
+      const accessToken = res?.data?.data?.accessToken;
+
+      if (accessToken) {
+
+
+        // Storing the accessToken in a cookie
+        setCookie("accessToken", accessToken, { expires: 7 }); // Expires in 7 days
+
+        // Optional: Store in localStorage if needed
+        localStorage.setItem("accessToken", accessToken);
+
+        // Optional: Navigate to a dashboard or display success message
+        router.push("/dashboard");
+        toast.success("Login successful!");
+      } else {
+        console.error("Access Token not found in response");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
     }
   };
+
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -157,7 +195,7 @@ const Page = () => {
                 <CardContent className="space-y-4">
                   <TextInput
                     control={form.control}
-                    name="username"
+                    name="name"
                     type="text"
                     label="Username"
                     placeholder="Enter your username"

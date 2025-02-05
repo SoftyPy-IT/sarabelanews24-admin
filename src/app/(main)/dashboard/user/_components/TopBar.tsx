@@ -13,45 +13,54 @@ import {
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
-import { Input } from "@/components/ui/input";
+import { useCreateUserMutation } from "@/redux/dailynews/users.api";
+import toast from "react-hot-toast";
+import TextInput from "@/utils/Form_Inputs/TextInput";
+
+type Inputs = {
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  password: string;
+};
 
 const TopBar = () => {
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-
-  const handleButtonClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  type Inputs = {
-    reporterType: string;
-    reporterName: string;
-    newsArea: string;
-    reportedDateAndTime: string;
-    selectedImage: string;
-    photoJournalistName: string;
-    admin_type: string;
-    publishedDate: string;
-    newsTitle: string;
-    description: string;
-    newsTags: string[];
-  };
+  const [createUser] = useCreateUserMutation({});
 
   const form = useForm<Inputs>({
     defaultValues: {
-      reporterType: "",
-      reporterName: "",
-      newsArea: "",
-      reportedDateAndTime: "",
-      photoJournalistName: "",
-      admin_type: "",
-      publishedDate: "",
-      newsTitle: "",
-      description: "",
-      newsTags: [""],
+      name: "",
+      email: "",
+      role: "",
+      status: "",
+      password: "",
     },
   });
+
+  const onSubmit = async (data: Inputs) => {
+    const modifyData = {
+      ...data,
+      name: data.name,
+      postDate: new Date().toISOString(),
+      
+    };
+    console.log("modify value:", modifyData);
+    // console.log(data);
+
+    try {
+      const res = await createUser(modifyData).unwrap();
+      console.log("response:", res);
+      if (res) {
+        toast.success("User Create Successfully!");
+        form.reset();
+        // document.querySelector("button[data-state='open']")?.click();
+        // Router.push("/dashboard/user");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <>
@@ -66,7 +75,7 @@ const TopBar = () => {
         {/* Create User Button */}
         <Sheet>
           <SheetTrigger asChild>
-            <Button className="w-full sm:w-auto bg-blue-500 text-white hover:bg-blue-600">
+            <Button className="w-full sm:w-auto text-white hover:bg-blue-600">
               Create User
             </Button>
           </SheetTrigger>
@@ -78,43 +87,80 @@ const TopBar = () => {
               <hr className="my-4" />
             </SheetHeader>
             <Form {...form}>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="font-medium text-gray-700">Name:</h3>
-                  <Input placeholder="Name" className="mt-2" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-gray-700">Email:</h3>
-                  <Input placeholder="Email" className="mt-2" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-gray-700">Role:</h3>
-                  <SelectInput
-                    control={form.control}
-                    name="admin_type"
-                    placeholder="Select Role"
-                    options={[
-                      { label: "Admin", value: "admin" },
-                      { label: "Moderator", value: "moderator" },
-                      {
-                        label: "Senior Journalist",
-                        value: "senior-journalist",
-                      },
-                      { label: "Journalist", value: "journalist" },
-                      { label: "User", value: "user" },
-                    ]}
-                  />
-                </div>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <h3 className="font-medium text-gray-700">Name:</h3>
 
-                <div className="flex justify-end my-6">
-                  <Button
-                    onClick={handleButtonClick}
-                    className="bg-green-500 text-white hover:bg-green-600"
-                  >
-                    Create User
-                  </Button>
+                    <TextInput
+                      control={form.control}
+                      name="name"
+                      placeholder="Name"
+                      rules={{ required: "Name is required" }}
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <h3 className="font-medium text-gray-700">Email:</h3>
+
+                    <TextInput
+                      control={form.control}
+                      name="email"
+                      placeholder="Email"
+                      rules={{ required: "Email is required" }}
+                    />
+                  </div>
+
+                  <div>
+                    <h3 className="font-medium text-gray-700">Role:</h3>
+                    <SelectInput
+                      control={form.control}
+                      name="role"
+                      placeholder="Select Role"
+                      options={[
+                        { label: "Admin", value: "admin" },
+                        { label: "User", value: "user" },
+                        { label: "Editor", value: "editor" },
+                      ]}
+                    />
+                  </div>
+
+                  <div>
+                    <h3 className="font-medium text-gray-700">Status:</h3>
+                    <SelectInput
+                      control={form.control}
+                      name="status"
+                      placeholder="Select Status"
+                      options={[
+                        { label: "Active", value: "active" },
+                        { label: "In-Active", value: "inactive" },
+                      ]}
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <h3 className="font-medium text-gray-700">Password:</h3>
+
+                    <TextInput
+                      control={form.control}
+                      name="password"
+                      placeholder="Password"
+                      rules={{ required: "Password is required" }}
+                    />
+                  </div>
+
+                  
+                  <div className="flex justify-end my-6">
+                    <Button
+                      // onClick={handleButtonClick}
+                      type="submit"
+                      className=" text-white hover:bg-green-600"
+                    >
+                      Create User
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              </form>
             </Form>
           </SheetContent>
         </Sheet>

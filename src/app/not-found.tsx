@@ -19,8 +19,8 @@ const NotFoundPage = () => {
       <div className="w-full max-w-[400px]">
         <Lottie animationData={notFoundAnimation} />
       </div>
-      
-      <div className="flex flex-col items-center -mt-24 text-center">
+
+      <div className="flex flex-col items-center space-y-4 text-center">
         <h1 className="py-1 text-3xl font-semibold">404 - Page Not Found</h1>
         <p className="mt-2 text-gray-600">
           The page you&apos;re looking for doesn&apos;t exist or has been moved.

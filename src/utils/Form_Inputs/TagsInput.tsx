@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Delete, ImageUpIcon, PlusIcon } from "lucide-react";
 import TextInput from "./TextInput";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
@@ -53,6 +56,7 @@ const TagsInput = ({ control, tags, setTags }: TagInputProps) => {
                     </Button>
                   </SheetTrigger>
                   <SheetContent side="right" style={{ maxWidth: "800px" }}>
+                    <SheetTitle className="sr-only">tags</SheetTitle>
                     <AllImgModal />
                   </SheetContent>
                 </Sheet>
