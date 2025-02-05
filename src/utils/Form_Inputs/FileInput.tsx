@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { type Control, type FieldValues, type Path } from "react-hook-form";
-import { Upload } from "lucide-react";
+import { CircleX, Upload } from "lucide-react";
 import Image from "next/image";
 
 type FileWithPreview = {
@@ -41,7 +41,6 @@ const FileInput = <T extends FieldValues>({
   multiple = false,
   maxFiles,
 }: FileInputProps<T>) => {
-   
   const [dragActive, setDragActive] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = React.useState<FileWithPreview[]>(
     []
@@ -64,17 +63,19 @@ const FileInput = <T extends FieldValues>({
     },
   });
 
-    const handleFileChange = (files: FileList | null) => {
-      if (!files) return;
-  
-      const newFiles = Array.from(files).map((file) => ({
-        file,
-        preview: URL.createObjectURL(file),
-      }));
-  
-      const updatedFiles = multiple ? [...(field.value || []), ...newFiles] : newFiles;
-      field.onChange(updatedFiles);
-    };
+  const handleFileChange = (files: FileList | null) => {
+    if (!files) return;
+
+    const newFiles = Array.from(files).map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    const updatedFiles = multiple
+      ? [...(field.value || []), ...newFiles]
+      : newFiles;
+    field.onChange(updatedFiles);
+  };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -101,14 +102,22 @@ const FileInput = <T extends FieldValues>({
     };
   }, [selectedFiles]);
 
+  const handleDelete = (index: number) => {
+    const updatedFiles = [...field.value];
+    updatedFiles.splice(index, 1);
+    field.onChange(updatedFiles);
+  };
+
   return (
     <FormField
       control={control}
       name={name}
       render={() => (
         <FormItem>
-          {label && <label className="block text-sm  mb-2 font-bold">{label}</label>}
-          
+          {label && (
+            <label className="block text-sm  mb-2 font-bold">{label}</label>
+          )}
+
           <div className="space-y-4">
             <div
               onDragEnter={handleDrag}
@@ -116,22 +125,29 @@ const FileInput = <T extends FieldValues>({
               onDragOver={handleDrag}
               onDrop={handleDrop}
               className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors
-                ${dragActive ? "border-primary bg-primary/10" : "border-muted-foreground/30"}
-                ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                ${
+                  dragActive
+                    ? "border-primary bg-primary/10"
+                    : "border-muted-foreground/30"
+                }
+                ${
+                  disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                }`}
               onClick={() => !disabled && inputRef.current?.click()}
             >
               <div className="flex flex-col items-center gap-2">
                 <Upload className="w-6 h-6 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">{placeholder}</p>
                 <p className="text-xs text-muted-foreground/70">
-                  {`accept ? Accepted formats: ${accept} : "Any file type"`}
+                  {accept ? `Accepted formats: ${accept}` : "Any file type"}
                 </p>
+               
               </div>
             </div>
 
             <FormControl>
               <Input
-              name={name}
+                name={name}
                 type="file"
                 ref={inputRef}
                 accept={accept}
@@ -143,23 +159,31 @@ const FileInput = <T extends FieldValues>({
             </FormControl>
 
             {field.value?.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {field.value.map((file: FileWithPreview, index: number) => (
-                <div
-                  key={index}
-                  className="relative aspect-square rounded-md overflow-hidden border"
-                >
-                  <Image
-                    src={file.preview}
-                    alt={file.file.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 80px, 100px"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {field.value.map((file: FileWithPreview, index: number) => (
+                  <div
+                    key={index}
+                    className="relative group aspect-square rounded-md border overflow-hidden"
+                  >
+                    <Image
+                      src={file.preview}
+                      alt={file.file.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 80px, 100px"
+                    />
+
+                    <button
+                      type="button"
+                      className="absolute top-0 right-0  text-red-500 opacity-0 group-hover:opacity-100 transition"
+                      onClick={() => handleDelete(index)}
+                    >
+                      <CircleX className="w-5 h-5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <FormMessage />
           </div>

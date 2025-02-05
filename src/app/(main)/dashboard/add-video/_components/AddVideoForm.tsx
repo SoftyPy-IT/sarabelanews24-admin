@@ -11,10 +11,12 @@ import TextInput from "@/utils/Form_Inputs/TextInput";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
 import { Delete, ImageUpIcon, PlusIcon } from "lucide-react";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
+import { useCreateNewsMutation } from "@/redux/dailynews/news.api";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
 import SelectorWithSearch from "@/utils/Form_Inputs/SelectorWithSearch";
 import TagSelector from "@/utils/Form_Inputs/TagSelector";
+import RadioInput from "@/utils/Form_Inputs/RadioInput";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import {
   Sheet,
@@ -22,17 +24,19 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useState } from "react";
+import React, { useState } from "react";
+import MultiSelector from "@/utils/Form_Inputs/MultiSelector";
 import {
   districtOption,
   divisionOption,
+  newsTagOption,
   reporterTypeOption,
   upazilaOption,
 } from "@/utils/options";
 import toast from "react-hot-toast";
 import NewsType from "@/utils/Form_Inputs/NewsType";
+import Image from "next/image";
 import { useCreateVideoNewsMutation } from "@/redux/dailynews/videoNews.api ";
-
 
 type Inputs = {
   reportedDate: string;
@@ -43,7 +47,7 @@ type Inputs = {
   // firstPage: boolean;
 
   selectedImage: string;
-  // imageTagline: string;
+  imageTagline: string;
   photojournalistName: string;
   internationalArea: string;
   division: string;
@@ -53,22 +57,21 @@ type Inputs = {
   newsType: string;
   newsCategory: string;
   newsTitle: string;
+  videioJornalistName: string;
+  videoUrl: string;
+  newsTagLine: string;
   adminName: string;
   slug: string;
   category: string;
   publishedDate: string;
   shortDescription: string;
   description: string;
-  videioJornalistName: string;
-  videoUrl: string;
-  newsTagLine: string;
-  // news_tags: string | string[];
   // news_tags: string | string[];
 
   tags: {
-    videoUrl: string;
-    videioJornalistName: string;
     newsTagLine: string;
+    videioJornalistName: string;
+    videoUrl: string;
   }[];
 
   metaTitle: string;
@@ -81,45 +84,55 @@ type CourseFormProps = {
   initialData?: any | undefined | null;
 };
 
+interface FileWithPreview {
+  file: File;
+  preview: string;
+}
+
 const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
-  const [createvideoNews] = useCreateVideoNewsMutation();
+  const [mainSelectedFiles, setMainSelectedFiles] = React.useState<
+    { url: string }[]
+  >([]);
+
+  const [tagSelectedFiles, setTagSelectedFiles] = React.useState<
+    { url: string }[][]
+  >([]);
+
+  const [createNews] = useCreateVideoNewsMutation({});
   const router = useRouter();
   const [firstPage, setFirstPage] = useState("");
-  
 
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
+  const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
 
   const form = useForm<Inputs>({
     defaultValues: {
       reportedDate: "",
       reporterType: "",
       reporterName: "",
-
       currentNews: true || false,
       displayLocation: "",
-      // firstPage: "",
       selectedImage: "",
-      // imageTagline: "",
+      imageTagline: "",
       photojournalistName: "",
       internationalArea: "",
       division: "",
       district: "",
       upazila: "",
-      // newsTag: "",
-      
+      newsTag: "",
       newsType: "",
       newsCategory: "",
       newsTitle: "",
       adminName: "",
+      videioJornalistName: "",
+      videoUrl: "",
+      newsTagLine: "",
       slug: "",
       category: "",
       publishedDate: "",
       shortDescription: "",
       description: "",
-      videioJornalistName: "",
-      videoUrl: "",
-      newsTagLine: "",
-      tags: [{ videoUrl: "", videioJornalistName: "", newsTagLine: "" }],
+      tags: [{ newsTagLine: "", videioJornalistName: "", videoUrl: "" }],
       metaTitle: "",
       metaKeywords: "",
       metaDescription: "",
@@ -130,6 +143,16 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
     control: form.control,
     name: "tags",
   });
+
+  const handleImageSelect = (images: any[]) => {
+    if (openSheetIndex === null) {
+      setMainSelectedFiles(images.map((img) => ({ url: img.url })));
+    } else {
+      const newTagFiles = [...tagSelectedFiles];
+      newTagFiles[openSheetIndex] = images.map((img) => ({ url: img.url }));
+      setTagSelectedFiles(newTagFiles);
+    }
+  };
 
   const newsType = useWatch({
     control: form.control,
@@ -142,19 +165,20 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
 
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
-    
       ...data,
       category: data.category,
       postDate: new Date().toISOString(),
+      images: mainSelectedFiles.map((item) => item.url).join(","),
+      // images: mainSelectedFiles.map((item) => item.url),
     };
-    console.log("modify value:",modifyData);
+    // console.log("modify value:",modifyData);
     // console.log(data);
 
     try {
-      const res = await createvideoNews(modifyData).unwrap();
-      console.log("response:",res)
+      const res = await createNews(modifyData).unwrap();
+      // console.log("response:",res)
       if (res) {
-        toast.success("Video News Create Successfully!");
+        toast.success("News Create Successfully!");
         router.push("/dashboard/list-video-news");
       }
     } catch (error) {
@@ -169,7 +193,6 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="grid grid-cols-12 gap-4 xl:6">
-              
               <div className="lg:col-span-8 col-span-full space-y-3">
                 {/* Reporter Info Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
@@ -248,7 +271,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                         <div className="col-span-2">
                           <TextInput
                             control={form.control}
-                            name={"internationalArea"}
+                            name="internationalArea"
                             placeholder="আন্তর্জাতিক এলাকা"
                             rules={{
                               required: "International area is required",
@@ -268,19 +291,35 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                       <SheetTrigger asChild>
                         <Button
                           variant="outline"
-                          className="p-8 border  rounded-full mb-5"
+                          className="p-8 border rounded-full mb-2"
                         >
                           <ImageUpIcon color="red" size={50} /> Add Image
                         </Button>
                       </SheetTrigger>
-                      <SheetContent side="right" style={{ maxWidth: "800px" }}>
-                        <SheetTitle className="sr-only">
-                          Image Selection Modal
-                        </SheetTitle>
-                        <AllImgModal />
+                      <SheetContent
+                        side="right"
+                        className="pt-4 overflow-y-auto"
+                        style={{ maxWidth: "800px" }}
+                      >
+                        <SheetTitle>সংবাদের তথ্য</SheetTitle>
+                        <AllImgModal
+                          onImageSelect={handleImageSelect}
+                          onClose={() => setOpenSheetIndex(null)}
+                        />
                       </SheetContent>
                     </Sheet>
                   </div>
+
+                  {mainSelectedFiles.map((file, index) => (
+                    <Image
+                      key={index}
+                      src={file.url}
+                      alt={`Preview ${index}`}
+                      width={130}
+                      height={100}
+                    />
+                  ))}
+
                   <div className="space-y-2">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       <div className="col-span-2">
@@ -353,27 +392,42 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                     {fields.map((field, index) => (
                       <div key={field.id}>
                         <div key={index} className="grid grid-cols-1 gap-4">
-                          <div>
-                            <TextInput
-                              control={form.control}
-                              name="videoUrl"
-                              placeholder="ভিডিও লিঙ্ক"
-                            />
-                          </div>
-                          <div>
-                            <TextInput
-                              control={form.control}
-                              name="videioJornalistName"
-                              placeholder="ভিডিও সাংবাদিকের নাম"
-                            />
-                          </div>
-                          <div>
-                            <TextInput
-                              control={form.control}
-                              name="newsTagLine"
-                              placeholder="সংবাদ ট্যাগ লাইন"
-                            />
-                          </div>
+                          <TextInput
+                            control={form.control}
+                            name="videioJornalistName"
+                            // name={`tags.${index}.videioJornalistName`}
+                            placeholder="ভিডিও সাংবাদিকের নাম"
+                            rules={{
+                              required: "Video Jornalist Name is required",
+                            }}
+                          />
+                          {/* <TextInput
+                            control={form.control}
+                            name={`tags.${index}.videoUrl`}
+                            placeholder="ভিডিও লিঙ্ক"
+                            rules={{ required: "Video URL is required" }}
+                          /> */}
+                          <TextInput
+                            control={form.control}
+                            name="videoUrl"
+                            // name={`tags.${index}.videoUrl`}
+                            placeholder="ভিডিও লিঙ্ক"
+                            rules={{
+                              required: "Additional Link is required",
+                              pattern: {
+                                value:
+                                  /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
+                                message:
+                                  "Please enter a valid URL with https://",
+                              },
+                            }}
+                          />
+                          <TextInput
+                            control={form.control}
+                            name="newsTagLine"
+                            // name={`tags.${index}.newsTagLine`}
+                            placeholder="সংবাদ ট্যাগ লাইন"
+                          />
                         </div>
                         <div className="flex justify-end gap-4 py-2">
                           {fields.length > 1 && (
@@ -435,9 +489,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
 
                 {/* SEO Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
-                  <h1 className="mb-2 font-semibold text-blue-500">
-                    SEO Section:
-                  </h1>
+                  <h1 className="mb-2 font-semibold ">SEO Section:</h1>
                   <CardContent className="space-y-5">
                     <TextInput
                       control={form.control}
@@ -464,11 +516,8 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
             </div>
 
             {/* Submit Section */}
-            <section className="my-4">
-              <Button
-                type="submit"
-                className="w-full bg-blue-500 text-white hover:bg-blue-600"
-              >
+            <section className="my-4 flex justify-end">
+              <Button type="submit" className="w-[400px] text-white ">
                 Submit
               </Button>
             </section>

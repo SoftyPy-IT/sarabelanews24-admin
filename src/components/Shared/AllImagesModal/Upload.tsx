@@ -7,7 +7,6 @@ import SelectInput from "@/utils/Form_Inputs/SelectInput";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import upload from "@public/assets/images/product-01.png";
 import FileInput from "@/utils/Form_Inputs/FileInput";
 import { useGetAllFolderQuery } from "@/redux/dailynews/folder.api";
 import { useCreateImagesMutation } from "@/redux/dailynews/images.api";
@@ -20,8 +19,6 @@ interface FileWithPreview {
 }
 
 const Upload = ({ onSuccess }: { onSuccess: () => void }) => {
-  // const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-  // const [dragOver, setDragOver] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = React.useState<FileWithPreview[]>(
     []
   );
@@ -38,10 +35,10 @@ const Upload = ({ onSuccess }: { onSuccess: () => void }) => {
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
-     return () => {
-       selectedFiles.forEach((file) => URL.revokeObjectURL(file.preview));
-     };
-   }, [selectedFiles]);
+    return () => {
+      selectedFiles.forEach((file) => URL.revokeObjectURL(file.preview));
+    };
+  }, [selectedFiles]);
 
   const onSubmit = async (data: Inputs) => {
     const toastId = toast.loading("Uploading images...");
@@ -63,18 +60,18 @@ const Upload = ({ onSuccess }: { onSuccess: () => void }) => {
       data.images.forEach((fileWithPreview: FileWithPreview) => {
         formData.append("images", fileWithPreview.file);
       });
-      
+
       formData.append("folder", data.folder);
-  
 
       const result = await createImages(formData).unwrap();
 
-      toast.success(result.message || "Images Uploaded Successfully!", { id: toastId, duration: 3000 });
+      toast.success(result.message || "Images Uploaded Successfully!", {
+        id: toastId,
+        duration: 3000,
+      });
 
-      // Reset form and close sheet
       form.reset();
       setSheetOpen(false);
-      // onOpenChange(false);
     } catch (err: any) {
       const errorMessage =
         err.data?.message || err.data?.errorMessages?.[0] || "Upload failed";
@@ -94,43 +91,27 @@ const Upload = ({ onSuccess }: { onSuccess: () => void }) => {
     },
   });
   const handleUploadSuccess = () => {
-    // Your existing upload logic
-    onSuccess(); // Close the sheet
+    onSuccess();
   };
-  // const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-  //   event.preventDefault();
-  //   setDragOver(true);
-  // };
 
-  // const handleDragLeave = () => {
-  //   setDragOver(false);
-  // };
-
-  // const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
-  //   event.preventDefault();
-  //   setDragOver(false);
-  //   const file = event.dataTransfer.files?.[0];
-  //   if (file) {
-  //     console.log("File dropped:", file);
-  //   }
-  // };
   return (
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="space-y-5">
-            <div className="w-full mt-5 flex items-center gap-2">
+            <div className="w-full mt-5 flex justify-end items-center gap-2">
               <div className="w-[400px]">
                 <SelectInput
                   control={form.control}
                   name="folder"
-                  placeholder="Select From Folder"
+                  placeholder="Select Folder"
                   options={
                     data?.map((program: { name: string; _id: string }) => ({
                       label: program.name,
                       value: program._id,
                     })) || []
                   }
+                  rules={{ required: "Select A Folder is required" }}
                 />
               </div>
               <h1>OR</h1>
@@ -147,7 +128,7 @@ const Upload = ({ onSuccess }: { onSuccess: () => void }) => {
               maxFiles={20}
             />
           </div>
-          {/* Image previews grid */}
+
           {selectedFiles.length > 0 && (
             <div className="grid grid-cols-3 gap-4 mt-4">
               {selectedFiles.map((fileWithPreview, index) => (
@@ -164,8 +145,7 @@ const Upload = ({ onSuccess }: { onSuccess: () => void }) => {
             </div>
           )}
           <div className="mt-4 flex justify-end ">
-          <Button onClick={handleUploadSuccess}>Upload</Button>
-           
+            <Button onClick={handleUploadSuccess}>Upload</Button>
           </div>
         </form>
       </Form>

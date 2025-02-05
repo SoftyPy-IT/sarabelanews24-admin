@@ -19,26 +19,27 @@ import {
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { Trash2 } from "lucide-react";
+import { TQueryParam } from "@/types/api.types";
 
 const AllImages = () => {
   const [openZoom, setOpenZoom] = React.useState(false);
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
   const [currentPage, setCurrentPage] = React.useState(1);
-  const limit = 20; // Show 20 images per page
+  const limit = 20;
 
-  const { data, isLoading, isError, refetch } = useGetAllImagesQuery(
-    { page: currentPage, limit },
-    { refetchOnMountOrArgChange: true }
-  );
+  const [params, setParams] = React.useState<TQueryParam[]>([]);
+  const { data, isLoading, isFetching, refetch } = useGetAllImagesQuery([
+    ...params,
+  ]) as any;
+  console.log(data);
 
   React.useEffect(() => {
-    refetch(); // Refetch when currentPage changes
+    refetch();
   }, [currentPage]);
 
   const [deleteImage] = useDeleteImagesMutation();
 
   if (isLoading) return <h1>Loading...</h1>;
-  if (isError) return <h1>Error loading images.</h1>;
 
   const handleImageClick = (image: string) => {
     setSelectedImage(image);
@@ -60,16 +61,22 @@ const AllImages = () => {
 
       if (result.isConfirmed) {
         await deleteImage({ id, public_id }).unwrap();
-        toast.success("Image deleted successfully!", { id: toastId, duration: 3000 });
+        toast.success("Image deleted successfully!", {
+          id: toastId,
+          duration: 3000,
+        });
         Swal.fire("Deleted!", "Your image has been deleted.", "success");
       }
     } catch (err: any) {
       console.error("Error deleting Image:", err);
-      toast.error(err?.data?.message || "Failed to delete Image.", { id: toastId, duration: 3000 });
+      toast.error(err?.data?.message || "Failed to delete Image.", {
+        id: toastId,
+        duration: 3000,
+      });
     }
   };
 
-  const images = data || [];
+  const images = data?.data || [];
   const totalPages = data?.meta?.totalPages || 1;
 
   const handlePageChange = (page: number) => {
@@ -115,7 +122,9 @@ const AllImages = () => {
                     e.preventDefault();
                     handlePageChange(currentPage - 1);
                   }}
-                  className={currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}
+                  className={
+                    currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                  }
                 />
               </PaginationItem>
 
@@ -144,7 +153,11 @@ const AllImages = () => {
                     e.preventDefault();
                     handlePageChange(currentPage + 1);
                   }}
-                  className={currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}
+                  className={
+                    currentPage === totalPages
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }
                 />
               </PaginationItem>
             </PaginationContent>
@@ -153,7 +166,11 @@ const AllImages = () => {
       </div>
 
       {/* Zoom Modal */}
-      <ImgZoomModal isOpen={openZoom} onOpenChange={setOpenZoom} selectedImage={selectedImage} />
+      <ImgZoomModal
+        isOpen={openZoom}
+        onOpenChange={setOpenZoom}
+        selectedImage={selectedImage}
+      />
     </>
   );
 };

@@ -58,12 +58,12 @@ const Aside = () => {
       children: [
         {
           href: "/dashboard/add-photo-news",
-          label: "Add Image",
+          label: "Add Photo News",
           icon: PlusIcon,
         },
         {
           href: "/dashboard/list-photo-news",
-          label: "Image List",
+          label: "Photo News List",
           icon: List,
         },
       ],

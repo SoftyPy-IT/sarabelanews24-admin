@@ -28,13 +28,14 @@ interface FileWithPreview {
   file: File;
   preview: string;
 }
-export type TProps = {
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
-  setIsOpen: (isOpen: boolean) => void;
-};
 
-const TopBar = ({ isOpen, onOpenChange, setIsOpen }: TProps) => {
+// export type TProps = {
+//   isOpen: boolean;
+//   onOpenChange: (isOpen: boolean) => void;
+//   setIsOpen: (isOpen: boolean) => void;
+// };
+
+const TopBar = () => {
   const [open, setOpen] = React.useState(false);
   const [selectedFiles, setSelectedFiles] = React.useState<FileWithPreview[]>(
     []

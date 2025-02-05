@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
@@ -10,7 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import TextInput from "@/utils/Form_Inputs/TextInput";
 import { ImageUpIcon } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -19,6 +21,9 @@ import { useCreateAdvertisementMutation } from "@/redux/dailynews/advertisement.
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import toast from "react-hot-toast";
 import TopBar from "./TopBar";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 
 type Inputs = {
   scheduleAdvertisements: string;
@@ -30,6 +35,12 @@ type Inputs = {
 
 const AddAdvertisementForm = () => {
   const [createAdvertisement] = useCreateAdvertisementMutation();
+  const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
+  const [mainSelectedFiles, setMainSelectedFiles] = React.useState<
+    { url: string }[]
+  >([]);
+const router = useRouter();
+
 
   const form = useForm<Inputs>({
     defaultValues: {
@@ -47,6 +58,7 @@ const AddAdvertisementForm = () => {
       advertisementLink: data.advertisementLink,
       displayLocation: data.displayLocation,
       adminName: data.adminName,
+      advertisementImage: mainSelectedFiles.map((item) => item.url).join(","),
       visibility: {
         popup: data.displayLocation === "popup",
         header: data.displayLocation === "header",
@@ -55,24 +67,33 @@ const AddAdvertisementForm = () => {
         detailsPage: data.displayLocation === "details-page",
       },
     };
-
     try {
       const res = await createAdvertisement(transformedData).unwrap();
-      toast.success("Advertisement created Successfully!");
-      if (res.success) {
-        toast.success("Advertisement created Successfully!");
+      console.log("response:", res);
+
+      if (res) {
+        toast.success("Photo News Create Successfully!");
+        router.push("/dashboard/list-advertisement");
       }
     } catch (error) {
       console.error(error);
     }
 
+    
+
     console.log(transformedData);
+  };
+
+  const handleImageSelect = (images: any[]) => {
+    if (openSheetIndex === null) {
+      setMainSelectedFiles(images.map((img) => ({ url: img.url })));
+    }
   };
 
   return (
     <>
       <div className="max-w-xl mx-auto">
-      <TopBar />
+        <TopBar />
         <div className="bg-white rounded border-gray-300 p-8 shadow-sm">
           <div className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-2">
@@ -99,14 +120,27 @@ const AddAdvertisementForm = () => {
                       <ImageUpIcon className="w-8 h-8 text-blue-500" />
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="right" style={{ maxWidth: "800px" }}>
+                  <SheetContent side="right" style={{ maxWidth: "800px" }} className="overflow-auto">
                     <SheetTitle className="text-xl font-semibold mb-6">
                       Select Advertisement Image
                     </SheetTitle>
-                    <AllImgModal />
+                    <AllImgModal
+                      onImageSelect={handleImageSelect}
+                      onClose={() => setOpenSheetIndex(null)}
+                    />
                   </SheetContent>
                 </Sheet>
               </div>
+
+              {mainSelectedFiles.map((file, index) => (
+                <Image
+                  key={index}
+                  src={file.url}
+                  alt={`Preview ${index}`}
+                  width={130}
+                  height={100}
+                />
+              ))}
 
               {/* Additional Link Section */}
               <div className="space-y-2">

@@ -1,3 +1,4 @@
+import { TQueryParam, TResponseRedux } from "@/types/api.types";
 import { baseApi } from "../api/baseApi";
 
 const imagesApi = baseApi.injectEndpoints({
@@ -23,23 +24,58 @@ const imagesApi = baseApi.injectEndpoints({
       invalidatesTags: ["images"],
     }),
 
+    // getAllImages: builder.query({
+    //   query: () => ({
+    //     url: "/gallery/all",
+    //     method: "GET",
+    //   }),
+    //   providesTags: ["images"],
+    // }),
+
     getAllImages: builder.query({
-      query: () => ({
-        url: "/gallery/all",
+      query: (args) => {
+        const params = new URLSearchParams();
+        if (args) {
+          args.forEach((item: TQueryParam) => {
+            params.append(item.name, item.value as string);
+          });
+        }
+        return {
+          url: "/gallery/all",
+          method: "GET",
+          params,
+        };
+      },
+      transformResponse: (response: TResponseRedux<[]>) => {
+        return {
+          data: response,
+          meta: response,
+        };
+      },
+      providesTags: ["images"],
+    }),
+
+
+    getImagesByFolder: builder.query({
+      query: (id) => ({
+        url: `/gallery/folder/${id}`,
         method: "GET",
       }),
       providesTags: ["images"],
     }),
+
+    
+
     getSingleImages: builder.query({
       query: (id) => ({
-        url: `/news/${id}`,
+        url: `/gallery/${id}`,
         method: "GET",
       }),
       providesTags: ["images"],
     }),
     updateImages: builder.mutation({
       query: ({ id, ...data }) => ({
-        url: `/news/${id}`,
+        url: `/gallery/${id}`,
         method: "PATCH",
         data,
       }),
@@ -54,4 +90,5 @@ export const {
   useGetAllImagesQuery,
   useGetSingleImagesQuery,
   useUpdateImagesMutation,
+  useGetImagesByFolderQuery
 } = imagesApi;

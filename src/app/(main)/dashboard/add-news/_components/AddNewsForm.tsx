@@ -86,15 +86,14 @@ interface FileWithPreview {
 }
 
 const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
-  // const [selectedFiles, setSelectedFiles] = React.useState<{ url: string }[]>(
-  //   []
-  // );
   const [mainSelectedFiles, setMainSelectedFiles] = React.useState<
     { url: string }[]
   >([]);
+
   const [tagSelectedFiles, setTagSelectedFiles] = React.useState<
     { url: string }[][]
   >([]);
+
   const [createNews] = useCreateNewsMutation({});
   const router = useRouter();
   const [firstPage, setFirstPage] = useState("");
@@ -102,6 +101,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
   const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
+
   const form = useForm<Inputs>({
     defaultValues: {
       reportedDate: "",
@@ -133,12 +133,6 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
     },
   });
 
-  // React.useEffect(() => {
-  //   return () => {
-  //     selectedFiles.forEach((file) => URL.revokeObjectURL(file.preview));
-  //   };
-  // }, [selectedFiles]);
-
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "tags",
@@ -151,6 +145,16 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       selectedImage: "",
     });
     setTagSelectedFiles([...tagSelectedFiles, []]);
+  };
+
+  const handleImageSelect = (images: any[]) => {
+    if (openSheetIndex === null) {
+      setMainSelectedFiles(images.map((img) => ({ url: img.url })));
+    } else {
+      const newTagFiles = [...tagSelectedFiles];
+      newTagFiles[openSheetIndex] = images.map((img) => ({ url: img.url }));
+      setTagSelectedFiles(newTagFiles);
+    }
   };
 
   const removeField = (index: number) => {
@@ -172,6 +176,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       ...data,
       category: data.category,
       postDate: new Date().toISOString(),
+      images: mainSelectedFiles.map((item) => item.url),
     };
     // console.log("modify value:",modifyData);
     // console.log(data);
@@ -273,7 +278,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         <div className="col-span-2">
                           <TextInput
                             control={form.control}
-                            name={"internationalArea"}
+                            name="internationalArea"
                             placeholder="আন্তর্জাতিক এলাকা"
                             rules={{
                               required: "International area is required",
@@ -303,33 +308,24 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         className="pt-4 overflow-y-auto"
                         style={{ maxWidth: "800px" }}
                       >
-                        <SheetTitle>News Info Photo</SheetTitle>
+                        <SheetTitle>সংবাদের তথ্য</SheetTitle>
                         <AllImgModal
-                          onImageSelect={(images) =>
-                            setMainSelectedFiles(images)
-                          }
+                          onImageSelect={handleImageSelect}
                           onClose={() => setOpenSheetIndex(null)}
                         />
-                        
                       </SheetContent>
                     </Sheet>
                   </div>
 
-                  {mainSelectedFiles.length > 0 && (
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mt-4">
-                      {mainSelectedFiles.map((file, index) => (
-                        <div key={index} className="relative group">
-                          <Image
-                            src={file.url}
-                            alt={`Preview ${index}`}
-                            className="rounded-full mb-5"
-                            width={130}
-                            height={100}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  {mainSelectedFiles.map((file, index) => (
+                    <Image
+                      key={index}
+                      src={file.url}
+                      alt={`Preview ${index}`}
+                      width={130}
+                      height={100}
+                    />
+                  ))}
 
                   <div className="space-y-2">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -401,40 +397,37 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                     {fields.map((field, index) => (
                       <div key={field.id} className="flex flex-col space-y-3">
                         <div className="flex justify-between items-center gap-2 p-4">
-                          {fields.map((field, index) => (
-                            <Sheet
-                              key={field.id}
-                              open={openSheetIndex === index}
-                              onOpenChange={(open) =>
-                                setOpenSheetIndex(open ? index : null)
-                              }
-                            >
-                              <SheetTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  className="p-8 border rounded-full mb-2"
-                                >
-                                  <ImageUpIcon color="red" size={50} /> Add
-                                  Image
-                                </Button>
-                              </SheetTrigger>
-                              <SheetContent
-                                side="right"
-                                className="pt-4 overflow-y-auto"
-                                style={{ maxWidth: "800px" }}
+                          <Sheet
+                            key={field.id}
+                            open={openSheetIndex === index}
+                            onOpenChange={(open) =>
+                              setOpenSheetIndex(open ? index : null)
+                            }
+                          >
+                            <SheetTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="p-8 border rounded-full mb-2"
                               >
-                                <SheetTitle>Img Tag</SheetTitle>
-                                <AllImgModal
-                                  onImageSelect={(images) => {
-                                    const newTagFiles = [...tagSelectedFiles];
-                                    newTagFiles[index] = images;
-                                    setTagSelectedFiles(newTagFiles);
-                                  }}
-                                  onClose={() => setOpenSheetIndex(null)}
-                                />
-                              </SheetContent>
-                            </Sheet>
-                          ))}
+                                <ImageUpIcon color="red" size={50} /> Add Image
+                              </Button>
+                            </SheetTrigger>
+                            <SheetContent
+                              side="right"
+                              className="pt-4 overflow-y-auto"
+                              style={{ maxWidth: "800px" }}
+                            >
+                              <SheetTitle>সংবাদ ট্যাগ</SheetTitle>
+                              <AllImgModal
+                                onImageSelect={(images: any) => {
+                                  const newTagFiles = [...tagSelectedFiles];
+                                  newTagFiles[index] = images;
+                                  setTagSelectedFiles(newTagFiles);
+                                }}
+                                onClose={() => setOpenSheetIndex(null)}
+                              />
+                            </SheetContent>
+                          </Sheet>
 
                           <div className="flex justify-end gap-2">
                             {fields.length > 1 && (
@@ -460,26 +453,21 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                           </div>
                         </div>
 
-                        {tagSelectedFiles[index]?.length > 0 && (
-                          <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mt-4">
-                            {tagSelectedFiles[index].map((file, imgIndex) => (
-                              <div key={imgIndex} className="relative group">
-                                <Image
-                                  src={file.url}
-                                  alt={`Preview ${imgIndex}`}
-                                  className="rounded-full mb-5"
-                                  width={130}
-                                  height={100}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        {/* Tag Image Display */}
+                        {tagSelectedFiles[index]?.map((file, imgIndex) => (
+                          <Image
+                            key={imgIndex}
+                            src={file.url}
+                            alt={`Preview ${imgIndex}`}
+                            width={130}
+                            height={100}
+                          />
+                        ))}
 
                         <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
                           <TextInput
                             control={form.control}
-                            name={`tags.${index}.imageTagline`}
+                            name="imageTagline"
                             placeholder="ইমেজ ট্যাগ লাইন"
                             rules={{ required: "Image Tag Line is required" }}
                           />

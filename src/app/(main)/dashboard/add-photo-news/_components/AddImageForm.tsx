@@ -20,22 +20,45 @@ import {
 import toast from "react-hot-toast";
 import { useCreatePhotoNewsMutation } from "@/redux/dailynews/photoNews.api";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
+import React, { useState } from "react";
+import Image from "next/image";
 
 type Inputs = {
   title: string;
   description: string;
   imgTagline: string;
   images: string | string[];
+  tagImages: string | string[];
   adminName: string;
   tags: {
-    imageTagline: string;   
+    imgTagline: string;
   }[];
-  postDate: string;   
+  postDate: string;
 };
 
 const AddImageForm = () => {
+  const [mainSelectedFiles, setMainSelectedFiles] = React.useState<
+    { url: string }[]
+  >([]);
+
+  const [tagSelectedFiles, setTagSelectedFiles] = React.useState<
+    { url: string }[][]
+  >([]);
+
+  const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
+
   const [createPhotoNews] = useCreatePhotoNewsMutation({});
   const router = useRouter();
+
+  const handleImageSelect = (images: any[]) => {
+    if (openSheetIndex === null) {
+      setMainSelectedFiles(images.map((img) => ({ url: img.url })));
+    } else {
+      const newTagFiles = [...tagSelectedFiles];
+      newTagFiles[openSheetIndex] = images.map((img) => ({ url: img.url }));
+      setTagSelectedFiles(newTagFiles);
+    }
+  };
 
   const form = useForm<Inputs>({
     defaultValues: {
@@ -43,10 +66,11 @@ const AddImageForm = () => {
       description: "",
       imgTagline: "",
       images: "",
+      tagImages: "",
       adminName: "",
       postDate: "",
-      
-  tags: [{ imageTagline: "" }],
+
+      tags: [{ imgTagline: "" }],
     },
   });
 
@@ -55,17 +79,32 @@ const AddImageForm = () => {
     name: "tags",
   });
 
+  const appendField = () => {
+    append({
+      imgTagline: "",
+    });
+    setTagSelectedFiles([...tagSelectedFiles, []]);
+  };
+
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
       ...data,
       title: data.title,
+      images: mainSelectedFiles.map((item) => item.url).join(","),  // Convert to string
+  tagImages: tagSelectedFiles.flat().map((item) => item.url).join(","),
+
+
+      // images: mainSelectedFiles.map((item) => item.url),
+      // tagImages: tagSelectedFiles.map((item) => item.url),
+      // tagImages: tagSelectedFiles.flat().map((item) => item.url),
+
     };
-    console.log("modify value:",modifyData);
+    console.log("modify value:", modifyData);
     console.log(data);
 
     try {
       const res = await createPhotoNews(modifyData).unwrap();
-      console.log("response:",res)
+      console.log("response:", res);
       if (res) {
         toast.success("Photo News Create Successfully!");
         router.push("/dashboard/list-photo-news");
@@ -73,6 +112,11 @@ const AddImageForm = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const removeField = (index: number) => {
+    remove(index);
+    setTagSelectedFiles(tagSelectedFiles.filter((_, i) => i !== index));
   };
 
   return (
@@ -96,14 +140,28 @@ const AddImageForm = () => {
                           <ImageUpIcon color="red" size={50} /> Add Image
                         </Button>
                       </SheetTrigger>
-                      <SheetContent side="right" style={{ maxWidth: "800px" }}>
+                      <SheetContent side="right" style={{ maxWidth: "800px" }} className="pt-4 overflow-y-auto">
                         <SheetTitle className="sr-only">
                           Image Selection Modal
                         </SheetTitle>
-                        <AllImgModal />
+                        <AllImgModal
+                          onImageSelect={handleImageSelect}
+                          onClose={() => setOpenSheetIndex(null)}
+                        />
                       </SheetContent>
                     </Sheet>
                   </div>
+
+                  
+                  {mainSelectedFiles.map((file, index) => (
+                    <Image
+                      key={index}
+                      src={file.url}
+                      alt={`Preview ${index}`}
+                      width={130}
+                      height={100}
+                    />
+                  ))}
                   <div className="space-y-2">
                     <div className="col-span-2">
                       <TextInput
@@ -126,7 +184,93 @@ const AddImageForm = () => {
 
               <div className="lg:col-span-4 col-span-full space-y-5">
                 {/* Tags Section */}
+                {/* Tags Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
+                  <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
+                  <div className="col-span-2">
+                    {fields.map((field, index) => (
+                      <div key={field.id} className="flex flex-col space-y-3">
+                        <div className="flex justify-between items-center gap-2 p-4">
+                          <Sheet
+                            key={field.id}
+                            open={openSheetIndex === index}
+                            onOpenChange={(open) =>
+                              setOpenSheetIndex(open ? index : null)
+                            }
+                          >
+                            <SheetTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="p-8 border rounded-full mb-2"
+                              >
+                                <ImageUpIcon color="red" size={50} /> Add Image
+                              </Button>
+                            </SheetTrigger>
+                            <SheetContent
+                              side="right"
+                              className="pt-4 overflow-y-auto"
+                              style={{ maxWidth: "800px" }}
+                            >
+                              <SheetTitle>সংবাদ ট্যাগ</SheetTitle>
+                              <AllImgModal
+                                onImageSelect={(images: any) => {
+                                  const newTagFiles = [...tagSelectedFiles];
+                                  newTagFiles[index] = images;
+                                  setTagSelectedFiles(newTagFiles);
+                                }}
+                                onClose={() => setOpenSheetIndex(null)}
+                              />
+                            </SheetContent>
+                          </Sheet>
+
+                          <div className="flex justify-end gap-2">
+                            {fields.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => removeField(index)}
+                              >
+                                <Delete className="w-4 h-4" />
+                              </Button>
+                            )}
+                            {index === fields.length - 1 && (
+                              <Button
+                                type="button"
+                                variant="default"
+                                size="sm"
+                                onClick={appendField}
+                              >
+                                <PlusIcon className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Tag Image Display */}
+                        {tagSelectedFiles[index]?.map((file, imgIndex) => (
+                          <Image
+                            key={imgIndex}
+                            src={file.url}
+                            alt={`Preview ${imgIndex}`}
+                            width={130}
+                            height={100}
+                          />
+                        ))}
+
+                        <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
+                          <TextInput
+                            control={form.control}
+                            name="imgTagline"
+                            placeholder="ইমেজ ট্যাগ লাইন"
+                            rules={{ required: "Image Tag Line is required" }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+                {/* <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold  ">সংবাদ ট্যাগ:</h1>
                   <div className="col-span-2">
                     {fields.map((field, index) => (
@@ -150,7 +294,14 @@ const AddImageForm = () => {
                                 Select News Image
                               </SheetTitle>
                               <hr />
-                              <AllImgModal />
+                              <AllImgModal
+                                onImageSelect={(images: any) => {
+                                  const newTagFiles = [...tagSelectedFiles];
+                                  newTagFiles[index] = images;
+                                  setTagSelectedFiles(newTagFiles);
+                                }}
+                                onClose={() => setOpenSheetIndex(null)}
+                              />
                             </SheetContent>
                           </Sheet>
 
@@ -173,7 +324,6 @@ const AddImageForm = () => {
                                 onClick={() =>
                                   append({
                                     imageTagline: "",
-                                    
                                   })
                                 }
                               >
@@ -181,7 +331,17 @@ const AddImageForm = () => {
                               </Button>
                             )}
                           </div>
+                          
                         </div>
+                        {tagSelectedFiles[index]?.map((file, imgIndex) => (
+                                                    <Image
+                                                      key={imgIndex}
+                                                      src={file.url}
+                                                      alt={`Preview ${imgIndex}`}
+                                                      width={130}
+                                                      height={100}
+                                                    />
+                                                  ))}
                         <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
                           <TextInput
                             control={form.control}
@@ -189,13 +349,11 @@ const AddImageForm = () => {
                             placeholder="ইমেজ ট্যাগ লাইন"
                             rules={{ required: "Image Tag Line is required" }}
                           />
-                         
                         </div>
                       </div>
                     ))}
                   </div>
-                </section>
-               
+                </section> */}
 
                 {/* Admin Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
@@ -218,10 +376,8 @@ const AddImageForm = () => {
                         rules={{ required: "Post date is required" }}
                       />
                     </div>
-
-                   
                   </div>
-                </section>            
+                </section>
               </div>
             </div>
 

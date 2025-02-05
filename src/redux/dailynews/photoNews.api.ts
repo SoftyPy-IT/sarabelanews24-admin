@@ -18,6 +18,8 @@ const photoNewsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["photoNews"],
     }),
+
+
     getAllPhotoNews: builder.query({
       query: () => ({
         url: "/photonews",
@@ -26,6 +28,8 @@ const photoNewsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["photoNews"],
     }),
+
+    
     getSinglePhotoNews: builder.query({
       query: (id) => ({
         url: `/photonews/${id}`,

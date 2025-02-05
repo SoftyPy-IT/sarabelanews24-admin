@@ -29,7 +29,7 @@ const ImagesDataTable = () => {
   // Map data to match the columns
   // Ensure `newsData` is always an array
   const newsData =
-    data?.categories?.map((item: any, index: any) => ({
+    data?.photonews?.map((item: any, index: any) => ({
       id: item._id,
       slNo:index + 1,
       title: item.title || "N/A",
