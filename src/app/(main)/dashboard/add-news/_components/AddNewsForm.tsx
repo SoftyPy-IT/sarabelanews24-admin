@@ -316,16 +316,19 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                       </SheetContent>
                     </Sheet>
                   </div>
-
-                  {mainSelectedFiles.map((file, index) => (
-                    <Image
-                      key={index}
-                      src={file.url}
-                      alt={`Preview ${index}`}
-                      width={130}
-                      height={100}
-                    />
-                  ))}
+                  <div className="grid grid-cols-2 md:grid-cols-6 mb-4 ">
+                    {mainSelectedFiles.map((file, index) => (
+                      <div key={index} className="rounded-lg">
+                        <Image
+                          src={file.url}
+                          alt={`Preview ${index}`}
+                          width={100}
+                          height={0}
+                          className="h-[150px] w-[150px] rounded-lg"
+                        />
+                      </div>
+                    ))}
+                  </div>
 
                   <div className="space-y-2">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

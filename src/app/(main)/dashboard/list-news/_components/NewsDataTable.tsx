@@ -38,7 +38,7 @@ const NewsDataTable = () => {
       // imageTagline: item.imageTagline || "N/A",
       // metaTitle: item.metaTitle || "N/A",
       // metaDescription: item.metaDescription || "N/A",
-      newsCategory: item.newsCategory || "N/A",
+      // newsCategory: item.newsCategory || "N/A",
       newsType: item.newsType || "N/A",
       shortDescription: item.shortDescription || "N/A",
       // slug: item.slug || "N/A",
@@ -123,11 +123,7 @@ const NewsDataTable = () => {
     {
       accessorKey: "category",
       header: () => <span className="font-bold">Category</span>,
-    },
-    {
-      accessorKey: "newsCategory",
-      header: () => <span className="font-bold">News Category</span>,
-    },
+    },    
     {
       accessorKey: "shortDescription",
       header: () => <span className="font-bold">Short Description</span>,

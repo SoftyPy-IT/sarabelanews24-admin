@@ -41,7 +41,7 @@ const ImagesDataTable = () => {
     })) || []; 
 
   const handleEdit = (rowData: any) => {
-    router.push(`/dashboard/list-news/update-details/${rowData.id}`);
+    router.push(`/dashboard/list-photo-news/update-details/${rowData.id}`);
   };
   
   const handleDelete = async (id: string) => {

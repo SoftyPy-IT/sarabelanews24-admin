@@ -1,273 +1,367 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { useForm, useFieldArray } from "react-hook-form";
-import SelectInput from "@/utils/Form_Inputs/SelectInput";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import RichText from "@/utils/Form_Inputs/RichText";
 import TextInput from "@/utils/Form_Inputs/TextInput";
-import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import TextArea from "@/utils/Form_Inputs/TextArea";
 import { Delete, ImageUpIcon, PlusIcon } from "lucide-react";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 
+import { useFieldArray, useForm } from "react-hook-form";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+
+import toast from "react-hot-toast";
+import { useCreatePhotoNewsMutation, useGetSinglePhotoNewsQuery, useUpdatePhotoNewsMutation } from "@/redux/dailynews/photoNews.api";
+import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
+import React, {use, useEffect, useState } from "react";
+import Image from "next/image";
+import UpdateTopBar from "../../_components/UpdateTopBar";
+
+
 type Inputs = {
-  reporterType: string;
-  reporterName: string;
-  newsArea: string;
-  reportedDateAndTime: string;
-  selectedImage: string;
-  imageTagLine: string;
-  photoJournalistName: string;
-  news_type: string;
-  publishedDate: string;
-  newsTitle: string;
-  shortDescription: string;
+  title: string;
   description: string;
+  imgTagline: string;
+  images: string | string[];
+  tagImages: string | string[];
+  adminName: string;
   tags: {
-    imageTagLine: string;
-    photoJournalistName: string;
-    selectedImage: string;
+    imgTagline: string;
+    selectedImage?:string; 
   }[];
+  postDate: string;
 };
 
-const Page = () => {
+type newsProps = {
+  params: Promise<{ id: string }>;
+};
+
+const Update = ({ params }: newsProps) => {
+const { id } = use(params);
+const [updatePhotoNews] = useUpdatePhotoNewsMutation();
+  const { data: singleData } = useGetSinglePhotoNewsQuery(id);
+
+  const [mainSelectedFiles, setMainSelectedFiles] = React.useState<
+    { url: string }[]
+  >([]);
+
+  const [tagSelectedFiles, setTagSelectedFiles] = React.useState<
+    { url: string }[][]
+  >([]);
+
+  const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
+
+  const [createPhotoNews] = useCreatePhotoNewsMutation({});
+  const router = useRouter();
+
+  const handleImageSelect = (images: any[]) => {
+    if (openSheetIndex === null) {
+      // Update main images
+      setMainSelectedFiles(images.map((img) => ({ url: img.url })));
+    } else {
+      // Update tag images
+      const newTagFiles = [...tagSelectedFiles];
+      newTagFiles[openSheetIndex] = images.map((img) => ({ url: img.url }));
+      setTagSelectedFiles(newTagFiles);
+    }
+  };
+
   const form = useForm<Inputs>({
     defaultValues: {
-      reporterType: "personalReporter",
-      reporterName: "John Smith",
-      newsArea: "তেজগাঁও। ঢাকা-১২১২",
-      reportedDateAndTime: "1988-09-07T23:17",
-      imageTagLine: "This should be the first image",
-      photoJournalistName: "omith Jordan",
-      news_type: "politics",
-      publishedDate: "1988-09-07T23:17",
-      newsTitle: "This  is the first news",
-      shortDescription: "This is the first news title and description for",
-      description:
-        "This is the first news description. This description includes  information about the news.",
-      tags: [
-        {
-          imageTagLine: "This is  tagline",
-          photoJournalistName: "jahan Ahmed",
-          selectedImage: "https//www.lorem.com",
-        },
-      ],
+      title: "",
+      description: "",
+      imgTagline: "",
+      images: "",
+      tagImages: "",
+      adminName: "",
+      postDate: "",
+
+      tags: [{ imgTagline: "" }],
     },
   });
 
+
+ useEffect(() => {
+    if (singleData && Object.keys(singleData).length > 0) {
+      const formatDate = (isoString: string) =>
+        isoString ? isoString.slice(0, 16) : "";
+
+      form.reset({
+        
+        // reportedDate: singleData.reportedDate || "",
+        title: singleData.title || "",
+        imgTagline: singleData.imgTagline || "",
+        
+        adminName: singleData.adminName || "",
+       
+        postDate: formatDate(singleData.postDate),
+      
+        description: singleData.description || "",
+
+        tags: singleData.tags || [
+          { imageTagline: "", photojournalistName: "", selectedImage: "" },
+        ],
+      
+      });
+
+  
+      const images = singleData.images?.map((url: string) => ({ url })) || [];
+      setMainSelectedFiles(images);
+
+   
+      const initialTagFiles =
+        singleData.tags?.map((tag: any) =>
+          tag.selectedImage ? [{ url: tag.selectedImage }] : []
+        ) || [];
+      setTagSelectedFiles(initialTagFiles);
+      
+    }
+  }, [singleData, form]);
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "tags",
   });
 
-  const onSubmit = (data: Inputs) => {
-    console.log("Form Data:", data);
+  const appendField = () => {
+    append({
+      imgTagline: "",
+    });
+    setTagSelectedFiles([...tagSelectedFiles, []]);
+  };
+
+  const onSubmit = async (data: Inputs) => {
+    const modifyData = {
+      ...data,
+      title: data.title,
+      images: mainSelectedFiles.map((item) => item.url).join(","),
+      tagImages: tagSelectedFiles
+        .flat()
+        .map((item) => item.url)
+        .join(","),
+
+      // images: mainSelectedFiles.map((item) => item.url),
+      // tagImages: tagSelectedFiles.map((item) => item.url),
+      // tagImages: tagSelectedFiles.flat().map((item) => item.url),
+    };
+    console.log("modify value:", modifyData);
+    console.log(data);
+
+    try {
+      const res = await createPhotoNews(modifyData).unwrap();
+      console.log("response:", res);
+      if (res) {
+        toast.success("Photo News Create Successfully!");
+        router.push("/dashboard/list-photo-news");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const removeField = (index: number) => {
+    remove(index);
+    setTagSelectedFiles(tagSelectedFiles.filter((_, i) => i !== index));
   };
 
   return (
-    <div className="min-h-screen">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Reporter Info Section */}
-          <section>
-            <h1 className="mb-2">প্রতিনিধি তথ্য:</h1>
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-              <SelectInput
-                control={form.control}
-                name="reporterType"
-                placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
-                options={[
-                  { label: "নিজস্ব প্রতিনিধি", value: "নিজস্ব প্রতিনিধি" },
-                  { label: "প্রতিনিধি", value: "প্রতিনিধি" },
-                ]}
-                rules={{ required: "Reporter type is required" }}
-              />
-              <TextInput
-                control={form.control}
-                name="reporterName"
-                placeholder="প্রতিনিধি নাম"
-                rules={{ required: "Reporter name is required" }}
-              />
-              <TextInput
-                control={form.control}
-                name="newsArea"
-                placeholder="সংবাদ এলাকা"
-                rules={{ required: "News area is required" }}
-              />
-              <DateTimeInput
-                control={form.control}
-                type="datetime-local"
-                name="reportedDateAndTime"
-                rules={{ required: "Reported date and time is required" }}
-              />
-            </div>
-          </section>
-
-          {/* News Info Section */}
-          <section>
-            <h1 className="mb-2">সংবাদের তথ্য:</h1>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <div className="grid lg:grid-cols-3 items-center lg:justify-center gap-4">
+    <>
+      <UpdateTopBar />
+      <div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="grid grid-cols-12 gap-4 xl:6">
+              <div className="lg:col-span-8 col-span-full space-y-3">
+                {/* News Info Section */}
+                <section className="bg-white border border-gray-300 rounded p-5">
+                  <h1 className="mb-2 font-semibold">সংবাদের তথ্য:</h1>
                   <div>
                     <Sheet>
                       <SheetTrigger asChild>
                         <Button
                           variant="outline"
-                          className="p-8 border-none hover:bg-blue-400 rounded-full"
+                          className="p-8 border  rounded-full mb-5"
                         >
-                          <ImageUpIcon color="red" size={50} />
+                          <ImageUpIcon color="red" size={50} /> Add Image
                         </Button>
                       </SheetTrigger>
-                      <SheetContent side="right" style={{ maxWidth: "800px" }}>
-                      <SheetTitle className="sr-only">
-                         news
+                      <SheetContent
+                        side="right"
+                        style={{ maxWidth: "800px" }}
+                        className="pt-4 overflow-y-auto"
+                      >
+                        <SheetTitle className="sr-only">
+                          Image Selection Modal
                         </SheetTitle>
-                        <AllImgModal />
+                        <AllImgModal
+                          onImageSelect={handleImageSelect}
+                          onClose={() => setOpenSheetIndex(null)}
+                        />
                       </SheetContent>
                     </Sheet>
                   </div>
 
-                  <div>
-                    <TextInput
-                      control={form.control}
-                      name="imageTagLine"
-                      placeholder="ইমেজ ট্যাগ লাইন"
-                      rules={{ required: "Image Tagline is required" }}
+                  {mainSelectedFiles.map((file, index) => (
+                    <Image
+                      key={index}
+                      src={file.url}
+                      alt={`Preview ${index}`}
+                      width={130}
+                      height={100}
                     />
-                  </div>
+                  ))}
+                  <div className="space-y-2">
+                    <div className="col-span-2">
+                      <TextInput
+                        control={form.control}
+                        name="title"
+                        placeholder="শিরোনাম"
+                        rules={{ required: "News title is required" }}
+                      />
+                    </div>
 
-                  <div>
-                    <TextInput
-                      control={form.control}
-                      rules={{ required: "Photographer name is required" }}
-                      name="photoJournalistName"
-                      placeholder="ফটো সাংবাদিক নাম"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-span-2 lg:col-span-1">
-                <SelectInput
-                  control={form.control}
-                  name="news_type"
-                  placeholder="বিভাগ নির্বাচন করুন"
-                  rules={{ required: "News type is required" }}
-                  options={[
-                    { label: "রাজনীতি", value: "রাজনীতি" },
-                    { label: "অর্থনীতি", value: "অর্থনীতি" },
-                    { label: "খেলাধুলা", value: "খেলাধুলা" },
-                    { label: "বিনোদন", value: "বিনোদন" },
-                    { label: "শিক্ষা", value: "শিক্ষা" },
-                  ]}
-                />
-              </div>
-              <div className="col-span-2 lg:col-span-1">
-                <TextInput
-                  control={form.control}
-                  name="publishedDate"
-                  type="datetime-local"
-                  rules={{ required: "Published date is required" }}
-                />
-              </div>
-              <div className="col-span-2">
-                <TextInput
-                  control={form.control}
-                  name="newsTitle"
-                  placeholder="শিরোনাম"
-                  rules={{ required: "News title is required" }}
-                />
-              </div>
-              <div className="col-span-2">
-                <TextArea
-                  control={form.control}
-                  name="shortDescription"
-                  placeholder="সংক্ষিপ্ত বিবরণ"
-                  rules={{ required: "Short Description is required" }}
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* Tags Section */}
-          <section>
-            <h1 className="mb-2">সংবাদ ট্যাগ:</h1>
-            <div className="col-span-2">
-              {fields.map((field, index) => (
-                <div key={field.id} className="flex flex-col space-y-3">
-                  <div className="flex justify-between items-center gap-2 p-4">
-                    <Sheet>
-                      <SheetTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="p-8 border-none hover:bg-blue-400 rounded-full"
-                        >
-                          <ImageUpIcon color="red" size={50} />
-                        </Button>
-                      </SheetTrigger>
-                      <SheetContent side="right" style={{ maxWidth: "800px" }}>
-                        <AllImgModal />
-                      </SheetContent>
-                    </Sheet>
-
-                    <div className="flex justify-end gap-2">
-                      {fields.length > 1 && (
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => remove(index)}
-                        >
-                          <Delete className="w-4 h-4" />
-                        </Button>
-                      )}
-                      {index === fields.length - 1 && (
-                        <Button
-                          type="button"
-                          variant="default"
-                          size="sm"
-                          onClick={() =>
-                            append({
-                              imageTagLine: "",
-                              photoJournalistName: "",
-                              selectedImage: "",
-                            })
-                          }
-                        >
-                          <PlusIcon className="w-4 h-4" />
-                        </Button>
-                      )}
+                    <div className="col-span-2">
+                      <RichText
+                        name="description"
+                        placeholder={"বিস্তারিত বর্ণনা "}
+                      />
                     </div>
                   </div>
-                  <TextInput
-                    control={form.control}
-                    name={`tags.${index}.photoJournalistName`}
-                    placeholder="ফটো সাংবাদিক নাম"
-                  />
-                  <TextInput
-                    control={form.control}
-                    name={`tags.${index}.imageTagLine`}
-                    placeholder="ইমেজ ট্যাগ লাইন"
-                  />
-                </div>
-              ))}
-            </div>
-          </section>
+                </section>
+              </div>
 
-          {/* Submit Section */}
-          <section>
-            <Button
-              type="submit"
-              className="w-full bg-blue-500 text-white hover:bg-blue-600"
-            >
-              Submit
-            </Button>
-          </section>
-        </form>
-      </Form>
-    </div>
+              <div className="lg:col-span-4 col-span-full space-y-5">
+       
+                {/* Tags Section */}
+                <section className="bg-white border border-gray-300 rounded p-5">
+                  <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
+                  <div className="col-span-2">
+                    {fields.map((field, index) => (
+                      <div key={field.id} className="flex flex-col space-y-3">
+                        <div className="flex justify-between items-center gap-2 p-4">
+                          <Sheet
+                            key={field.id}
+                            open={openSheetIndex === index}
+                            onOpenChange={(open) =>
+                              setOpenSheetIndex(open ? index : null)
+                            }
+                          >
+                            <SheetTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="p-8 border rounded-full mb-2"
+                              >
+                                <ImageUpIcon color="red" size={50} /> Add Image
+                              </Button>
+                            </SheetTrigger>
+                            <SheetContent
+                              side="right"
+                              className="pt-4 overflow-y-auto"
+                              style={{ maxWidth: "800px" }}
+                            >
+                              <SheetTitle>সংবাদ ট্যাগ</SheetTitle>
+                              <AllImgModal
+                                onImageSelect={(images: any) => {
+                                  const newTagFiles = [...tagSelectedFiles];
+                                  newTagFiles[index] = images;
+                                  setTagSelectedFiles(newTagFiles);
+                                }}
+                                onClose={() => setOpenSheetIndex(null)}
+                              />
+                            </SheetContent>
+                          </Sheet>
+
+                          <div className="flex justify-end gap-2">
+                            {fields.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => removeField(index)}
+                              >
+                                <Delete className="w-4 h-4" />
+                              </Button>
+                            )}
+                            {index === fields.length - 1 && (
+                              <Button
+                                type="button"
+                                variant="default"
+                                size="sm"
+                                onClick={appendField}
+                              >
+                                <PlusIcon className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Tag Image Display */}
+                        {tagSelectedFiles[index]?.map((file, imgIndex) => (
+                          <Image
+                            key={imgIndex}
+                            src={file.url}
+                            alt={`Preview ${imgIndex}`}
+                            width={130}
+                            height={100}
+                          />
+                        ))}
+
+                        <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
+                          <TextInput
+                            control={form.control}
+                            name="imgTagline"
+                            placeholder="ইমেজ ট্যাগ লাইন"
+                            rules={{ required: "Image Tag Line is required" }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                {/* Admin Section */}
+                <section className="bg-white border border-gray-300 rounded p-5">
+                  <h1 className="mb-2 font-semibold ">Admin Section:</h1>
+                  <div className="col-span-2">
+                    <div className="col-span-2">
+                      <TextInput
+                        control={form.control}
+                        name="adminName"
+                        placeholder="Admin Name"
+                        rules={{ required: "Admin name is required" }}
+                      />
+                    </div>
+                    <div className="grid grid-cols-1  gap-4 mt-2">
+                      <DateTimeInput
+                        control={form.control}
+                        name="postDate"
+                        label="Post Date"
+                        type="datetime-local"
+                        rules={{ required: "Post date is required" }}
+                      />
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+
+            {/* Submit Section */}
+            <section className="my-4 flex justify-end">
+              <Button type="submit" className="w-[400px] text-white ">
+                Submit
+              </Button>
+            </section>
+          </form>
+        </Form>
+      </div>
+    </>
   );
 };
 
-export default Page;
+export default Update;
