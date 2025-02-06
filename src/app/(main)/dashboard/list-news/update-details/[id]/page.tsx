@@ -40,6 +40,7 @@ import toast from "react-hot-toast";
 import NewsType from "@/utils/Form_Inputs/NewsType";
 import TopBar from "../../_components/TopBar";
 import Image from "next/image";
+import Loading from "@/app/loading";
 
 type Inputs = {
   reportedDate: string;
@@ -239,15 +240,15 @@ const Page = ({ params }: newsProps) => {
   // };
 
   // Update handleRemove function to sync with form data
-  const handleRemove = (index: number) => {
-    const updatedFiles = [...mainSelectedFiles];
-    updatedFiles.splice(index, 1);
-    setMainSelectedFiles(updatedFiles);
-    form.setValue("selectedImage", updatedFiles[0]?.url || ""); // Update form value
-  };
+  // const handleRemove = (index: number) => {
+  //   const updatedFiles = [...mainSelectedFiles];
+  //   updatedFiles.splice(index, 1);
+  //   setMainSelectedFiles(updatedFiles);
+  //   form.setValue("selectedImage", updatedFiles[0]?.url || ""); // Update form value
+  // };
 
   if (isLoading) {
-    return <p>Loading............</p>;
+    return <Loading/>;
   }
 
   return (
