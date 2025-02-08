@@ -136,7 +136,7 @@ const Page = ({ params }: newsProps) => {
       form.reset({
         reportedDate: formatDate(singleData.reportedDate),
         // reportedDate: singleData.reportedDate || "",
-        reporterType: singleData.reporterType || "own_representative",
+        reporterType: singleData.reporterType || "",
         reporterName: singleData.reporterName || "",
         currentNews: singleData.currentNews || false,
         displayLocation: singleData.displayLocation || "",
@@ -350,7 +350,7 @@ const Page = ({ params }: newsProps) => {
                           <ImageUpIcon color="red" size={50} /> Add Image
                         </Button>
                       </SheetTrigger>
-                      <SheetContent side="right" style={{ maxWidth: "800px" }}>
+                      <SheetContent side="right" style={{ maxWidth: "800px" }} className="overflow-auto">
                         <SheetTitle className="sr-only">
                           Image Selection Modal
                         </SheetTitle>

@@ -142,7 +142,7 @@
 //           <SheetTrigger asChild>
 //             <Button className="">+ Add Image</Button>
 //           </SheetTrigger>
-//           <SheetContent side="right" className="pt-20">
+//           <SheetContent side="right" className="pt-20 overflow-auto">
 //             <SheetHeader>
 //               <SheetTitle className="text-center">Add Image</SheetTitle>
 //               <hr />

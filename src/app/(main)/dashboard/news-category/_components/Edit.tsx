@@ -68,7 +68,7 @@ const Edit = ({ id }: NewsProps) => {
             <EditIcon />
           </div>
         </SheetTrigger>
-        <SheetContent side="right" style={{ maxWidth: "400px" }}>
+        <SheetContent side="right" style={{ maxWidth: "400px" }} className="overflow-auto">
           <SheetTitle className="sr-only">Edit Category</SheetTitle>
           <div className="pt-4">
             <Form {...form}>

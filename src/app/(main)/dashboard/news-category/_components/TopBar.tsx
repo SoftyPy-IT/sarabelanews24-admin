@@ -68,7 +68,7 @@ const TopBar = () => {
               </Button>
             </div>
           </SheetTrigger>
-          <SheetContent side="right" style={{ maxWidth: "400px" }}>
+          <SheetContent side="right" style={{ maxWidth: "400px" }} className="overflow-auto">
             <SheetTitle className="sr-only">Category</SheetTitle>
             
             <div className="pt-4">

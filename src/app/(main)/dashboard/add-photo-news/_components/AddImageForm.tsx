@@ -185,7 +185,7 @@ const AddImageForm = () => {
               <div className="lg:col-span-4 col-span-full space-y-5">
                 {/* Tags Section */}
                 {/* Tags Section */}
-                <section className="bg-white border border-gray-300 rounded p-5">
+                {/* <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
                   <div className="col-span-2">
                     {fields.map((field, index) => (
@@ -247,7 +247,7 @@ const AddImageForm = () => {
                           </div>
                         </div>
 
-                        {/* Tag Image Display */}
+                     
                         {tagSelectedFiles[index]?.map((file, imgIndex) => (
                           <Image
                             key={imgIndex}
@@ -269,7 +269,7 @@ const AddImageForm = () => {
                       </div>
                     ))}
                   </div>
-                </section>
+                </section> */}
                 {/* <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold  ">সংবাদ ট্যাগ:</h1>
                   <div className="col-span-2">

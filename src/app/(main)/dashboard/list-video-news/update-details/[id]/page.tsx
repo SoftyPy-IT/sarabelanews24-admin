@@ -62,7 +62,7 @@ type Inputs = {
   upazila: string;
   // newsTag: string;
   newsType: string;
-  newsTitle: string;
+  newsTitle: string; 
   adminName: string;
   slug: string;
   category: string;
@@ -91,19 +91,15 @@ const Update = ({ params }: newsProps) => {
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
   const router = useRouter();
   const [firstPage, setFirstPage] = useState("");
-  const [currentNews, setCurrentNews] = useState<boolean>(false);
   const [updateVideoNews] = useUpdateVideoNewsMutation();
   const { data: singleData } = useGetSingleVideoNewsQuery(id);
 
   const [mainSelectedFiles, setMainSelectedFiles] = React.useState<
     { url: string }[]
-  >([]);
-
-  const [tagSelectedFiles, setTagSelectedFiles] = React.useState<
-    { url: string }[][]
-  >([]);
+  >([]); 
 
   const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
+  
   const form = useForm<Inputs>({
     defaultValues: {
       reportedDate: "",
@@ -161,7 +157,7 @@ const Update = ({ params }: newsProps) => {
         newsTitle: singleData.newsTitle || "",
         adminName: singleData.adminName || "",
         slug: singleData.slug || "",
-        category: singleData.category?._id || "",
+        category: singleData.category || "",
         publishedDate: formatDate(singleData.publishedDate),
         shortDescription: singleData.shortDescription || "",
         description: singleData.description || "",
@@ -183,11 +179,11 @@ const Update = ({ params }: newsProps) => {
       setMainSelectedFiles(mainImages);
 
       // Initialize tag images from API
-      const initialTagFiles =
-        singleData.tags?.map((tag: any) =>
-          tag.selectedImage ? [{ url: tag.selectedImage }] : []
-        ) || [];
-      setTagSelectedFiles(initialTagFiles);
+      // const initialTagFiles =
+      //   singleData.tags?.map((tag: any) =>
+      //     tag.selectedImage ? [{ url: tag.selectedImage }] : []
+      //   ) || [];
+      // setTagSelectedFiles(initialTagFiles);
     }
   }, [singleData, form]);
 
@@ -228,11 +224,12 @@ const Update = ({ params }: newsProps) => {
       const urls = images.map((img) => img.url);
       setMainSelectedFiles(images);
       form.setValue("selectedImage", urls[0] || "");
-    } else {
-      const newTagFiles = [...tagSelectedFiles];
-      newTagFiles[openSheetIndex] = images;
-      setTagSelectedFiles(newTagFiles);
-    }
+    } 
+    // else {
+    //   const newTagFiles = [...tagSelectedFiles];
+    //   newTagFiles[openSheetIndex] = images;
+    //   setTagSelectedFiles(newTagFiles);
+    // }
   };
 
   if (isLoading) {
@@ -244,7 +241,7 @@ const Update = ({ params }: newsProps) => {
       <UpdateTopBar />
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          
             <div className="grid grid-cols-12 gap-4 xl:6">
               <div className="lg:col-span-8 col-span-full space-y-3">
                 {/* Reporter Info Section */}
@@ -338,7 +335,7 @@ const Update = ({ params }: newsProps) => {
                           <ImageUpIcon color="red" size={50} /> Add Image
                         </Button>
                       </SheetTrigger>
-                      <SheetContent side="right" style={{ maxWidth: "800px" }}>
+                      <SheetContent side="right" style={{ maxWidth: "800px" }} className="overflow-auto">
                         <SheetTitle className="sr-only">
                           Image Selection Modal
                         </SheetTitle>
@@ -441,15 +438,7 @@ const Update = ({ params }: newsProps) => {
                             name="videoUrl"
                             // name={`tags.${index}.videoUrl`}
                             placeholder="ভিডিও লিঙ্ক"
-                            rules={{
-                              required: "Additional Link is required",
-                              pattern: {
-                                value:
-                                  /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
-                                message:
-                                  "Please enter a valid URL with https://",
-                              },
-                            }}
+                            
                           />
                           <TextInput
                             control={form.control}
@@ -544,11 +533,11 @@ const Update = ({ params }: newsProps) => {
 
             {/* Submit Section */}
             <section className="my-4 flex justify-end">
-              <Button type="submit" className="w-[400px] text-white ">
+              <Button type="submit" className="w-[400px] text-white " onClick={form.handleSubmit(onSubmit)}>
                 Submit
               </Button>
             </section>
-          </form>
+          
         </Form>
       </div>
     </>

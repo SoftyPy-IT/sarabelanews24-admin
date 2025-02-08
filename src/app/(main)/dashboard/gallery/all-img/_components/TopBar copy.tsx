@@ -95,7 +95,7 @@ const TopBar = () => {
         <SheetTrigger asChild>
           <Button>+ Add Image</Button>
         </SheetTrigger>
-        <SheetContent side="right" className="pt-20" style={{ maxWidth: "500px" }}>
+        <SheetContent side="right" style={{ maxWidth: "500px" }} className="pt-20 overflow-auto">
           <SheetHeader>
             <SheetTitle className="text-center">Add Image</SheetTitle>
             <hr />

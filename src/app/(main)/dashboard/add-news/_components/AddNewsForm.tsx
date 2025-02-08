@@ -396,7 +396,15 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                 {/* Tags Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
-                  <div className="col-span-2">
+                  <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
+                    <TextInput
+                      control={form.control}
+                      name="imageTagline"
+                      placeholder="ইমেজ ট্যাগ লাইন"
+                      rules={{ required: "Image Tag Line is required" }}
+                    />
+                  </div>
+                  {/* <div className="col-span-2">
                     {fields.map((field, index) => (
                       <div key={field.id} className="flex flex-col space-y-3">
                         <div className="flex justify-between items-center gap-2 p-4">
@@ -457,7 +465,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         </div>
 
                         {/* Tag Image Display */}
-                        {tagSelectedFiles[index]?.map((file, imgIndex) => (
+                        {/* {tagSelectedFiles[index]?.map((file, imgIndex) => (
                           <Image
                             key={imgIndex}
                             src={file.url}
@@ -477,7 +485,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         </div>
                       </div>
                     ))}
-                  </div>
+                  </div> */}
                 </section>
 
                 {/* news showing position */}

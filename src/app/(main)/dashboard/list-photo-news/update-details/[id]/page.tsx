@@ -187,7 +187,7 @@ const Update = ({ params }: newsProps) => {
       <UpdateTopBar />
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          
             <div className="grid grid-cols-12 gap-4 xl:6">
               <div className="lg:col-span-8 col-span-full space-y-3">
                 {/* News Info Section */}
@@ -369,11 +369,11 @@ const Update = ({ params }: newsProps) => {
 
             {/* Submit Section */}
             <section className="my-4 flex justify-end">
-              <Button type="submit" className="w-[400px] text-white ">
+              <Button type="submit" className="w-[400px] text-white " onClick={form.handleSubmit(onSubmit)}>
                 Submit
               </Button>
             </section>
-          </form>
+         
         </Form>
       </div>
     </>

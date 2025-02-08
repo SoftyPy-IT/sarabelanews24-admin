@@ -42,11 +42,16 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
     );
   };
 
+  // const handleUpload = () => {
+  //   onImageSelect(selectedImages);
+  //   onClose();
+  // };
+
   const handleUpload = () => {
-    // Pass selected images to parent before closing
     onImageSelect(selectedImages);
     onClose();
   };
+  
 
 
   type Inputs = {

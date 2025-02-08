@@ -191,7 +191,7 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                           <ImageUpIcon color="red" size={50} /> Add Image
                         </Button>
                       </SheetTrigger>
-                      <SheetContent side="right" style={{ maxWidth: "800px" }}>
+                      <SheetContent side="right" style={{ maxWidth: "800px" }} className="overflow-auto">
                         <SheetTitle className="text-xl font-semibold mb-6">
                           Image Selection Modal
                         </SheetTitle>

@@ -5,6 +5,7 @@ import { useDeleteVideoNewsMutation, useGetAllVideoNewsQuery } from "@/redux/dai
 import ActionDropdown from "@/utils/Action/ActionDropdown";
 import { DataTable } from "@/utils/Table/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
@@ -192,8 +193,30 @@ const VideoList = () => {
 
   const columns: ColumnDef<any, any>[] = [
     {
-      // accessorKey: "images",
+      accessorKey: "images",
       header: "Images",
+      cell: ({ row }) => {
+        const images = row.original.images;
+        // Handle array of images or single image string
+        const imageUrl = Array.isArray(images) ? images[0] : images;
+        
+        return imageUrl && imageUrl !== "N/A" ? (
+          <div className="relative w-16 h-16">
+            <Image
+              src={imageUrl}
+              alt="News thumbnail"
+              fill
+              className="object-cover rounded-md"
+              sizes="(max-width: 64px) 100vw, 64px"
+            />
+          </div>
+        ) : (
+          <div className="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
+            <span className="text-gray-400 text-xs">No image</span>
+          </div>
+        );
+      },
+      
     },
     {
       accessorKey: "reporterType",
