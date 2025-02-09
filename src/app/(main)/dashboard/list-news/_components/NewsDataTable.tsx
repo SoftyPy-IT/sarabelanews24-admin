@@ -2,7 +2,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useDeleteNewsMutation, useGetAllNewsQuery } from "@/redux/dailynews/news.api";
+import {
+  useDeleteNewsMutation,
+  useGetAllNewsQuery,
+} from "@/redux/dailynews/news.api";
 import ActionDropdown from "@/utils/Action/ActionDropdown";
 import { DataTable } from "@/utils/Table/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
@@ -11,10 +14,10 @@ import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import TopBar from "./TopBar";
 import Loading from "@/app/loading";
+import Image from "next/image";
 
 const NewsDataTable = () => {
   const router = useRouter();
-
 
   // API call
   const { data, isLoading, isError } = useGetAllNewsQuery({});
@@ -29,7 +32,7 @@ const NewsDataTable = () => {
     data?.news?.map((item: any, index: any) => ({
       id: item._id,
       slNo: index + 1,
-      adminName: item.adminName || "N/A",
+      images: item.images || "N/A",
       title: item.newsTitle || "N/A",
       category: item.category?.name || "N/A",
       // createdAt: new Date(item.createdAt).toLocaleString(),
@@ -70,51 +73,39 @@ const NewsDataTable = () => {
     }
   };
 
-
-  // const handleDelete = async (id: string) => {
-  //   Swal.fire({
-  //     title: "Are you sure?",
-  //     text: "You won't be able to revert this!",
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonColor: "#3085d6",
-  //     cancelButtonColor: "#d33",
-  //     confirmButtonText: "Yes, delete it!",
-  //   }).then(async (result) => {
-  //     if (result.isConfirmed) {
-  //       try {
-  //           await deleteNews(id).unwrap();
-
-  //           Swal.fire({
-  //               title: "Deleted!",
-  //               text: "Your activity has been deleted.",
-  //               icon: "success"
-  //           });
-  //       } catch (err: any) {
-  //           toast.error(err.message);
-  //       }
-  //   }
-
-  //     if (result.isConfirmed) {
-  //       Swal.fire("Deleted!", "Delete Successful", "success");
-  //       console.log("Deleting row:", id);
-  //     }
-  //   });
-  // };
-
   const handleView = (rowData: any) => {
     router.push(`/dashboard/list-news/view-details/${rowData.id}`);
   };
 
   const columns: ColumnDef<any, any>[] = [
-
     {
       accessorKey: "slNo",
       header: () => <span className="font-bold">SL. No.</span>,
     },
     {
-      accessorKey: "adminName",
-      header: () => <span className="font-bold">Admin Name</span>,
+      accessorKey: "images",
+      header: () => <span className="font-bold">Images</span>,
+      cell: ({ row }) => {
+        const images = row.original.images;
+        // Handle array of images or single image string
+        const imageUrl = Array.isArray(images) ? images[0] : images;
+
+        return imageUrl && imageUrl !== "N/A" ? (
+          <div className="relative w-24 h-16">
+            <Image
+              src={imageUrl}
+              alt="News thumbnail"
+              fill
+              className="object-cover rounded-md"
+              sizes="(max-width: 64px) 100vw, 64px"
+            />
+          </div>
+        ) : (
+          <div className="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
+            <span className="text-gray-400 text-xs">No image</span>
+          </div>
+        );
+      },
     },
     {
       accessorKey: "title",
@@ -123,7 +114,7 @@ const NewsDataTable = () => {
     {
       accessorKey: "category",
       header: () => <span className="font-bold">Category</span>,
-    },    
+    },
     {
       accessorKey: "shortDescription",
       header: () => <span className="font-bold">Short Description</span>,
@@ -131,7 +122,16 @@ const NewsDataTable = () => {
     {
       accessorKey: "description",
       header: () => <span className="font-bold">Description</span>,
-    },    
+      cell: ({ row }) => {
+        const description = row.original.description;
+        const maxLength = 150; // Maximum number of characters to show
+        const slicedDescription = description.length > maxLength 
+          ? `${description.slice(0, maxLength)}...` 
+          : description;
+    
+        return <span>{slicedDescription}</span>;
+      },
+    },
     {
       accessorKey: "Action",
       header: () => <span className="font-bold">Action</span>,
@@ -150,12 +150,11 @@ const NewsDataTable = () => {
     <>
       <TopBar />
       <div className="overflow-x-auto bg-white p-2 rounded">
-
         <DataTable
           columns={columns}
           data={newsData ?? []}
-          filterKey="adminName"
-          filterPlaceholder="Search by Admin Name"
+          filterKey="category"
+          filterPlaceholder="Search by Category"
           pageSize={10}
           selectOptions={{
             key: "newsType",

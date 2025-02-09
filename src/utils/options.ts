@@ -34,6 +34,8 @@ export const upazilaOption = [
 export const newsTagOption = [
   { label: "গুরুত্বপূর্ণ", value: "important" },
   { label: "দৈনিক ইসলাম", value: "daily-islam" },
+  { label: "আন্তর্জাতিক", value: "international" },
+  { label: "শিক্ষা", value: "education" },
   { label: "সাক্ষাৎকার", value: "meeting" },
   { label: "মতামত", value: "opinion" },
   { label: "ফিচার", value: "feature" },
