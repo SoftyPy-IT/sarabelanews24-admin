@@ -1,64 +1,91 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client"
 import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
 import { useGetAllFolderQuery } from "@/redux/dailynews/folder.api";
-import {
-  useGetAllImagesQuery,
-  useGetImagesByFolderQuery,
-} from "@/redux/dailynews/images.api";
+import { useGetAllImagesQuery } from "@/redux/dailynews/images.api";
 import { TQueryParam } from "@/types/api.types";
+import GlobalPagination from "../GlobalPagination";
 
 interface RecentProps {
-  onImageSelect: (images: any[]) => void; // Add this prop
+  onImageSelect: (images: any[]) => void;
   onClose: () => void;
 }
 
 const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
   const [selectedImages, setSelectedImages] = useState<any[]>([]);
-  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [imagesPerPage, setImagesPerPage] = useState<number>(10); // Default images per page
 
-  const { data: folders, isLoading: foldersLoading } = useGetAllFolderQuery({});
+  const { data: foldersData } = useGetAllFolderQuery({});
+  // const { data, isLoading, isError } = useGetAllFolderQuery({});
 
-  const [params, setParams] = useState<TQueryParam[]>([]);
+  // Initialize params with page and limit
+  const [params, setParams] = useState<TQueryParam[]>([
+    { name: "page", value: currentPage.toString() },
+    { name: "limit", value: imagesPerPage.toString() },
+  ]);
+
   const {
     data: allImages,
     isLoading,
     isFetching,
-    refetch,
   } = useGetAllImagesQuery([...params]) as any;
 
+  const metaData = allImages?.meta;
+  const images = allImages?.data;
+
   const handleFolderChange = (value: any) => {
-    setParams([{ name: "folder", value: value }]);
+    setCurrentPage(1); 
+    setParams([
+      { name: "page", value: "1" },
+      { name: "limit", value: imagesPerPage.toString() },
+      { name: "folder", value },
+    ]);
   };
 
+  // Handle checkbox selection
   const handleCheckboxChange = (image: any, checked: boolean) => {
     setSelectedImages((prev) =>
       checked ? [...prev, image] : prev.filter((img) => img._id !== image._id)
     );
   };
 
-  // const handleUpload = () => {
-  //   onImageSelect(selectedImages);
-  //   onClose();
-  // };
-
+  // Handle upload
   const handleUpload = () => {
     onImageSelect(selectedImages);
     onClose();
   };
-  
+
+  // Handle page change
+ const handlePageChange = (page: number) => {
+  setCurrentPage(page);
+  setParams((prevParams) => {
+    return prevParams.map((param) =>
+      param.name === "page" ? { ...param, value: page.toString() } : param
+    );
+  });
+};
+
+const handleImagesPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const newLimit = parseInt(e.target.value, 10);
+  setImagesPerPage(newLimit);
+  setCurrentPage(1); // Reset to first page when changing limit
+  setParams([
+    { name: "page", value: "1" },
+    { name: "limit", value: newLimit.toString() },
+    ...params.filter((param) => param.name !== "limit" && param.name !== "page"),
+  ]);
+};
 
 
-  type Inputs = {
-    folder: string;
-  };
-
-  const form = useForm<Inputs>({
+  // Form setup
+  const form = useForm({
     defaultValues: {
       folder: "",
     },
@@ -69,6 +96,7 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(() => {})}>
           <div className="text-gray-900">
+            {/* Folder selection */}
             <div className="w-full mt-5 flex justify-end items-center gap-2">
               <div className="w-[400px]">
                 <SelectInput
@@ -76,7 +104,7 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
                   name="folder"
                   placeholder="Select From Folder"
                   options={
-                    folders?.map((folder: { name: string; _id: string }) => ({
+                    foldersData?.map((folder: { name: string; _id: string }) => ({
                       label: folder.name,
                       value: folder._id,
                     })) || []
@@ -86,15 +114,33 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
               </div>
             </div>
 
-            {!selectedFolder && (
-              <div className="text-center text-gray-500 my-4">
-                Please select a folder to view images.
+            {/* Total images and images per page selector */}
+            <div className="my-4 flex justify-between items-center">
+              <span className="text-gray-500">
+                {/* Total Images: {metaData?.total || 0} */}
+              </span>
+              <div>
+                <label htmlFor="imagesPerPage" className="text-gray-500 mr-2">
+                  Images per page:
+                </label>
+                <select
+                  id="imagesPerPage"
+                  value={imagesPerPage}
+                  onChange={handleImagesPerPageChange}
+                  className="p-2 border rounded"
+                >
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
               </div>
-            )}
+            </div>
 
-            {selectedFolder || !selectedFolder ? (
+            {/* Image grid */}
+            {images?.length > 0 ? (
               <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 p-1 my-4">
-                {allImages?.data?.map((row: any) => (
+                {images.map((row: any) => (
                   <div key={row._id} className="relative group">
                     <Image
                       src={row.url}
@@ -130,23 +176,28 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
               </div>
             ) : (
               <div className="text-center text-gray-500 my-4">
-                No images found for the selected folder.
+                No images found.
               </div>
             )}
           </div>
 
+          {/* Upload button */}
           <div className="flex justify-end">
-          <Button 
-        className="bg-green-500" 
-        onClick={handleUpload}
-        disabled={selectedImages.length === 0}
-      >
-        Upload
-      </Button>
-            {/* <Button className="bg-green-500" onClick={handleUpload}>
+            <Button
+              className="bg-green-500"
+              onClick={handleUpload}
+              disabled={selectedImages.length === 0}
+            >
               Upload
-            </Button> */}
+            </Button>
           </div>
+
+          {/* Pagination */}
+          <GlobalPagination
+            currentPage={currentPage}
+            totalPages={metaData?.totalPages || 1}
+            onPageChange={handlePageChange}
+          />
         </form>
       </Form>
     </>

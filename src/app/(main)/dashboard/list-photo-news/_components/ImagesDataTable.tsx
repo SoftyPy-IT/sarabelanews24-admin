@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import Loading from "@/app/loading";
 import { useDeletePhotoNewsMutation, useGetAllPhotoNewsQuery } from "@/redux/dailynews/photoNews.api";
+import Image from "next/image";
 
 const ImagesDataTable = () => {
   const router = useRouter();
@@ -35,6 +36,7 @@ const ImagesDataTable = () => {
       title: item.title || "N/A",
       description: item.description || "N/A",
       imgTagline: item.imgTagline || "N/A",
+      images: item.images || "N/A",
       adminName: item.adminName || "N/A",      
       postDate: new Date(item.postDate).toLocaleDateString(),
     
@@ -67,36 +69,7 @@ const ImagesDataTable = () => {
   };
   
 
-  // const handleDelete = async (id: string) => {
-  //   Swal.fire({
-  //     title: "Are you sure?",
-  //     text: "You won't be able to revert this!",
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonColor: "#3085d6",
-  //     cancelButtonColor: "#d33",
-  //     confirmButtonText: "Yes, delete it!",
-  //   }).then(async (result) => {
-  //     if (result.isConfirmed) {
-  //       try {
-  //           await deleteNews(id).unwrap();
 
-  //           Swal.fire({
-  //               title: "Deleted!",
-  //               text: "Your activity has been deleted.",
-  //               icon: "success"
-  //           });
-  //       } catch (err: any) {
-  //           toast.error(err.message);
-  //       }
-  //   }
-
-  //     if (result.isConfirmed) {
-  //       Swal.fire("Deleted!", "Delete Successful", "success");
-  //       console.log("Deleting row:", id);
-  //     }
-  //   });
-  // };
 
   const handleView = (rowData: any) => {
     router.push(`/dashboard/list-news/view-details/${rowData.id}`);
@@ -109,8 +82,29 @@ const ImagesDataTable = () => {
       header: () => <span className="font-bold">SL. No.</span>,
     },
     {
-      accessorKey: "adminName",
-      header: () => <span className="font-bold">Admin Name</span>,
+      accessorKey: "images",
+      header: () => <span className="font-bold">Title Image</span>,
+      cell: ({ row }) => {
+              const images = row.original.images;
+              // Handle array of images or single image string
+              const imageUrl = Array.isArray(images) ? images[0] : images;
+      
+              return imageUrl && imageUrl !== "N/A" ? (
+                <div className="relative w-24 h-16">
+                  <Image
+                    src={imageUrl}
+                    alt="News thumbnail"
+                    fill
+                    className="object-cover rounded-md"
+                    sizes="(max-width: 64px) 100vw, 64px"
+                  />
+                </div>
+              ) : (
+                <div className="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
+                  <span className="text-gray-400 text-xs">No image</span>
+                </div>
+              );
+            },
     },
     {
       accessorKey: "title",
@@ -119,16 +113,25 @@ const ImagesDataTable = () => {
     {
       accessorKey: "description",
       header: () => <span className="font-bold">Description</span>,
+      cell: ({ row }) => {
+        const description = row.original.description;
+        const maxLength = 150; 
+        const slicedDescription = description.length > maxLength 
+          ? `${description.slice(0, maxLength)}...` 
+          : description;
+    
+        return <span>{slicedDescription}</span>;
+      },
     }, 
-    {
-      accessorKey: "imgTagline",
-      header: () => <span className="font-bold">Image Tag Line</span>,
-    },
+    // {
+    //   accessorKey: "imgTagline",
+    //   header: () => <span className="font-bold">Image Tag Line</span>,
+    // },
 
-    {
-      accessorKey: "postDate",
-      header: () => <span className="font-bold">Post Date</span>,
-    },      
+    // {
+    //   accessorKey: "postDate",
+    //   header: () => <span className="font-bold">Post Date</span>,
+    // },      
        
     {
       accessorKey: "Action",
@@ -152,8 +155,8 @@ const ImagesDataTable = () => {
       <DataTable
         columns={columns}
         data={newsData ?? []} 
-        filterKey="adminName"
-        filterPlaceholder="Search by Admin Name"
+        filterKey="title"
+        filterPlaceholder="Search by Title"
         pageSize={10}
         selectOptions={{
           key: "newsType",

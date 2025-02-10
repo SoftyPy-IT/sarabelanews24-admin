@@ -90,7 +90,7 @@ const Update = ({ params }: newsProps) => {
     if (singleData && Object.keys(singleData).length > 0) {
       const formatDate = (isoString: string) =>
         isoString ? isoString.slice(0, 16) : "";
-  
+
       form.reset({
         title: singleData.title || "",
         imgTagline: singleData.imgTagline || "",
@@ -101,23 +101,21 @@ const Update = ({ params }: newsProps) => {
         selectedImage: singleData.images?.[0] || "",
         galleries: singleData.galleries.map((gallery: any) => ({
           imageTagline: gallery.imageTagline,
-          photos: gallery.photos,  // Directly mapping the photos array
+          photos: gallery.photos, // Directly mapping the photos array
         })),
       });
-  
+
       // Handle main images
       const images = singleData.images?.map((url: string) => ({ url })) || [];
       setMainSelectedFiles(images);
-  
+
       // Handle tag images
-      const tagImagesArray: { url: string }[][] = singleData.galleries.map((gallery: any) =>
-        gallery.photos.map((url: string) => ({ url }))
+      const tagImagesArray: { url: string }[][] = singleData.galleries.map(
+        (gallery: any) => gallery.photos.map((url: string) => ({ url }))
       );
       setTagSelectedFiles(tagImagesArray);
     }
   }, [singleData, form]);
-  
-  
 
   // useEffect(() => {
   //   if (singleData && Object.keys(singleData).length > 0) {
@@ -167,10 +165,10 @@ const Update = ({ params }: newsProps) => {
       ...data,
       _id: id,
       postDate: new Date(data.postDate).toISOString(),
-      images: mainSelectedFiles.map((item) => item.url), // ✅ Keep it as an array
+      images: mainSelectedFiles.map((item) => item.url),
       galleries: data.galleries.map((gallery, index) => ({
         imageTagline: gallery.imageTagline,
-        photos: tagSelectedFiles[index]?.map((item) => item.url) || [], // ✅ Keep it as an array
+        photos: tagSelectedFiles[index]?.map((item) => item.url) || [],
       })),
     };
     console.log("modify value:", modifyData);
@@ -282,95 +280,108 @@ const Update = ({ params }: newsProps) => {
             <div className="lg:col-span-4 col-span-full space-y-5">
               {/* Tags Section */}
               <section className="bg-white border border-gray-300 rounded p-5">
-  <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
-  <div className="col-span-2">
-    {fields.map((field, index) => (
-      <div key={field.id} className="flex flex-col space-y-3">
-        <div className="flex justify-between items-center gap-2 p-4">
-          <Sheet
-            key={field.id}
-            open={openSheetIndex === index}
-            onOpenChange={(open) =>
-              setOpenSheetIndex(open ? index : null)
-            }
-          >
-            <SheetTrigger asChild>
-              <Button
-                variant="outline"
-                className="p-8 border rounded-full mb-2"
-              >
-                <ImageUpIcon color="red" size={50} /> Add Image
-              </Button>
-            </SheetTrigger>
-            <SheetContent
-              side="right"
-              className="pt-4 overflow-y-auto"
-              style={{ maxWidth: "800px" }}
-            >
-              <SheetTitle>সংবাদ ট্যাগ</SheetTitle>
-              <AllImgModal
-                onImageSelect={(images: any) => {
-                  const newTagFiles = [...tagSelectedFiles];
-                  newTagFiles[index] = images;
-                  setTagSelectedFiles(newTagFiles);
-                }}
-                onClose={() => setOpenSheetIndex(null)}
-              />
-            </SheetContent>
-          </Sheet>
+                <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
+                <div className="col-span-2">
+                  {fields.map((field, index) => (
+                    <div key={field.id} className="flex flex-col space-y-3">
+                      <div className="flex justify-between items-center gap-2 p-4">
+                        <Sheet
+                          key={field.id}
+                          open={openSheetIndex === index}
+                          onOpenChange={(open) =>
+                            setOpenSheetIndex(open ? index : null)
+                          }
+                        >
+                          <SheetTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="p-8 border rounded-full mb-2"
+                            >
+                              <ImageUpIcon color="red" size={50} /> Add Image
+                            </Button>
+                          </SheetTrigger>
+                          <SheetContent
+                            side="right"
+                            className="pt-4 overflow-y-auto"
+                            style={{ maxWidth: "800px" }}
+                          >
+                            <SheetTitle>সংবাদ ট্যাগ</SheetTitle>
+                            <AllImgModal
+                              onImageSelect={(images: any) => {
+                                const newTagFiles = [...tagSelectedFiles];
+                                newTagFiles[index] = images;
+                                setTagSelectedFiles(newTagFiles);
+                              }}
+                              onClose={() => setOpenSheetIndex(null)}
+                            />
+                          </SheetContent>
+                        </Sheet>
 
-          <div className="flex justify-end gap-2">
-            {fields.length > 1 && (
-              <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                onClick={() => removeField(index)}
-              >
-                <Delete className="w-4 h-4" />
-              </Button>
-            )}
-            {index === fields.length - 1 && (
-              <Button
-                type="button"
-                variant="default"
-                size="sm"
-                onClick={appendField}
-              >
-                <PlusIcon className="w-4 h-4" />
-              </Button>
-            )}
-          </div>
-        </div>
+                        <div className="flex justify-end gap-2">
+                          {fields.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => removeField(index)}
+                            >
+                              <Delete className="w-4 h-4" />
+                            </Button>
+                          )}
+                          {index === fields.length - 1 && (
+                            <Button
+                              type="button"
+                              variant="default"
+                              size="sm"
+                              onClick={appendField}
+                            >
+                              <PlusIcon className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
 
-        {/* Tag Image Display */}
-        <div className="grid grid-cols-3 gap-2">
-          {tagSelectedFiles[index]?.map((file, imgIndex) =>
-            file?.url ? (
-              <Image
-                key={imgIndex}
-                src={file.url}
-                alt={`Preview ${imgIndex}`}
-                width={130}
-                height={100}
-                className="rounded-md"
-              />
-            ) : null
-          )}
-        </div>
+                      {/* Tag Image Display */}
+                      <div className="flex flex-wrap gap-4 rounded-md">
+                        {tagSelectedFiles[index]?.map((file, imgIndex) => (
+                          <div
+                            key={index}
+                            className="relative rounded group"
+                          >
+                            <Image
+                              key={imgIndex}
+                              src={file.url}
+                              alt={`Preview ${imgIndex}`}
+                              width={130}
+                              height={100}
+                              className="h-[100px] w-[150px] rounded-lg object-cover"
+                            />
 
-        <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
-          <TextInput
-            control={form.control}
-            name={`galleries.${index}.imageTagline`}
-            placeholder="ইমেজ ট্যাগ লাইন"
-          />
-        </div>
-      </div>
-    ))}
-  </div>
-</section>
+                            <button
+                              onClick={() => {
+                                setTagSelectedFiles((files) =>
+                                  files.filter((_, i) => i !== index)
+                                );
+                              }}
+                              className="absolute top-0 right-0 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <CircleX />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
 
+                      <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
+                        <TextInput
+                          control={form.control}
+                          name={`galleries.${index}.imageTagline`}
+                          placeholder="ইমেজ ট্যাগ লাইন"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
 
               {/* Admin Section */}
               <section className="bg-white border border-gray-300 rounded p-5">
@@ -381,7 +392,6 @@ const Update = ({ params }: newsProps) => {
                       control={form.control}
                       name="adminName"
                       placeholder="Admin Name"
-                      
                     />
                   </div>
                   <div className="grid grid-cols-1  gap-4 mt-2">
@@ -390,7 +400,6 @@ const Update = ({ params }: newsProps) => {
                       name="postDate"
                       label="Post Date"
                       type="datetime-local"
-                      
                     />
                   </div>
                 </div>
