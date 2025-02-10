@@ -39,7 +39,7 @@ export const newsTagOption = [
   { label: "সাক্ষাৎকার", value: "meeting" },
   { label: "মতামত", value: "opinion" },
   { label: "ফিচার", value: "feature" },
-  { label: "সম্বার", value: "sombar" },
+  { label: "সম্ভার", value: "sombar" },
   { label: "সবচেয়ে পঠিত", value: "most-readable" },
   { label: "আলোচিত", value: "discussed" },
   { label: "সুখবর", value: "good-news" },

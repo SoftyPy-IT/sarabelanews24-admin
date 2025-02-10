@@ -280,9 +280,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                             control={form.control}
                             name="internationalArea"
                             placeholder="আন্তর্জাতিক এলাকা"
-                            rules={{
-                              required: "International area is required",
-                            }}
+                            
                           />
                         </div>
                       </>

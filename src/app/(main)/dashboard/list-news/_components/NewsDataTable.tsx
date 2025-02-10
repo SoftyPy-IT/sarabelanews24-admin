@@ -44,11 +44,11 @@ const NewsDataTable = () => {
       // newsCategory: item.newsCategory || "N/A",
       newsType: item.newsType || "N/A",
       shortDescription: item.shortDescription || "N/A",
-      // slug: item.slug || "N/A",
+      slug: item.slug || "N/A",
     })) || [];
 
   const handleEdit = (rowData: any) => {
-    router.push(`/dashboard/list-news/update-details/${rowData.id}`);
+    router.push(`/dashboard/list-news/update-details/${rowData.slug}`);
   };
 
   const handleDelete = async (id: string) => {
