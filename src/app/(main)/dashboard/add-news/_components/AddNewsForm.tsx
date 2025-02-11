@@ -9,7 +9,7 @@ import RichText from "@/utils/Form_Inputs/RichText";
 import TextArea from "@/utils/Form_Inputs/TextArea";
 import TextInput from "@/utils/Form_Inputs/TextInput";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
-import { Delete, ImageUpIcon, PlusIcon } from "lucide-react";
+import { CircleX, Delete, ImageUpIcon, PlusIcon } from "lucide-react";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import { useCreateNewsMutation } from "@/redux/dailynews/news.api";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
@@ -314,7 +314,31 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                       </SheetContent>
                     </Sheet>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-6 mb-4 ">
+
+                  <div className="flex flex-wrap gap-4">
+                  {mainSelectedFiles.map((file, index) => (
+                    <div key={index} className="relative rounded-lg group">
+                      <Image
+                        src={file.url}
+                        alt={`Preview ${index}`}
+                        width={150}
+                        height={150}
+                        className="h-[150px] w-[150px] rounded-lg object-cover"
+                      />
+                      <button
+                        onClick={() => {
+                          setMainSelectedFiles(files => files.filter((_, i) => i !== index));
+                        }}
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                       <CircleX />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+
+                  {/* <div className="grid grid-cols-2 md:grid-cols-6 mb-4 ">
                     {mainSelectedFiles.map((file, index) => (
                       <div key={index} className="rounded-lg">
                         <Image
@@ -326,7 +350,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         />
                       </div>
                     ))}
-                  </div>
+                  </div> */}
 
                   <div className="space-y-2">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

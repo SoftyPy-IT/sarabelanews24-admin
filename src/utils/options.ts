@@ -32,8 +32,10 @@ export const upazilaOption = [
   { label: "ময়মনসিংহ", value: "Mymensingh" },
 ];
 export const newsTagOption = [
+  { label: "সর্বশেষ", value: "latest" },
   { label: "গুরুত্বপূর্ণ", value: "important" },
   { label: "দৈনিক ইসলাম", value: "daily-islam" },
+  { label: "খেলাধুলা", value: "sports" },
   { label: "আন্তর্জাতিক", value: "international" },
   { label: "শিক্ষা", value: "education" },
   { label: "সাক্ষাৎকার", value: "meeting" },
