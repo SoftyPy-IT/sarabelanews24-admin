@@ -33,7 +33,7 @@ export const upazilaOption = [
 ];
 export const newsTagOption = [
   { label: "গুরুত্বপূর্ণ", value: "important" },
-  { label: "দৈনিক ইসলাম", value: "daily-islam" },
+  { label: "ইসলাম", value: "daily-islam" },
   { label: "সাক্ষাৎকার", value: "meeting" },
   { label: "মতামত", value: "opinion" },
   { label: "ফিচার", value: "feature" },

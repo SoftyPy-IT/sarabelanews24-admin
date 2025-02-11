@@ -414,12 +414,12 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                             placeholder="ভিডিও লিঙ্ক"
                             rules={{
                               required: "Additional Link is required",
-                              pattern: {
-                                value:
-                                  /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
-                                message:
-                                  "Please enter a valid URL with https://",
-                              },
+                              // pattern: {
+                              //   value:
+                              //     /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
+                              //   message:
+                              //     "Please enter a valid URL with https://",
+                              // },
                             }}
                           />
                           <TextInput
