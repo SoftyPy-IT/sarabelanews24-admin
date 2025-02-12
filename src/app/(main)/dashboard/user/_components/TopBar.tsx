@@ -79,7 +79,7 @@ const TopBar = () => {
               Create User
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="pt-12 px-6">
+          <SheetContent side="right" className="pt-12 px-6 overflow-auto">
             <SheetHeader>
               <SheetTitle className="text-center text-xl font-semibold">
                 Create User

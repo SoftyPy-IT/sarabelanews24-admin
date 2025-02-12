@@ -9,6 +9,7 @@ import {
 import ActionDropdown from "@/utils/Action/ActionDropdown";
 import { DataTable } from "@/utils/Table/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
@@ -37,7 +38,7 @@ const ListAdvertisement = () => {
     })) || [];
 
   const handleEdit = (rowData: any) => {
-    router.push(`/dashboard/list-news/update-details/${rowData.id}`);
+    router.push(`/dashboard/list-advertisement/update-details/${rowData.id}`);
   };
 
   const handleDelete = async (id: string) => {
@@ -70,7 +71,26 @@ const ListAdvertisement = () => {
     {
       accessorKey: "advertisementImage",
       header: () => <span className="font-bold">Image</span>,
+      cell: ({ row }) => {
+        const imageUrl = row.getValue("advertisementImage") as string;
+        return imageUrl && imageUrl !== "N/A" ? (
+          <div className="w-20 h-20 relative">
+            <Image
+              src={imageUrl}
+              alt="Advertisement Image"
+              fill
+              className="object-cover rounded"
+            />
+          </div>
+        ) : (
+          <span>No Image</span>
+        );
+      },
     },
+    // {
+    //   accessorKey: "advertisementImage",
+    //   header: () => <span className="font-bold">Image</span>,
+    // },
     {
       accessorKey: "advertisementLink",
       header: () => <span className="font-bold">Ad. Link</span>,

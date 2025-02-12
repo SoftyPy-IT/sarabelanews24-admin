@@ -198,7 +198,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       {/* <TopBar /> */}
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          
             <div className="grid grid-cols-12 gap-4 xl:6">
               <div className="lg:col-span-8 col-span-full space-y-3">
                 {/* Reporter Info Section */}
@@ -280,9 +280,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                             control={form.control}
                             name="internationalArea"
                             placeholder="আন্তর্জাতিক এলাকা"
-                            rules={{
-                              required: "International area is required",
-                            }}
+                            
                           />
                         </div>
                       </>
@@ -316,16 +314,19 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                       </SheetContent>
                     </Sheet>
                   </div>
-
-                  {mainSelectedFiles.map((file, index) => (
-                    <Image
-                      key={index}
-                      src={file.url}
-                      alt={`Preview ${index}`}
-                      width={130}
-                      height={100}
-                    />
-                  ))}
+                  <div className="grid grid-cols-2 md:grid-cols-6 mb-4 ">
+                    {mainSelectedFiles.map((file, index) => (
+                      <div key={index} className="rounded-lg">
+                        <Image
+                          src={file.url}
+                          alt={`Preview ${index}`}
+                          width={100}
+                          height={0}
+                          className="h-[150px] w-[150px] rounded-lg"
+                        />
+                      </div>
+                    ))}
+                  </div>
 
                   <div className="space-y-2">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -393,7 +394,15 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                 {/* Tags Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
-                  <div className="col-span-2">
+                  <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
+                    <TextInput
+                      control={form.control}
+                      name="imageTagline"
+                      placeholder="ইমেজ ট্যাগ লাইন"
+                      rules={{ required: "Image Tag Line is required" }}
+                    />
+                  </div>
+                  {/* <div className="col-span-2">
                     {fields.map((field, index) => (
                       <div key={field.id} className="flex flex-col space-y-3">
                         <div className="flex justify-between items-center gap-2 p-4">
@@ -454,7 +463,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         </div>
 
                         {/* Tag Image Display */}
-                        {tagSelectedFiles[index]?.map((file, imgIndex) => (
+                        {/* {tagSelectedFiles[index]?.map((file, imgIndex) => (
                           <Image
                             key={imgIndex}
                             src={file.url}
@@ -474,7 +483,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         </div>
                       </div>
                     ))}
-                  </div>
+                  </div> */}
                 </section>
 
                 {/* news showing position */}
@@ -553,11 +562,12 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
             {/* Submit Section */}
             <section className="my-4 flex justify-end">
-              <Button type="submit" className="w-[400px] text-white ">
+              <Button type="submit" className="w-[400px] text-white " onClick={form.handleSubmit(onSubmit)}>
                 Submit
               </Button>
             </section>
-          </form>
+            {/* <form onSubmit={}>
+          </form> */}
         </Form>
       </div>
     </>

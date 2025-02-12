@@ -51,3 +51,5 @@ export const {
   useGetSingleNewsQuery,
   useUpdateNewsMutation
 } = newsApi;
+
+

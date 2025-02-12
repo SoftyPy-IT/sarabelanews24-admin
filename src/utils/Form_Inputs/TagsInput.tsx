@@ -55,7 +55,7 @@ const TagsInput = ({ control, tags, setTags }: TagInputProps) => {
                       <ImageUpIcon color="red" size={50} />
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="right" style={{ maxWidth: "800px" }}>
+                  <SheetContent side="right" style={{ maxWidth: "800px" }} className="overflow-auto">
                     <SheetTitle className="sr-only">tags</SheetTitle>
                     <AllImgModal />
                   </SheetContent>

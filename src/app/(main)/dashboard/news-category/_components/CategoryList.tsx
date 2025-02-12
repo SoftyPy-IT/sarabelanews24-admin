@@ -12,8 +12,9 @@ import {
   useGetAllCategoriesQuery,
 } from "@/redux/dailynews/category.api";
 import React from "react";
-import { Edit, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import TopBar from "./TopBar";
+import Edit from "./Edit";
 
 const CategoryList = () => {
   const router = useRouter();
@@ -74,10 +75,7 @@ const CategoryList = () => {
       header: () => <span className="font-bold">Action</span>,
       cell: ({ row }: any) => (
         <div className="flex gap-2 -ml-5">
-          <Edit
-            color="black"
-            className="hover:bg-gray-200 rounded-full w-[40px] h-[40px] p-2 "
-          />
+          <Edit id={row.original.id} />
           <Trash2
             onClick={() => handleDelete(row.original.id)}
             color="red"

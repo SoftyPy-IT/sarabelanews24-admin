@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useDeleteVideoNewsMutation, useGetAllVideoNewsQuery } from "@/redux/dailynews/videoNews.api ";
+import {
+  useDeleteVideoNewsMutation,
+  useGetAllVideoNewsQuery,
+} from "@/redux/dailynews/videoNews.api ";
 import ActionDropdown from "@/utils/Action/ActionDropdown";
 import { DataTable } from "@/utils/Table/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
@@ -137,20 +141,20 @@ const VideoList = () => {
   // Map data to match the columns
   // Ensure `newsData` is always an array
   const videoNewsData =
-    data?.videoNews?.map((item: any) => ({
+    data?.videoNews?.map((item: any, index: any) => ({
       id: item._id,
+      slNo: index + 1,
       reporterName: item.reporterName || "N/A",
       reporterType: item.reporterType || "N/A",
       images: item.images || "N/A",
       photojournalistName: item.photojournalistName || "N/A",
       newsTitle: item.newsTitle || "N/A",
-      
       date: new Date(item.date).toLocaleDateString(),
       imageTagline: item.imageTagline || "N/A",
       videioJornalistName: item.videioJornalistName || "N/A",
       videoUrl: item.videoUrl || "N/A",
-
-      newsCategory: item.newsCategory || "N/A",
+      category: item.category?.name || "N/A",
+      // category: item.category || "N/A",
       newsType: item.newsType || "N/A",
       shortDescription: item.shortDescription || "N/A",
       description: item.description || "N/A",
@@ -159,7 +163,7 @@ const VideoList = () => {
     })) || []; // Fallback to an empty array
 
   const handleEdit = (rowData: any) => {
-    router.push(`/dashboard/list-news/update-details/${rowData.id}`);
+    router.push(`/dashboard/list-video-news/update-details/${rowData.id}`);
   };
 
   const handleDelete = async (id: string) => {
@@ -184,42 +188,51 @@ const VideoList = () => {
     }
   };
 
-
   const handleView = (rowData: any) => {
     router.push(`/dashboard/list-video-gallery/view-details/${rowData?.id}`);
   };
 
-
   const columns: ColumnDef<any, any>[] = [
     {
-      // accessorKey: "images",
+      accessorKey: "slNo",
+      header: "Sl. No.",
+    },
+    {
+      accessorKey: "images",
       header: "Images",
+      cell: ({ row }) => {
+        const images = row.original.images;
+        // Handle array of images or single image string
+        const imageUrl = Array.isArray(images) ? images[0] : images;
+
+        return imageUrl && imageUrl !== "N/A" ? (
+          <div className="relative w-16 h-16">
+            <Image
+              src={imageUrl}
+              alt="News thumbnail"
+              fill
+              className="object-cover rounded-md"
+              sizes="(max-width: 64px) 100vw, 64px"
+            />
+          </div>
+        ) : (
+          <div className="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
+            <span className="text-gray-400 text-xs">No image</span>
+          </div>
+        );
+      },
     },
     {
-      accessorKey: "reporterType",
-      header: "Reporter Type",
+      accessorKey: "newsTitle",
+      header: "News Title",
     },
     {
-      accessorKey: "reporterName",
-      header: "Reporter Name",
-    },
-    
-    {
-      accessorKey: "photojournalistName",
-      header: "Photo Journalist Name",
-    },
-    {
-      accessorKey: "videioJornalistName",
-      header: "Video Journalist Name",
+      accessorKey: "category",
+      header: "Category",
     },
     {
       accessorKey: "videoUrl",
       header: "Video URL",
-    },
-   
-    {
-      accessorKey: "newsTitle",
-      header: "News Title",
     },
     {
       accessorKey: "shortDescription",
@@ -249,8 +262,8 @@ const VideoList = () => {
       <DataTable
         columns={columns}
         data={videoNewsData ?? []}
-        filterKey="reporterName"
-        filterPlaceholder="Search by Reporter Name"
+        filterKey="category"
+        filterPlaceholder="Search by Category"
         pageSize={10}
         selectOptions={{
           key: "newsType",

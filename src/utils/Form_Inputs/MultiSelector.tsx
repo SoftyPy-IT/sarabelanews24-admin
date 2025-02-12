@@ -20,7 +20,7 @@ const MultiSelector: React.FC<MultiSelectorProps> = ({
     <Controller
       name={name}
       control={control}
-      defaultValue={[]} // Default value as an empty array
+      defaultValue={[]}
       render={({ field: { value, onChange }, fieldState: { error } }) => (
         <div>
           <Multiselect

@@ -9,7 +9,7 @@ import RichText from "@/utils/Form_Inputs/RichText";
 import TextArea from "@/utils/Form_Inputs/TextArea";
 import TextInput from "@/utils/Form_Inputs/TextInput";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
-import { Delete, ImageUpIcon, PlusIcon } from "lucide-react";
+import { CircleX, Delete, ImageUpIcon, PlusIcon } from "lucide-react";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import {
   useGetSingleNewsQuery,
@@ -40,6 +40,7 @@ import toast from "react-hot-toast";
 import NewsType from "@/utils/Form_Inputs/NewsType";
 import TopBar from "../../_components/TopBar";
 import Image from "next/image";
+import Loading from "@/app/loading";
 
 type Inputs = {
   reportedDate: string;
@@ -129,9 +130,13 @@ const Page = ({ params }: newsProps) => {
 
   useEffect(() => {
     if (singleData && Object.keys(singleData).length > 0) {
+      const formatDate = (isoString: string) =>
+        isoString ? isoString.slice(0, 16) : "";
+
       form.reset({
-        reportedDate: singleData.reportedDate || "",
-        reporterType: singleData.reporterType || "own_representative",
+        reportedDate: formatDate(singleData.reportedDate),
+        // reportedDate: singleData.reportedDate || "",
+        reporterType: singleData.reporterType || "",
         reporterName: singleData.reporterName || "",
         currentNews: singleData.currentNews || false,
         displayLocation: singleData.displayLocation || "",
@@ -149,9 +154,10 @@ const Page = ({ params }: newsProps) => {
         adminName: singleData.adminName || "",
         slug: singleData.slug || "",
         category: singleData.category?._id || "",
-        publishedDate: singleData.publishedDate || "",
+        publishedDate: formatDate(singleData.publishedDate),
         shortDescription: singleData.shortDescription || "",
         description: singleData.description || "",
+
         tags: singleData.tags || [
           { imageTagline: "", photojournalistName: "", selectedImage: "" },
         ],
@@ -159,20 +165,19 @@ const Page = ({ params }: newsProps) => {
         metaKeywords: singleData.metaKeywords || [],
         metaDescription: singleData.metaDescription || "",
       });
-      // Initialize main image from API
-    const mainImages = singleData.images?.map((url: string) => ({ url })) || [];
-    setMainSelectedFiles(mainImages);
 
-    // Initialize tag images from API
-    const initialTagFiles = singleData.tags?.map((tag: any) => 
-      tag.selectedImage ? [{ url: tag.selectedImage }] : []
-    ) || [];
-    setTagSelectedFiles(initialTagFiles);
-  }
-}, [singleData, form]);
+      const mainImages =
+        singleData.images?.map((url: string) => ({ url })) || [];
+      setMainSelectedFiles(mainImages);
 
-
-
+      // Initialize tag images from API
+      const initialTagFiles =
+        singleData.tags?.map((tag: any) =>
+          tag.selectedImage ? [{ url: tag.selectedImage }] : []
+        ) || [];
+      setTagSelectedFiles(initialTagFiles);
+    }
+  }, [singleData, form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -184,24 +189,7 @@ const Page = ({ params }: newsProps) => {
     name: "newsType",
   });
 
-  // const onSubmit = async (data: Inputs) => {
-  //   const modifyData = {
-  //     ...data,
-  //     category: data.category,
-  //     postDate: new Date().toISOString(),
-  //   };
-  //   console.log(data)
-  //   try {
-  //     const res = await updateNews({ ...modifyData, id }).unwrap();
-  //     console.log("response:",res)
-  //     if (res) {
-  //       toast.success("News Update Successfully!");
-  //       router.push("/dashboard/list-news");
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+
 
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
@@ -215,7 +203,7 @@ const Page = ({ params }: newsProps) => {
 
     try {
       const res = await updateNews({ ...modifyData, id }).unwrap();
-      console.log("response:",res)
+      console.log("response:", res);
       if (res) {
         toast.success("News Update Successfully!");
         router.push("/dashboard/list-news");
@@ -227,16 +215,40 @@ const Page = ({ params }: newsProps) => {
 
   const handleImageSelect = (images: any[]) => {
     if (openSheetIndex === null) {
-      setMainSelectedFiles(images.map((img) => ({ url: img.url })));
+      const urls = images.map((img) => img.url);
+      setMainSelectedFiles(images);
+      form.setValue("selectedImage", urls[0] || "");
     } else {
       const newTagFiles = [...tagSelectedFiles];
-      newTagFiles[openSheetIndex] = images.map((img) => ({ url: img.url }));
+      newTagFiles[openSheetIndex] = images;
       setTagSelectedFiles(newTagFiles);
+      form.setValue(
+        `tags.${openSheetIndex}.selectedImage`,
+        images[0]?.url || ""
+      );
     }
   };
 
+  // const handleImageSelect = (images: any[]) => {
+  //   if (openSheetIndex === null) {
+  //     setMainSelectedFiles(images.map((img) => ({ url: img.url })));
+  //   } else {
+  //     const newTagFiles = [...tagSelectedFiles];
+  //     newTagFiles[openSheetIndex] = images.map((img) => ({ url: img.url }));
+  //     setTagSelectedFiles(newTagFiles);
+  //   }
+  // };
+
+  // Update handleRemove function to sync with form data
+  // const handleRemove = (index: number) => {
+  //   const updatedFiles = [...mainSelectedFiles];
+  //   updatedFiles.splice(index, 1);
+  //   setMainSelectedFiles(updatedFiles);
+  //   form.setValue("selectedImage", updatedFiles[0]?.url || ""); // Update form value
+  // };
+
   if (isLoading) {
-    return <p>Loading............</p>;
+    return <Loading/>;
   }
 
   return (
@@ -338,7 +350,7 @@ const Page = ({ params }: newsProps) => {
                           <ImageUpIcon color="red" size={50} /> Add Image
                         </Button>
                       </SheetTrigger>
-                      <SheetContent side="right" style={{ maxWidth: "800px" }}>
+                      <SheetContent side="right" style={{ maxWidth: "800px" }} className="overflow-auto">
                         <SheetTitle className="sr-only">
                           Image Selection Modal
                         </SheetTitle>
@@ -349,15 +361,19 @@ const Page = ({ params }: newsProps) => {
                       </SheetContent>
                     </Sheet>
                   </div>
-                  {mainSelectedFiles.map((file, index) => (
-                    <Image
-                      key={index}
-                      src={file.url}
-                      alt={`Preview ${index}`}
-                      width={130}
-                      height={100}
-                    />
-                  ))}
+                  <div className="grid grid-cols-2 md:grid-cols-6 mb-4 ">
+                    {mainSelectedFiles.map((file, index) => (
+                      <div key={index} className="rounded-lg">
+                        <Image
+                          src={file.url}
+                          alt={`Preview ${index}`}
+                          width={100}
+                          height={0}
+                          className="h-[150px] w-[150px] rounded-lg"
+                        />
+                      </div>
+                    ))}
+                  </div>
                   <div className="space-y-2">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       <div className="col-span-2">
@@ -381,6 +397,7 @@ const Page = ({ params }: newsProps) => {
                           ) || []
                         }
                       />
+
                       <NewsType
                         form={form}
                         name="displayLocation"
@@ -388,6 +405,7 @@ const Page = ({ params }: newsProps) => {
                         setFirstPage={setFirstPage}
                       />
                     </div>
+
                     <div className="col-span-2">
                       <TextInput
                         control={form.control}
@@ -415,6 +433,18 @@ const Page = ({ params }: newsProps) => {
               <div className="lg:col-span-4 col-span-full space-y-5">
                 {/* Tags Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
+                  <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
+                  <div className="col-span-2">
+                    <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
+                      <TextInput
+                        control={form.control}
+                        name="imageTagline"
+                        placeholder="ইমেজ ট্যাগ লাইন"
+                      />
+                    </div>
+                  </div>
+                </section>
+                {/* <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
                   <div className="col-span-2">
                     {fields.map((field, index) => (
@@ -472,9 +502,9 @@ const Page = ({ params }: newsProps) => {
                               </Button>
                             )}
                           </div>
-                        </div>
-                        {/* Tag Image Display */}
-                        {tagSelectedFiles[index]?.map((file, imgIndex) => (
+                        </div> */}
+                {/* Tag Image Display */}
+                {/* {tagSelectedFiles[index]?.map((file, imgIndex) => (
                           <Image
                             key={imgIndex}
                             src={file.url}
@@ -488,12 +518,12 @@ const Page = ({ params }: newsProps) => {
                             control={form.control}
                             name="imageTagline"
                             placeholder="ইমেজ ট্যাগ লাইন"
-                          />                          
+                          />
                         </div>
                       </div>
                     ))}
                   </div>
-                </section>
+                </section> */}
 
                 {/* News showing position */}
                 <section className="bg-white border border-gray-300 rounded p-5">
@@ -555,7 +585,12 @@ const Page = ({ params }: newsProps) => {
                       label="Meta Description"
                       placeholder="Enter Meta Description"
                     />
-                    <TagSelector name="metaKeywords" label="Meta Keywords" />
+                    {/* <TagSelector name="metaKeywords" label="Meta Keywords" /> */}
+                    <TagSelector
+                    name="metaKeywords"
+                    label="Meta Keywords"
+                    defaultValues={singleData?.metaKeywords || []}
+                  />
                   </CardContent>
                 </section>
               </div>

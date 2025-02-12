@@ -178,7 +178,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
       const res = await createNews(modifyData).unwrap();
       // console.log("response:",res)
       if (res) {
-        toast.success("News Create Successfully!");
+        toast.success("Video News Created Successfully!");
         router.push("/dashboard/list-video-news");
       }
     } catch (error) {
@@ -196,7 +196,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
               <div className="lg:col-span-8 col-span-full space-y-3">
                 {/* Reporter Info Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
-                  <h1 className="mb-2 font-semibold  ">প্রতিনিধি তথ্য:</h1>
+                  <h1 className="mb-2 font-semibold">প্রতিনিধি তথ্য:</h1>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <SelectInput
                       control={form.control}
@@ -414,12 +414,11 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                             placeholder="ভিডিও লিঙ্ক"
                             rules={{
                               required: "Additional Link is required",
-                              // pattern: {
-                              //   value:
-                              //     /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
-                              //   message:
-                              //     "Please enter a valid URL with https://",
-                              // },
+                              pattern: {
+                                
+                                message:
+                                  "Please enter a valid URL",
+                              },
                             }}
                           />
                           <TextInput
