@@ -303,6 +303,7 @@ const AddLeadNews = ({ editingId, initialData }: CourseFormProps) => {
                       />
                     </div> */}
                     <div className="col-span-2">
+                      
                       <RichText name="description" label="Description" />
                     </div>
                   </div>

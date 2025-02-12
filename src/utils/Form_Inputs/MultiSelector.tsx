@@ -28,14 +28,14 @@ const MultiSelector: React.FC<MultiSelectorProps> = ({
             options={options}
             selectedValues={options.filter((option) =>
               value?.includes(option.value)
-            )} // Match selected values to the full objects
+            )} 
             displayValue="label"
             onSelect={(selectedList) =>
               onChange(selectedList.map((item: any) => item.value))
-            } // Update form state with array of values
+            } 
             onRemove={(selectedList) =>
               onChange(selectedList.map((item: any) => item.value))
-            } // Update form state with array of values
+            } 
           />
           {error && <p className="mt-1 text-sm text-red-600">{error.message}</p>}
         </div>

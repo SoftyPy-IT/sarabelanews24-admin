@@ -21,6 +21,7 @@ import { useCreatePhotoNewsMutation } from "@/redux/dailynews/photoNews.api";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import React, { useState } from "react";
 import Image from "next/image";
+import DailyTimesEditor from "@/utils/Form_Inputs/JodiEditor";
 
 type Inputs = {
   title: string;
@@ -182,10 +183,11 @@ const AddImageForm = () => {
                   </div>
 
                   <div className="col-span-2">
-                    <RichText
+                  <DailyTimesEditor name="description" />
+                    {/* <RichText
                       name="description"
                       placeholder={"বিস্তারিত বর্ণনা"}
-                    />
+                    /> */}
                   </div>
                 </div>
               </section>
