@@ -25,17 +25,17 @@ const AllImages = () => {
   const [openZoom, setOpenZoom] = React.useState(false);
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
   const [currentPage, setCurrentPage] = React.useState(1);
-  const limit = 20;
+
 
   const [params, setParams] = React.useState<TQueryParam[]>([]);
-  const { data, isLoading, isFetching, refetch } = useGetAllImagesQuery([
+  const { data, isLoading, refetch } = useGetAllImagesQuery([
     ...params,
   ]) as any;
   console.log(data);
 
   React.useEffect(() => {
     refetch();
-  }, [currentPage]);
+  }, [currentPage, refetch]);
 
   const [deleteImage] = useDeleteImagesMutation();
 

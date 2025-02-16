@@ -118,13 +118,35 @@ const NewsDataTable = () => {
     {
       accessorKey: "shortDescription",
       header: () => <span className="font-bold">Short Description</span>,
+      cell: ({ row }) => {
+        const description = row.original.description;
+        const maxLength = 50; // Maximum number of characters to show
+        const slicedDescription = description.length > maxLength 
+          ? `${description.slice(0, maxLength)}...` 
+          : description;
+    
+        return <span>{slicedDescription}</span>;
+      },
     },
     {
       accessorKey: "description",
       header: () => <span className="font-bold">Description</span>,
       cell: ({ row }) => {
         const description = row.original.description;
-        const maxLength = 150; // Maximum number of characters to show
+        const maxLength = 100; // Maximum number of characters to show
+        const slicedDescription = description.length > maxLength 
+          ? `${description.slice(0, maxLength)}...` 
+          : description;
+    
+        return <span>{slicedDescription}</span>;
+      },
+    },
+    {
+      accessorKey: "tags",
+      header: () => <span className="font-bold">Tags</span>,
+      cell: ({ row }) => {
+        const description = row.original.description;
+        const maxLength = 100; // Maximum number of characters to show
         const slicedDescription = description.length > maxLength 
           ? `${description.slice(0, maxLength)}...` 
           : description;
@@ -157,13 +179,17 @@ const NewsDataTable = () => {
           filterPlaceholder="Search by Category"
           pageSize={10}
           selectOptions={{
-            key: "newsType",
+            key: "category",
             options: [
-              { label: "Politics", value: "Politics" },
-              { label: "Economy", value: "Economy" },
-              { label: "Sports", value: "Sports" },
-              { label: "Entertainment", value: "Entertainment" },
-              { label: "Education", value: "Education" },
+              { label: "বিনোদন", value: "বিনোদন" },
+              { label: "উপসম্পাদকীয়", value: "উপসম্পাদকীয়" },
+              { label: "জাতীয়", value: "জাতীয়" },
+              { label: "লাইফ স্টাইল", value: "লাইফ স্টাইল" },
+              { label: "ভ্রমণ ও পর্যটন", value: "ভ্রমণ ও পর্যটন" },
+              { label: "স্বাস্থ্য", value: "স্বাস্থ্য" },
+              { label: "শিক্ষা", value: "শিক্ষা" },
+              { label: "ধর্ম ও ইসলাম", value: "ধর্ম ও ইসলাম" },
+              { label: "চাকরি", value: "চাকরি" },
             ],
             placeholder: "Select News Type",
           }}

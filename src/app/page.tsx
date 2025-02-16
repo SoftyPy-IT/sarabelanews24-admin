@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,7 @@ type FormData = {
 
 
 const ParticleBackground = () => {
-  const backgroundTexts = ["সত্যের সন্ধানে সব সময়", "daytimes24"];
+  const backgroundTexts = useMemo(() => ["সত্যের সন্ধানে সব সময়", "daytimes24"], []);
   const [textInstances, setTextInstances] = useState<
     {
       text: string;
@@ -45,14 +46,17 @@ const ParticleBackground = () => {
     animationDelay: `${Math.random() * 3}s`,
   });
 
-  const generateTextInstances = (count: number) => {
+
+
+
+  const generateTextInstances = useCallback((count: number) => {
     const instances: {
       text: string;
       id: string;
       position: { top: string; left: string; animationDelay: string };
     }[] = [];
     for (let i = 0; i < count; i++) {
-      backgroundTexts.forEach((text) => {
+      backgroundTexts.forEach((text:any) => {
         instances.push({
           text,
           id: `${text}-${i}`,
@@ -61,13 +65,13 @@ const ParticleBackground = () => {
       });
     }
     return instances;
-  };
-
+  }, [backgroundTexts]);
+  
   useEffect(() => {
-    // Generate positions only on the client
     const instances = generateTextInstances(10);
     setTextInstances(instances);
-  }, []);
+  }, [generateTextInstances]);
+
 
   return (
     <div className="absolute inset-0 overflow-hidden">
