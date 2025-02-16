@@ -15,19 +15,31 @@ import Swal from "sweetalert2";
 import TopBar from "./TopBar";
 import Loading from "@/app/loading";
 import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+
+import parse from "html-react-parser";
+
+const tagColors = [
+  "border-blue-500 text-blue-500",
+  "border-green-500 text-green-500",
+  "border-red-500 text-red-500",
+  "border-black text-black",
+  "border-purple-500 text-purple-500",
+  "border-pink-500 text-pink-500",
+  "border-orange-500 text-orange-500",
+  "border-gray-500 text-gray-500",
+];
 
 const NewsDataTable = () => {
   const router = useRouter();
 
-  // API call
   const { data, isLoading, isError } = useGetAllNewsQuery({});
   const [deleteNews] = useDeleteNewsMutation();
 
   if (isLoading) {
     return <Loading />;
   }
-  // Map data to match the columns
-  // Ensure `newsData` is always an array
+
   const newsData =
     data?.news?.map((item: any, index: any) => ({
       id: item._id,
@@ -35,13 +47,9 @@ const NewsDataTable = () => {
       images: item.images || "N/A",
       title: item.newsTitle || "N/A",
       category: item.category?.name || "N/A",
-      // createdAt: new Date(item.createdAt).toLocaleString(),
-      // date: new Date(item.date).toLocaleDateString(),
+      publishedDate: new Date(item.publishedDate).toLocaleDateString(),
       description: item.description || "N/A",
-      // imageTagline: item.imageTagline || "N/A",
-      // metaTitle: item.metaTitle || "N/A",
-      // metaDescription: item.metaDescription || "N/A",
-      // newsCategory: item.newsCategory || "N/A",
+      newsTag: item.newsTag || [],
       newsType: item.newsType || "N/A",
       shortDescription: item.shortDescription || "N/A",
       slug: item.slug || "N/A",
@@ -80,14 +88,19 @@ const NewsDataTable = () => {
   const columns: ColumnDef<any, any>[] = [
     {
       accessorKey: "slNo",
-      header: () => <span className="font-bold">SL. No.</span>,
+      header: () => <div className="w-10 font-bold">SL. No.</div>,
+    },
+    {
+      accessorKey: "publishedDate",
+      header: () => <div className="w-20 font-bold">Pub. Date</div>,
     },
     {
       accessorKey: "images",
-      header: () => <span className="font-bold">Images</span>,
+      header: () => (
+        <span className="font-bold flex justify-center">Images</span>
+      ),
       cell: ({ row }) => {
         const images = row.original.images;
-        // Handle array of images or single image string
         const imageUrl = Array.isArray(images) ? images[0] : images;
 
         return imageUrl && imageUrl !== "N/A" ? (
@@ -109,49 +122,58 @@ const NewsDataTable = () => {
     },
     {
       accessorKey: "title",
-      header: () => <span className="font-bold">Title</span>,
+      header: () => (
+        <span className="font-bold ">Title</span>
+      ),
     },
     {
       accessorKey: "category",
-      header: () => <span className="font-bold">Category</span>,
+      header: () => <div className="w-32 font-bold ">Category</div>,
     },
+
     {
       accessorKey: "shortDescription",
-      header: () => <span className="font-bold">Short Description</span>,
+      header: () => (
+        <span className="font-bold flex justify-center">Short Description</span>
+      ),
       cell: ({ row }) => {
-        const description = row.original.description;
-        const maxLength = 50; // Maximum number of characters to show
-        const slicedDescription = description.length > maxLength 
-          ? `${description.slice(0, maxLength)}...` 
-          : description;
-    
-        return <span>{slicedDescription}</span>;
+        const description = row.original.shortDescription || "";
+        const maxLength = 30;
+        const slicedDescription =
+          description.length > maxLength
+            ? `${description.slice(0, maxLength)}...`
+            : description;
+
+        return <div>{parse(slicedDescription)}</div>;
       },
     },
+
     {
-      accessorKey: "description",
-      header: () => <span className="font-bold">Description</span>,
+      accessorKey: "newsTag",
+      header: () => (
+        <div className="w-32 font-bold flex justify-center">Tags</div>
+      ),
       cell: ({ row }) => {
-        const description = row.original.description;
-        const maxLength = 100; // Maximum number of characters to show
-        const slicedDescription = description.length > maxLength 
-          ? `${description.slice(0, maxLength)}...` 
-          : description;
-    
-        return <span>{slicedDescription}</span>;
-      },
-    },
-    {
-      accessorKey: "tags",
-      header: () => <span className="font-bold">Tags</span>,
-      cell: ({ row }) => {
-        const description = row.original.description;
-        const maxLength = 100; // Maximum number of characters to show
-        const slicedDescription = description.length > maxLength 
-          ? `${description.slice(0, maxLength)}...` 
-          : description;
-    
-        return <span>{slicedDescription}</span>;
+        const tags = row.original.newsTag;
+        return (
+        
+          <div className="grid grid-cols-2 gap-2">
+          {tags.map((tag: string, index: number) => {
+            const colorClass = tagColors[index % tagColors.length];
+  
+            return (
+              <Badge
+                key={index}
+                variant="outline"
+                className={`px-3 py-1 rounded-full flex justify-center items-center  ${colorClass}`}
+
+              >
+                {tag}
+              </Badge>
+            );
+          })}
+        </div>
+        );
       },
     },
     {
@@ -175,8 +197,8 @@ const NewsDataTable = () => {
         <DataTable
           columns={columns}
           data={newsData ?? []}
-          filterKey="category"
-          filterPlaceholder="Search by Category"
+          filterKey="publishedDate"
+          filterPlaceholder="Search by Published Date"
           pageSize={10}
           selectOptions={{
             key: "category",

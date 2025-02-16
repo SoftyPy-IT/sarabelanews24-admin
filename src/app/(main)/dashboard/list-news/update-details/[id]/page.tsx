@@ -229,23 +229,6 @@ const Page = ({ params }: newsProps) => {
     }
   };
 
-  // const handleImageSelect = (images: any[]) => {
-  //   if (openSheetIndex === null) {
-  //     setMainSelectedFiles(images.map((img) => ({ url: img.url })));
-  //   } else {
-  //     const newTagFiles = [...tagSelectedFiles];
-  //     newTagFiles[openSheetIndex] = images.map((img) => ({ url: img.url }));
-  //     setTagSelectedFiles(newTagFiles);
-  //   }
-  // };
-
-  // Update handleRemove function to sync with form data
-  // const handleRemove = (index: number) => {
-  //   const updatedFiles = [...mainSelectedFiles];
-  //   updatedFiles.splice(index, 1);
-  //   setMainSelectedFiles(updatedFiles);
-  //   form.setValue("selectedImage", updatedFiles[0]?.url || ""); // Update form value
-  // };
 
   if (isLoading) {
     return <Loading/>;
@@ -423,7 +406,7 @@ const Page = ({ params }: newsProps) => {
                     <div className="col-span-2">
                       <RichText
                         name="description"
-                        placeholder="বিস্তারিত বর্ণনা"
+                        // placeholder="বিস্তারিত বর্ণনা"
                       />
                     </div>
                   </div>
