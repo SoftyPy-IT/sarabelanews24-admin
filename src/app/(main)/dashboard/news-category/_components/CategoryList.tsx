@@ -15,6 +15,7 @@ import React from "react";
 import { Trash2 } from "lucide-react";
 import TopBar from "./TopBar";
 import Edit from "./Edit";
+import Loader from "@/components/Loader";
 
 const CategoryList = () => {
   const router = useRouter();
@@ -25,7 +26,7 @@ const CategoryList = () => {
   const [deleteCategories] = useDeleteCategoriesMutation();
 
   if (isLoading) {
-    return <h1>Loading...</h1>;
+    return  <Loader/>;
   }
 
   const newsData =

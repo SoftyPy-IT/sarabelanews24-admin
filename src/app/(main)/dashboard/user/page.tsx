@@ -12,6 +12,7 @@ import {
   useGetAllUserQuery,
 } from "@/redux/dailynews/users.api";
 import toast from "react-hot-toast";
+import Loader from "@/components/Loader";
 
 
 const Page = () => {
@@ -21,7 +22,7 @@ const Page = () => {
   const [deleteUser] = useDeleteUserMutation();
 
   if (isLoading) {
-    return <h1>Loading...</h1>;
+    return  <Loader/>;
   }
 
   // console.log("News data fetched successfully", data);

@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import parse from 'html-react-parser'
 import truncateText from "@/utils/truncateText";
+import Loader from "@/components/Loader";
 
 
 const VideoList = () => {
@@ -23,7 +24,7 @@ const VideoList = () => {
   const [deleteVideoNews] = useDeleteVideoNewsMutation();
 
   if (isLoading) {
-    return <h1>Loading...</h1>;
+    return  <Loader/>;
   }
 
   const videoNewsData =

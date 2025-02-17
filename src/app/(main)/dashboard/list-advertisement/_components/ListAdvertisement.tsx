@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import Loader from "@/components/Loader";
 import {
   useDeleteAdvertisementMutation,
   useGetAllAdvertisementQuery,
@@ -22,7 +23,7 @@ const ListAdvertisement = () => {
   const [deleteAdvertisement] = useDeleteAdvertisementMutation();
 
   if (isLoading) {
-    return <h1>Loading...</h1>;
+    return <Loader/>;
   }
 
   // console.log("News data fetched successfully", data);
