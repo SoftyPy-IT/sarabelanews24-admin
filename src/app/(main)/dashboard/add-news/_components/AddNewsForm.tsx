@@ -5,11 +5,10 @@ import { Form } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
-import RichText from "@/utils/Form_Inputs/RichText";
 import TextArea from "@/utils/Form_Inputs/TextArea";
 import TextInput from "@/utils/Form_Inputs/TextInput";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
-import { CircleX, Delete, ImageUpIcon, PlusIcon } from "lucide-react";
+import { CircleX, ImageUpIcon } from "lucide-react";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import { useCreateNewsMutation } from "@/redux/dailynews/news.api";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
@@ -44,8 +43,6 @@ type Inputs = {
   reporterName: string;
   currentNews: boolean;
   displayLocation: string;
-  // firstPage: boolean;
-
   selectedImage: string;
   imageTagline: string;
   photojournalistName: string;
@@ -63,7 +60,6 @@ type Inputs = {
   publishedDate: string;
   shortDescription: string;
   description: string;
-  // news_tags: string | string[];
 
   tags: {
     imageTagline: string;
@@ -179,24 +175,34 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       postDate: new Date().toISOString(),
       images: mainSelectedFiles.map((item) => item.url),
     };
-    // console.log("modify value:",modifyData);
-    // console.log(data);
-
+  
     try {
       const res = await createNews(modifyData).unwrap();
-      // console.log("response:",res)
       if (res) {
-        toast.success("News Create Successfully!");
+        toast.success("News Created Successfully!");
         router.push("/dashboard/list-news");
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error("Submission error:", error);
+  
+      if (error?.data?.errorSources && Array.isArray(error.data.errorSources)) {
+        // Display each validation error in toast
+        error.data.errorSources.forEach((err: any) => {
+          toast.error(`${err.message}`); // Show only the message
+        });
+      } else if (error?.data?.message) {
+        toast.error(error.data.message); // Show general error message
+      } else {
+        toast.error("Something went wrong!"); // Fallback error
+      }
     }
   };
+  
+  
 
   return (
     <>
-      {/* <TopBar /> */}
+
       <div>
         <Form {...form}>
           <div className="grid grid-cols-12 gap-4 xl:6">

@@ -19,17 +19,14 @@ const photoNewsApi = baseApi.injectEndpoints({
       invalidatesTags: ["photoNews"],
     }),
 
-
     getAllPhotoNews: builder.query({
       query: () => ({
         url: "/photonews",
         method: "GET",
-    
       }),
       providesTags: ["photoNews"],
     }),
 
-    
     getSinglePhotoNews: builder.query({
       query: (id) => ({
         url: `/photonews/${id}`,
@@ -37,6 +34,14 @@ const photoNewsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["photoNews"],
     }),
+    getPhotoNewsByID: builder.query({
+      query: (id) => ({
+        url: `/photonews/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["photoNews"],
+    }),
+
     updatePhotoNews: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `/photonews/${id}`,
@@ -49,9 +54,10 @@ const photoNewsApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useCreatePhotoNewsMutation, 
-  useDeletePhotoNewsMutation, 
+  useCreatePhotoNewsMutation,
+  useDeletePhotoNewsMutation,
   useGetAllPhotoNewsQuery,
   useGetSinglePhotoNewsQuery,
-  useUpdatePhotoNewsMutation
+  useUpdatePhotoNewsMutation,
+  useGetPhotoNewsByIDQuery,
 } = photoNewsApi;

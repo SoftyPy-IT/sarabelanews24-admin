@@ -60,6 +60,7 @@ const NewsDataTable = () => {
   };
 
   const handleDelete = async (id: string) => {
+    console.log(id)
     try {
       Swal.fire({
         title: "Are you sure?",
@@ -120,11 +121,41 @@ const NewsDataTable = () => {
         );
       },
     },
+  
     {
       accessorKey: "title",
       header: () => (
         <span className="font-bold ">Title</span>
       ),
+    
+    },
+    {
+      accessorKey: "newsTag",
+      header: () => (
+        <div className="w-32 font-bold flex justify-center">Tags</div>
+      ),
+      cell: ({ row }) => {
+        const tags = row.original.newsTag;
+        return (
+
+          <div className="grid grid-cols-2 gap-2">
+            {tags.map((tag: string, index: number) => {
+              const colorClass = tagColors[index % tagColors.length];
+
+              return (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className={`p-1 rounded-full flex justify-center items-center  ${colorClass}`}
+
+                >
+                  {tag}
+                </Badge>
+              );
+            })}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "category",
@@ -148,34 +179,7 @@ const NewsDataTable = () => {
       },
     },
 
-    {
-      accessorKey: "newsTag",
-      header: () => (
-        <div className="w-32 font-bold flex justify-center">Tags</div>
-      ),
-      cell: ({ row }) => {
-        const tags = row.original.newsTag;
-        return (
-        
-          <div className="grid grid-cols-2 gap-2">
-          {tags.map((tag: string, index: number) => {
-            const colorClass = tagColors[index % tagColors.length];
   
-            return (
-              <Badge
-                key={index}
-                variant="outline"
-                className={`px-3 py-1 rounded-full flex justify-center items-center  ${colorClass}`}
-
-              >
-                {tag}
-              </Badge>
-            );
-          })}
-        </div>
-        );
-      },
-    },
     {
       accessorKey: "Action",
       header: () => <span className="font-bold">Action</span>,

@@ -53,8 +53,10 @@ const Page = () => {
         confirmButtonText: "Yes, delete it!",
       }).then(async (result) => {
         if (result.isConfirmed) {
-          await deleteUser(id).unwrap();
+        const res=   await deleteUser(id).unwrap();
+         if(res.successfully){
           Swal.fire("Deleted!", "Your activity has been deleted.", "success");
+         }
         }
       });
     } catch (err: any) {

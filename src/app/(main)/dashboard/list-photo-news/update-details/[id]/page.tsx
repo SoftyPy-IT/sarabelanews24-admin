@@ -19,8 +19,7 @@ import {
 
 import toast from "react-hot-toast";
 import {
-  useCreatePhotoNewsMutation,
-  useGetSinglePhotoNewsQuery,
+  useGetPhotoNewsByIDQuery,
   useUpdatePhotoNewsMutation,
 } from "@/redux/dailynews/photoNews.api";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
@@ -50,7 +49,7 @@ type newsProps = {
 const Update = ({ params }: newsProps) => {
   const { id } = use(params);
   const [updatePhotoNews] = useUpdatePhotoNewsMutation();
-  const { data: singleData } = useGetSinglePhotoNewsQuery(id);
+  const { data: singleData } = useGetPhotoNewsByIDQuery(id);
 
   const [mainSelectedFiles, setMainSelectedFiles] = React.useState<
     { url: string }[]
@@ -116,45 +115,6 @@ const Update = ({ params }: newsProps) => {
       setTagSelectedFiles(tagImagesArray);
     }
   }, [singleData, form]);
-
-  // useEffect(() => {
-  //   if (singleData && Object.keys(singleData).length > 0) {
-  //     const formatDate = (isoString: string) =>
-  //       isoString ? isoString.slice(0, 16) : "";
-
-  //     form.reset({
-  //       title: singleData.title || "",
-  //       imgTagline: singleData.imgTagline || "",
-  //       photos: singleData.tagImages || "",
-  //       adminName: singleData.adminName || "",
-  //       postDate: formatDate(singleData.postDate),
-  //       description: singleData.description || "",
-  //       selectedImage: singleData.images?.[0] || "",
-  //       galleries: singleData.tags || [
-  //         { imageTagline: "", tagImages: "", selectedImage: "" },
-  //       ],
-  //     });
-
-  //     // Handle main images
-  //     const images = singleData.images?.map((url: string) => ({ url })) || [];
-
-  //     setMainSelectedFiles(images);
-
-  //     // Handle tag images
-  //     if (singleData.tagImages) {
-  //       // Split the comma-separated string into an array of URLs
-  //       const tagImagesArray: string[] = singleData.tagImages[0].split(",");
-  //       // Convert each URL into the required format
-  //       const formattedTagImages: { url: string }[][] = [
-  //         tagImagesArray.map((url: string) => ({
-  //           url: url.trim(),
-  //         })),
-  //       ];
-  //       setTagSelectedFiles(formattedTagImages);
-  //     }
-  //   }
-  // }, [singleData, form]);
-
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "galleries",
@@ -414,7 +374,7 @@ const Update = ({ params }: newsProps) => {
               className="w-[400px] text-white "
               onClick={form.handleSubmit(onSubmit)}
             >
-              Submit
+              Update
             </Button>
           </section>
         </Form>

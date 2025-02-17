@@ -1,77 +1,68 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-"use client";
+"use client"
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { Form } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Eye, EyeOff } from "lucide-react";
-import TextInput from "@/utils/Form_Inputs/TextInput";
-import axios from "axios";
-import toast from "react-hot-toast";
-import { storeUserInfo } from "@/services/actions/auth.services";
-import { setCookie } from "@/axios/Cookies";
-
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { useForm, type SubmitHandler } from "react-hook-form"
+import { Form } from "@/components/ui/form"
+import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
+import { motion } from "framer-motion"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { Input } from "@/components/ui/input"
+import { Eye, EyeOff } from "lucide-react"
+import TextInput from "@/utils/Form_Inputs/TextInput"
+import axios from "axios"
+import toast from "react-hot-toast"
+import { setCookie } from "@/axios/Cookies"
+import logo from "../../src/logo/logo2.png"
 type FormData = {
-  name: string;
-  password: string;
-};
-
+  name: string
+  password: string
+}
 
 const ParticleBackground = () => {
-  const backgroundTexts = useMemo(() => ["সত্যের সন্ধানে সব সময়", "daytimes24"], []);
+  const backgroundTexts = useMemo(() => ["সত্যের সন্ধানে সব সময়", "sarabelanews24"], [])
   const [textInstances, setTextInstances] = useState<
     {
-      text: string;
-      id: string;
-      position: { top: string; left: string; animationDelay: string };
+      text: string
+      id: string
+      position: { top: string; left: string; animationDelay: string }
     }[]
-  >([]);
+  >([])
 
   const generateRandomPosition = () => ({
     top: `${Math.random() * 100}%`,
     left: `${Math.random() * 100}%`,
     animationDelay: `${Math.random() * 3}s`,
-  });
+  })
 
+  const generateTextInstances = useCallback(
+    (count: number) => {
+      const instances: {
+        text: string
+        id: string
+        position: { top: string; left: string; animationDelay: string }
+      }[] = []
+      for (let i = 0; i < count; i++) {
+        backgroundTexts.forEach((text: any) => {
+          instances.push({
+            text,
+            id: `${text}-${i}`,
+            position: generateRandomPosition(),
+          })
+        })
+      }
+      return instances
+    },
+    [backgroundTexts],
+  )
 
-
-
-  const generateTextInstances = useCallback((count: number) => {
-    const instances: {
-      text: string;
-      id: string;
-      position: { top: string; left: string; animationDelay: string };
-    }[] = [];
-    for (let i = 0; i < count; i++) {
-      backgroundTexts.forEach((text:any) => {
-        instances.push({
-          text,
-          id: `${text}-${i}`,
-          position: generateRandomPosition(),
-        });
-      });
-    }
-    return instances;
-  }, [backgroundTexts]);
-  
   useEffect(() => {
-    const instances = generateTextInstances(10);
-    setTextInstances(instances);
-  }, [generateTextInstances]);
-
+    const instances = generateTextInstances(10)
+    setTextInstances(instances)
+  }, [generateTextInstances])
 
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -89,11 +80,11 @@ const ParticleBackground = () => {
                 y: ["0%", "50%", "100%"],
               }}
               transition={{
-                repeat: Infinity,
+                repeat: Number.POSITIVE_INFINITY,
                 repeatDelay: 0.8,
                 duration: 4,
                 ease: "easeInOut",
-                delay: parseFloat(instance.position.animationDelay),
+                delay: Number.parseFloat(instance.position.animationDelay),
               }}
             >
               {instance.text}
@@ -102,55 +93,43 @@ const ParticleBackground = () => {
         </div>
       </div>
     </div>
-  );
-};
-
+  )
+}
 
 const Page = () => {
-  const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter()
+  const [showPassword, setShowPassword] = useState(false)
 
   const form = useForm<FormData>({
     defaultValues: {
       name: "",
       password: "",
     },
-  });
-
-
+  })
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/v1/auth/login", data);
-      console.log(res)
+      const res = await axios.post("http://localhost:5000/api/v1/auth/login", data)
 
-      // Correctly accessing the accessToken
-      const accessToken = res?.data?.data?.accessToken;
+      const accessToken = res?.data?.data?.accessToken
 
       if (accessToken) {
+        setCookie("accessToken", accessToken, { expires: 7 })
 
-
-        // Storing the accessToken in a cookie
-        setCookie("accessToken", accessToken, { expires: 7 }); // Expires in 7 days
-
-        // Optional: Store in localStorage if needed
-        localStorage.setItem("accessToken", accessToken);
-
-        // Optional: Navigate to a dashboard or display success message
-        router.push("/dashboard");
-        toast.success("Login successful!");
+        localStorage.setItem("accessToken", accessToken)
+        router.push("/dashboard")
+        toast.success("Login successful!")
       } else {
-        console.error("Access Token not found in response");
+        console.error("Access Token not found in response")
       }
     } catch (error) {
-      console.error("Error during login:", error);
+      console.error("Error during login:", error)
     }
-  };
-
+  }
 
   const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+    setShowPassword(!showPassword)
+  }
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-2 md:px-0 overflow-hidden">
@@ -178,24 +157,19 @@ const Page = () => {
                   className="relative w-32 h-32"
                 >
                   <Image
-                    src="/assets/dailyTimes24.png"
-                    alt="Daily Times 24"
+                    src={logo || "/placeholder.svg"}
+                    alt="sarabelanews24"
                     layout="fill"
                     className="object-contain"
                     priority
                   />
                 </motion.div>
               </div>
-              <CardTitle className="text-2xl font-semibold text-center text-gray-900">
-                সত্যের সন্ধানে সব সময়
-              </CardTitle>
+              <CardTitle className="text-2xl font-semibold text-center text-gray-900">সত্যের সন্ধানে সব সময়</CardTitle>
             </CardHeader>
 
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <CardContent className="space-y-4">
                   <TextInput
                     control={form.control}
@@ -230,17 +204,11 @@ const Page = () => {
                       onClick={togglePasswordVisibility}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
                     >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
-                      )}
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
                   </div>
                   {form.formState.errors.password && (
-                    <p className="text-sm text-red-500">
-                      {form.formState.errors.password.message}
-                    </p>
+                    <p className="text-sm text-red-500">{form.formState.errors.password.message}</p>
                   )}
                 </CardContent>
 
@@ -276,7 +244,8 @@ const Page = () => {
         </motion.div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Page;
+export default Page
+

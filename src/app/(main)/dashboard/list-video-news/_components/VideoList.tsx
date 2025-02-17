@@ -12,7 +12,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
-
+import parse from 'html-react-parser'
+import truncateText from "@/utils/truncateText";
 
 
 const VideoList = () => {
@@ -24,8 +25,6 @@ const VideoList = () => {
   if (isLoading) {
     return <h1>Loading...</h1>;
   }
-
-  // console.log("News data fetched successfully", data);
 
   const videoNewsData =
     data?.videoNews?.map((item: any, index: any) => ({
@@ -46,7 +45,7 @@ const VideoList = () => {
       description: item.description || "N/A",
       adminName: item.adminName || "N/A",
       slug: item.slug || "N/A",
-    })) || []; 
+    })) || [];
 
   const handleEdit = (rowData: any) => {
     router.push(`/dashboard/list-video-news/update-details/${rowData.id}`);
@@ -126,7 +125,13 @@ const VideoList = () => {
     {
       accessorKey: "description",
       header: "Description",
+      cell: ({ row }) => (
+        <div className="line-clamp-2 text-sm text-gray-700">
+          {parse(truncateText(row.original.description, 100))}
+        </div>
+      ),
     },
+
     {
       accessorKey: "Action",
       header: "Action",

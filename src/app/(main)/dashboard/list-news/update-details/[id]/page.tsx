@@ -86,8 +86,8 @@ const Page = ({ params }: newsProps) => {
   const [firstPage, setFirstPage] = useState("");
   const [currentNews, setCurrentNews] = useState<boolean>(false);
   const [updateNews] = useUpdateNewsMutation();
-  const { data: singleData } = useGetSingleNewsQuery(id);
 
+  const { data: singleData } = useGetSingleNewsQuery(id);
   const [mainSelectedFiles, setMainSelectedFiles] = React.useState<
     { url: string }[]
   >([]);
@@ -192,14 +192,15 @@ const Page = ({ params }: newsProps) => {
 
 
   const onSubmit = async (data: Inputs) => {
+    
     const modifyData = {
       ...data,
       category: data.category,
       postDate: new Date().toISOString(),
       images: mainSelectedFiles.map((item) => item.url),
     };
-    // console.log("modify value:",modifyData);
-    // console.log(data);
+    console.log("modify value:", modifyData);
+    console.log(data);
 
     try {
       const res = await updateNews({ ...modifyData, id }).unwrap();
@@ -231,7 +232,7 @@ const Page = ({ params }: newsProps) => {
 
 
   if (isLoading) {
-    return <Loading/>;
+    return <Loading />;
   }
 
   return (
@@ -406,7 +407,7 @@ const Page = ({ params }: newsProps) => {
                     <div className="col-span-2">
                       <RichText
                         name="description"
-                        // placeholder="বিস্তারিত বর্ণনা"
+                      // placeholder="বিস্তারিত বর্ণনা"
                       />
                     </div>
                   </div>
@@ -427,87 +428,7 @@ const Page = ({ params }: newsProps) => {
                     </div>
                   </div>
                 </section>
-                {/* <section className="bg-white border border-gray-300 rounded p-5">
-                  <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
-                  <div className="col-span-2">
-                    {fields.map((field, index) => (
-                      <div key={field.id} className="flex flex-col space-y-3">
-                        <div className="flex justify-between items-center gap-2 p-4">
-                          <Sheet>
-                            <SheetTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className="p-8 border rounded-full"
-                              >
-                                <ImageUpIcon color="red" size={50} />
-                                Add Image
-                              </Button>
-                            </SheetTrigger>
-                            <SheetContent
-                              side="right"
-                              style={{ maxWidth: "800px" }}
-                            >
-                              <AllImgModal
-                                onImageSelect={(images: any) => {
-                                  const newTagFiles = [...tagSelectedFiles];
-                                  newTagFiles[index] = images;
-                                  setTagSelectedFiles(newTagFiles);
-                                }}
-                                onClose={() => setOpenSheetIndex(null)}
-                              />
-                            </SheetContent>
-                          </Sheet>
-                          <div className="flex justify-end gap-2">
-                            {fields.length > 1 && (
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => remove(index)}
-                              >
-                                <Delete className="w-4 h-4" />
-                              </Button>
-                            )}
-                            {index === fields.length - 1 && (
-                              <Button
-                                type="button"
-                                variant="default"
-                                size="sm"
-                                onClick={() =>
-                                  append({
-                                    imageTagline: "",
-                                    photojournalistName: "",
-                                    selectedImage: "",
-                                  })
-                                }
-                              >
-                                <PlusIcon className="w-4 h-4" />
-                              </Button>
-                            )}
-                          </div>
-                        </div> */}
-                {/* Tag Image Display */}
-                {/* {tagSelectedFiles[index]?.map((file, imgIndex) => (
-                          <Image
-                            key={imgIndex}
-                            src={file.url}
-                            alt={`Preview ${imgIndex}`}
-                            width={130}
-                            height={100}
-                          />
-                        ))}
-                        <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
-                          <TextInput
-                            control={form.control}
-                            name="imageTagline"
-                            placeholder="ইমেজ ট্যাগ লাইন"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section> */}
-
+                
                 {/* News showing position */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">
@@ -570,10 +491,10 @@ const Page = ({ params }: newsProps) => {
                     />
                     {/* <TagSelector name="metaKeywords" label="Meta Keywords" /> */}
                     <TagSelector
-                    name="metaKeywords"
-                    label="Meta Keywords"
-                    defaultValues={singleData?.metaKeywords || []}
-                  />
+                      name="metaKeywords"
+                      label="Meta Keywords"
+                      defaultValues={singleData?.metaKeywords || []}
+                    />
                   </CardContent>
                 </section>
               </div>
@@ -582,7 +503,7 @@ const Page = ({ params }: newsProps) => {
             {/* Submit Section */}
             <section className="my-4 flex justify-end">
               <Button type="submit" className="w-[400px] text-white">
-                Submit
+                Update
               </Button>
             </section>
           </form>
