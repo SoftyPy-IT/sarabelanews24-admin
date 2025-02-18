@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { TQueryParam } from "@/types/api.types";
 import { baseApi } from "../api/baseApi";
 
 const videoNewsApi = baseApi.injectEndpoints({
@@ -18,14 +20,31 @@ const videoNewsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["videoNews"],
     }),
+
     getAllVideoNews: builder.query({
-      query: () => ({
-        url: "/video-news",
-        method: "GET",
-    
-      }),
+      query: (args) => {
+        const queryParams = new URLSearchParams();
+
+        if (args) {
+          args.forEach((item: TQueryParam) => {
+            queryParams.append(item.name, item.value as string);
+          });
+        }
+
+        return {
+          url: `/video-news?${queryParams.toString()}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response: any) => {
+        return {
+          data: response.videoNews,
+          meta: response.meta,
+        };
+      },
       providesTags: ["videoNews"],
     }),
+
     getSingleVideoNews: builder.query({
       query: (id) => ({
         url: `/video-news/${id}`,
@@ -45,9 +64,9 @@ const videoNewsApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useCreateVideoNewsMutation, 
-  useDeleteVideoNewsMutation, 
+  useCreateVideoNewsMutation,
+  useDeleteVideoNewsMutation,
   useGetAllVideoNewsQuery,
   useGetSingleVideoNewsQuery,
-  useUpdateVideoNewsMutation
+  useUpdateVideoNewsMutation,
 } = videoNewsApi;
