@@ -32,10 +32,11 @@ const Layout = ({ children }: { children: ReactNode }) => {
             <X className="h-6 w-6" />
           </button>
         </div>
-        <div className="h-[calc(100vh-64px)] overflow-y-auto">
+        <div className="h-[calc(100vh-64px)] overflow-y-scroll ">
           <Aside />
         </div>
       </aside>
+
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col w-full overflow-hidden">

@@ -19,6 +19,7 @@ import { useCreateCategoriesMutation } from "@/redux/dailynews/category.api";
 
 type Inputs = {
   name: string;
+  slug: string;
 };
 
 const TopBar = () => {
@@ -27,6 +28,7 @@ const TopBar = () => {
   const form = useForm<Inputs>({
     defaultValues: {
       name: "",
+      slug: "",
     },
   });
 
@@ -85,6 +87,16 @@ const TopBar = () => {
                       placeholder="Enter Category Name"
                       rules={{
                         required: "Category Name is required",
+                      }}
+                    />
+                  </div>
+                  <div className="mt-2 ">
+                    <TextInput
+                      control={form.control}
+                      name="slug"
+                      placeholder="Enter Slug Bangla"
+                      rules={{
+                        required: "Slug is required",
                       }}
                     />
                   </div>

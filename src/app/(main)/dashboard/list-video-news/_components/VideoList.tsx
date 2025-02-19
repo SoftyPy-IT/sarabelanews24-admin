@@ -12,41 +12,61 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
-
-
+import parse from 'html-react-parser'
+import truncateText from "@/utils/truncateText";
+import Loader from "@/components/Loader";
+import { useState } from "react";
+import { TMeta, TQueryParam } from "@/types/api.types";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
+import { updatePaginationParams } from "@/utils/pagination";
+import { Search } from "lucide-react";
 
 const VideoList = () => {
   const router = useRouter();
-
-  const { data, isLoading, isError } = useGetAllVideoNewsQuery({});
+  const [params, setParams] = useState<TQueryParam[]>([
+    { name: "page", value: "1" },
+    { name: "limit", value: "5" },
+  ])
+  const [searchQuery, setSearchQuery] = useState("")
   const [deleteVideoNews] = useDeleteVideoNewsMutation();
 
+  const { data, isLoading, isError } = useGetAllVideoNewsQuery(params);
+
+  const videoNews = data?.data
+  const meta = data?.meta as TMeta
+
   if (isLoading) {
-    return <h1>Loading...</h1>;
+    return <Loader />;
   }
 
-  // console.log("News data fetched successfully", data);
 
-  const videoNewsData =
-    data?.videoNews?.map((item: any, index: any) => ({
-      id: item._id,
-      slNo: index + 1,
-      reporterName: item.reporterName || "N/A",
-      reporterType: item.reporterType || "N/A",
-      images: item.images || "N/A",
-      photojournalistName: item.photojournalistName || "N/A",
-      newsTitle: item.newsTitle || "N/A",
-      date: new Date(item.date).toLocaleDateString(),
-      imageTagline: item.imageTagline || "N/A",
-      videioJornalistName: item.videioJornalistName || "N/A",
-      videoUrl: item.videoUrl || "N/A",
-      category: item.category?.name || "N/A",
-      newsType: item.newsType || "N/A",
-      shortDescription: item.shortDescription || "N/A",
-      description: item.description || "N/A",
-      adminName: item.adminName || "N/A",
-      slug: item.slug || "N/A",
-    })) || []; 
+  const videoNewsData = videoNews?.map((item: any, index: any) => ({
+    id: item._id,
+    slNo: index + 1,
+    reporterName: item.reporterName || "N/A",
+    reporterType: item.reporterType || "N/A",
+    images: item.images || "N/A",
+    photojournalistName: item.photojournalistName || "N/A",
+    newsTitle: item.newsTitle || "N/A",
+    date: new Date(item.date).toLocaleDateString(),
+    imageTagline: item.imageTagline || "N/A",
+    videioJornalistName: item.videioJornalistName || "N/A",
+    videoUrl: item.videoUrl || "N/A",
+    category: item.category?.name || "N/A",
+    newsType: item.newsType || "N/A",
+    shortDescription: item.shortDescription || "N/A",
+    description: item.description || "N/A",
+    adminName: item.adminName || "N/A",
+    slug: item.slug || "N/A",
+  })) || [];
 
   const handleEdit = (rowData: any) => {
     router.push(`/dashboard/list-video-news/update-details/${rowData.id}`);
@@ -126,7 +146,13 @@ const VideoList = () => {
     {
       accessorKey: "description",
       header: "Description",
+      cell: ({ row }) => (
+        <div className="line-clamp-2 text-sm text-gray-700">
+          {parse(truncateText(row.original.description, 100))}
+        </div>
+      ),
     },
+
     {
       accessorKey: "Action",
       header: "Action",
@@ -140,27 +166,100 @@ const VideoList = () => {
       ),
     },
   ];
+  const handlePaginationChange = (page: number) => {
+    setParams((prev) => updatePaginationParams(prev, page, meta?.limit || 5))
+  }
 
   return (
     <div className="overflow-x-auto bg-white p-3">
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="h-12 w-[300px] rounded-lg border border-gray-200 pl-10 pr-4 text-sm outline-none focus:border-gray-300"
+        />
+      </div>
       <DataTable
         columns={columns}
         data={videoNewsData ?? []}
-        filterKey="category"
-        filterPlaceholder="Search by Category"
-        pageSize={10}
-        selectOptions={{
-          key: "newsType",
-          options: [
-            { label: "Politics", value: "Politics" },
-            { label: "Economy", value: "Economy" },
-            { label: "Sports", value: "Sports" },
-            { label: "Entertainment", value: "Entertainment" },
-            { label: "Education", value: "Education" },
-          ],
-          placeholder: "Select News Type",
-        }}
+
       />
+      <Pagination className="mt-5">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              onClick={() => handlePaginationChange(meta.page - 1)}
+              className="cursor-pointer"
+            />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink
+              onClick={() => handlePaginationChange(1)}
+              isActive={meta.page === 1}
+              className="cursor-pointer"
+            >
+              1
+            </PaginationLink>
+          </PaginationItem>
+
+          {meta.page > 3 && (
+            <PaginationItem>
+              <PaginationEllipsis className="cursor-pointer" />
+            </PaginationItem>
+          )}
+
+          {[...Array(meta.totalPage)].map((_, i) => {
+            const pageNumber = i + 1;
+            if (
+              pageNumber !== 1 &&
+              pageNumber !== meta.totalPage &&
+              pageNumber >= meta.page - 1 &&
+              pageNumber <= meta.page + 1
+            ) {
+              return (
+                <PaginationItem key={i}>
+                  <PaginationLink
+                    onClick={() => handlePaginationChange(pageNumber)}
+                    isActive={meta.page === pageNumber}
+                    className="cursor-pointer"
+                  >
+                    {pageNumber}
+                  </PaginationLink>
+                </PaginationItem>
+              );
+            }
+            return null;
+          })}
+
+          {meta.page < meta.totalPage - 2 && (
+            <PaginationItem>
+              <PaginationEllipsis className="cursor-pointer" />
+            </PaginationItem>
+          )}
+
+          {meta.totalPage > 1 && (
+            <PaginationItem>
+              <PaginationLink
+                onClick={() => handlePaginationChange(meta.totalPage)}
+                isActive={meta.page === meta.totalPage}
+                className="cursor-pointer"
+              >
+                {meta.totalPage}
+              </PaginationLink>
+            </PaginationItem>
+          )}
+
+          <PaginationItem>
+            <PaginationNext
+              onClick={() => handlePaginationChange(meta.page + 1)}
+              className="cursor-pointer"
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };

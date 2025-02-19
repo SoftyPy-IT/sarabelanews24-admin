@@ -534,7 +534,7 @@ const Update = ({ params }: newsProps) => {
             {/* Submit Section */}
             <section className="my-4 flex justify-end">
               <Button type="submit" className="w-[400px] text-white " onClick={form.handleSubmit(onSubmit)}>
-                Submit
+                Update
               </Button>
             </section>
           

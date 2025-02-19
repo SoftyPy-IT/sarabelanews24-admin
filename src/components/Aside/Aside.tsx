@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import logo from "@public/assets/dailyTimes24.png";
+import logo from "../../../src/logo/logo2.svg";
 import { usePathname } from "next/navigation";
 import {
   Accordion,
@@ -20,8 +20,9 @@ import {
   UserRoundCog,
   GalleryThumbnailsIcon,
   ChartLine,
-  Settings2,
   NotebookIcon,
+  DatabaseBackup,
+  ArchiveRestore,
 } from "lucide-react";
 
 const Aside = () => {
@@ -41,7 +42,7 @@ const Aside = () => {
         { href: "/dashboard/add-news", label: "Add News", icon: PlusIcon },
         {
           href: "/dashboard/news-category",
-          label: "News Category",
+          label: "Category",
           icon: PlusIcon,
         },
         {
@@ -51,6 +52,7 @@ const Aside = () => {
         },
       ],
     },
+
     {
       href: "/Add-Photo-News",
       label: "Photo News",
@@ -79,6 +81,11 @@ const Aside = () => {
           label: "Video List",
           icon: List,
         },
+        {
+          href: "/dashboard/news-category",
+          label: "Category",
+          icon: PlusIcon,
+        },
       ],
     },
     {
@@ -100,7 +107,7 @@ const Aside = () => {
     },
     {
       href: "/img",
-      label: "Gallery",
+      label: "Stock Photo",
       icon: GalleryThumbnailsIcon,
       children: [
         {
@@ -117,29 +124,40 @@ const Aside = () => {
       icon: UserRoundCog,
     },
     {
-      href: "/dashboard/settings",
-      label: "Settings",
-      icon: Settings2,
+      href: "/dashboard",
+      label: "Backup & Settings",
+      icon: DatabaseBackup,
+      children: [
+        {
+          href: "/dashboard/backup",
+          label: "Backup Database",
+          icon: DatabaseBackup,
+        },
+        {
+          href: "/dashboard/restore",
+          label: "Restore Database",
+          icon: ArchiveRestore
+        },
+      ],
     },
   ];
 
   return (
-    <aside className="text-white h-full p-6">
+    <aside className="text-white h-full ">
       {/* Logo and Branding */}
-      <div className="text-center py-4">
+      <div className="text-center">
         <Link
-          href="/"
+          href="/dashboard"
           className="inline-block transition-transform hover:scale-105"
         >
           <Image
             src={logo}
-            alt="Daily Times 24 Logo"
-            width={100}
+            alt="sarabelanews24"
+            width={180}
             height={100}
             priority
           />
         </Link>
-        <p className="text-lg font-bold">সত্যের সন্ধানে সব সময়</p>
       </div>
 
       {/* Navigation Menu */}
@@ -175,7 +193,7 @@ const Aside = () => {
                             "flex items-center px-4 py-2 text-sm  transition-colors",
                             "hover:bg-blue-600/20",
                             pathname === child.href &&
-                              "text-blue-200  border-b-2 border-white"
+                            "text-blue-200  border-b-2 border-white"
                           )}
                         >
                           <child.icon className="w-4 h-4 mr-2" />
@@ -192,7 +210,7 @@ const Aside = () => {
                     "flex items-center px-4 py-3 text-sm font-medium  transition-colors",
                     "hover:bg-blue-600/20",
                     pathname === route.href &&
-                      "text-blue-200 border-b-2 border-white"
+                    "text-blue-200 border-b-2 border-white"
                   )}
                 >
                   <route.icon className="w-5 h-5 mr-2" />

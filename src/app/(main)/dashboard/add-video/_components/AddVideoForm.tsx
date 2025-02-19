@@ -375,7 +375,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                     <div className="col-span-2">
                       <RichText
                         name="description"
-                        placeholder={"বিস্তারিত বর্ণনা "}
+                        // placeholder={"বিস্তারিত বর্ণনা "}
                       />
                     </div>
                   </div>

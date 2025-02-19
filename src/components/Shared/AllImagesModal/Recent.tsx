@@ -41,7 +41,7 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
   const images = allImages?.data;
 
   const handleFolderChange = (value: any) => {
-    setCurrentPage(1); 
+    setCurrentPage(1);
     setParams([
       { name: "page", value: "1" },
       { name: "limit", value: imagesPerPage.toString() },
@@ -63,26 +63,25 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
   };
 
   // Handle page change
- const handlePageChange = (page: number) => {
-  setCurrentPage(page);
-  setParams((prevParams) => {
-    return prevParams.map((param) =>
-      param.name === "page" ? { ...param, value: page.toString() } : param
-    );
-  });
-};
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setParams((prevParams) => {
+      return prevParams.map((param) =>
+        param.name === "page" ? { ...param, value: page.toString() } : param
+      );
+    });
+  };
 
-const handleImagesPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  const newLimit = parseInt(e.target.value, 10);
-  setImagesPerPage(newLimit);
-  setCurrentPage(1); // Reset to first page when changing limit
-  setParams([
-    { name: "page", value: "1" },
-    { name: "limit", value: newLimit.toString() },
-    ...params.filter((param) => param.name !== "limit" && param.name !== "page"),
-  ]);
-};
-
+  const handleImagesPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newLimit = parseInt(e.target.value, 10);
+    setImagesPerPage(newLimit);
+    setCurrentPage(1); // Reset to first page when changing limit
+    setParams([
+      { name: "page", value: "1" },
+      { name: "limit", value: newLimit.toString() },
+      ...params.filter((param) => param.name !== "limit" && param.name !== "page"),
+    ]);
+  };
 
   // Form setup
   const form = useForm({
@@ -175,9 +174,7 @@ const handleImagesPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
                 ))}
               </div>
             ) : (
-              <div className="text-center text-gray-500 my-4">
-                No images found.
-              </div>
+              <div className="text-center text-gray-500 my-4">No images found.</div>
             )}
           </div>
 
