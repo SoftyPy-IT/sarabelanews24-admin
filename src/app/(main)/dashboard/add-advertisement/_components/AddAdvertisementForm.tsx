@@ -154,15 +154,7 @@ const router = useRouter();
                   ))}
                 </div>
 
-              {/* {mainSelectedFiles.map((file, index) => (
-                <Image
-                  key={index}
-                  src={file.url}
-                  alt={`Preview ${index}`}
-                  width={130}
-                  height={100}
-                />
-              ))} */}
+             
 
               {/* Additional Link Section */}
               <div className="space-y-2">
