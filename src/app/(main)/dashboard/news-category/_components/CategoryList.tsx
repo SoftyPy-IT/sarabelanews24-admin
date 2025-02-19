@@ -36,9 +36,6 @@ const CategoryList = () => {
       category: item.name || "N/A",
     })) || [];
 
-  const handleEdit = (rowData: any) => {
-    router.push(`/dashboard/list-news/update-details/${rowData.id}`);
-  };
 
   const handleDelete = async (id: string) => {
     try {
