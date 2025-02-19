@@ -107,26 +107,35 @@ const Page = () => {
     },
   })
 
+
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/v1/auth/login", data)
-
-      const accessToken = res?.data?.data?.accessToken
-
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/auth/login`, data);
+  
+      const accessToken = res?.data?.data?.accessToken;
+  
       if (accessToken) {
-        setCookie("accessToken", accessToken, { expires: 7 })
-
-        localStorage.setItem("accessToken", accessToken)
-        router.push("/dashboard")
-        toast.success("Login successful!")
+        setCookie("accessToken", accessToken, { expires: 7 });
+  
+        localStorage.setItem("accessToken", accessToken);
+        router.push("/dashboard");
+        toast.success("Login successful!");
       } else {
-        console.error("Access Token not found in response")
+        console.error("Access Token not found in response");
       }
-    } catch (error) {
-      console.error("Error during login:", error)
+    } catch (error: any) {
+      console.error("Error during login:", error);
+  
+      // Extract error message
+      const errorMessage =
+        error?.response?.data?.message ||
+        "Something went wrong. Please try again.";
+  
+      // Show error message in toast
+      toast.error(errorMessage);
     }
-  }
-
+  };
+  
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
   }

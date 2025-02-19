@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { TQueryParam } from "@/types/api.types";
 import { baseApi } from "../api/baseApi";
 
 const photoNewsApi = baseApi.injectEndpoints({
@@ -19,12 +21,29 @@ const photoNewsApi = baseApi.injectEndpoints({
       invalidatesTags: ["photoNews"],
     }),
 
+
     getAllPhotoNews: builder.query({
-      query: () => ({
-        url: "/photonews",
-        method: "GET",
-      }),
-      providesTags: ["photoNews"],
+      query: (args) => {
+        const queryParams = new URLSearchParams();
+
+        if (args) {
+          args.forEach((item: TQueryParam) => {
+            queryParams.append(item.name, item.value as string);
+          });
+        }
+
+        return {
+          url: `/photonews?${queryParams.toString()}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response: any) => {
+        return {
+          data: response.photonews,
+          meta: response.meta,
+        };
+      },
+      providesTags: ["photonews"],
     }),
 
     getSinglePhotoNews: builder.query({

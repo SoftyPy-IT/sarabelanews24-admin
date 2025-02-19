@@ -20,6 +20,7 @@ import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { Trash2 } from "lucide-react";
 import { TQueryParam } from "@/types/api.types";
+import Loader from "@/app/loading";
 
 const AllImages = () => {
   const [openZoom, setOpenZoom] = React.useState(false);
@@ -39,7 +40,7 @@ const AllImages = () => {
 
   const [deleteImage] = useDeleteImagesMutation();
 
-  if (isLoading) return <h1>Loading...</h1>;
+  if (isLoading) return <Loader />;
 
   const handleImageClick = (image: string) => {
     setSelectedImage(image);

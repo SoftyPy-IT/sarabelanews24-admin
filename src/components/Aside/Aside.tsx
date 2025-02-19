@@ -20,8 +20,9 @@ import {
   UserRoundCog,
   GalleryThumbnailsIcon,
   ChartLine,
-  Settings2,
   NotebookIcon,
+  DatabaseBackup,
+  ArchiveRestore,
 } from "lucide-react";
 
 const Aside = () => {
@@ -51,7 +52,7 @@ const Aside = () => {
         },
       ],
     },
-    
+
     {
       href: "/Add-Photo-News",
       label: "Photo News",
@@ -123,9 +124,21 @@ const Aside = () => {
       icon: UserRoundCog,
     },
     {
-      href: "/dashboard/settings",
-      label: "Settings",
-      icon: Settings2,
+      href: "/dashboard",
+      label: "Backup & Settings",
+      icon: DatabaseBackup,
+      children: [
+        {
+          href: "/dashboard/backup",
+          label: "Backup Database",
+          icon: DatabaseBackup,
+        },
+        {
+          href: "/dashboard/restore",
+          label: "Restore Database",
+          icon: ArchiveRestore
+        },
+      ],
     },
   ];
 

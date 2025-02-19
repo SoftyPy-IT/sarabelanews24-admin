@@ -12,6 +12,7 @@ import {
   useGetAllUserQuery,
 } from "@/redux/dailynews/users.api";
 import toast from "react-hot-toast";
+import Loader from "@/components/Loader";
 
 
 const Page = () => {
@@ -20,26 +21,17 @@ const Page = () => {
   const { data, isLoading, isError } = useGetAllUserQuery({});
   const [deleteUser] = useDeleteUserMutation();
 
-  if (isLoading) {
-    return <h1>Loading...</h1>;
-  }
 
-  // console.log("News data fetched successfully", data);
 
-  
   const usersData =
     data?.map((item: any) => ({
       id: item._id,
       name: item.name || "N/A",
       email: item.email || "N/A",
       role: item.role || "N/A",
-      status: item.status || "N/A",  
-    })) || []; 
+      status: item.status || "N/A",
+    })) || [];
 
-
-  const handleEdit = (rowData: any) => {
-    router.push(`/dashboard/list-news/update-details/${rowData.id}`);
-  };
 
   const handleDelete = async (id: string) => {
     try {
@@ -53,10 +45,10 @@ const Page = () => {
         confirmButtonText: "Yes, delete it!",
       }).then(async (result) => {
         if (result.isConfirmed) {
-        const res=   await deleteUser(id).unwrap();
-         if(res.successfully){
-          Swal.fire("Deleted!", "Your activity has been deleted.", "success");
-         }
+          const res = await deleteUser(id).unwrap();
+          if (res.successfully) {
+            Swal.fire("Deleted!", "Your activity has been deleted.", "success");
+          }
         }
       });
     } catch (err: any) {
@@ -96,6 +88,9 @@ const Page = () => {
       ),
     },
   ];
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <>
@@ -106,7 +101,7 @@ const Page = () => {
           data={usersData ?? []}
           filterKey="name"
           filterPlaceholder="Search by Name"
-          pageSize={10}
+
         />
       </div>
     </>

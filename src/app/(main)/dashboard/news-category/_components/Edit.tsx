@@ -22,6 +22,7 @@ import { useEffect } from "react";
 
 type Inputs = {
   name: string;
+  slug: string;
 };
 
 type NewsProps = {
@@ -36,6 +37,7 @@ const Edit = ({ id }: NewsProps) => {
   const form = useForm<Inputs>({
     defaultValues: {
       name: "",
+      slug: "",
     },
   });
 
@@ -43,6 +45,7 @@ const Edit = ({ id }: NewsProps) => {
     if (singleData) {
       form.reset({
         name: singleData.name || "",
+        slug: singleData.slug || "",
       });
     }
   }, [singleData, form]);
@@ -74,7 +77,7 @@ const Edit = ({ id }: NewsProps) => {
             <Form {...form}>
               <div className="bg-white p-1">
                 <h1 className="font-semibold text-lg text-center">
-                  Edit News Category
+                  Edit Category
                 </h1>
                 <hr className="my-4" />
                 <div>
@@ -87,6 +90,16 @@ const Edit = ({ id }: NewsProps) => {
                     }}
                   />
                 </div>
+                <div className="mt-2 ">
+                    <TextInput
+                      control={form.control}
+                      name="slug"
+                      placeholder="Enter Slug Bangla"
+                      rules={{
+                        required: "Slug is required",
+                      }}
+                    />
+                  </div>
                 <div className="flex justify-end mt-4">
                   <Button
                     onClick={form.handleSubmit(onSubmit)}
