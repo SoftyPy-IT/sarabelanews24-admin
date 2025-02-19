@@ -9,17 +9,14 @@ import RichText from "@/utils/Form_Inputs/RichText";
 import TextArea from "@/utils/Form_Inputs/TextArea";
 import TextInput from "@/utils/Form_Inputs/TextInput";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
-import { CircleX, Delete, ImageUpIcon, PlusIcon } from "lucide-react";
+import {  Delete, ImageUpIcon, PlusIcon } from "lucide-react";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
-import {
-  useGetSingleNewsQuery,
-  useUpdateNewsMutation,
-} from "@/redux/dailynews/news.api";
+
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
 import SelectorWithSearch from "@/utils/Form_Inputs/SelectorWithSearch";
 import TagSelector from "@/utils/Form_Inputs/TagSelector";
-import RadioInput from "@/utils/Form_Inputs/RadioInput";
+
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import {
   Sheet,
@@ -28,7 +25,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import React, { use, useEffect, useState } from "react";
-import MultiSelector from "@/utils/Form_Inputs/MultiSelector";
+
 import {
   districtOption,
   divisionOption,
@@ -247,20 +244,26 @@ const Update = ({ params }: newsProps) => {
                 {/* Reporter Info Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">প্রতিনিধি তথ্য:</h1>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                     <div>
                     <SelectInput
                       control={form.control}
                       name="reporterType"
                       placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
                       options={reporterTypeOption}
                     />
-
+                       </div>
+ <div>
                     <DateTimeInput
                       control={form.control}
                       type="datetime-local"
                       name="reportedDate"
                     />
-                    <div className="col-span-2">
+                       </div>
+                 <div className="col-span-1 md:col-span-2">
                       <TextInput
                         control={form.control}
                         name="reporterName"
@@ -268,6 +271,9 @@ const Update = ({ params }: newsProps) => {
                       />
                     </div>
                   </div>
+
+
+
                 </section>
 
                 {/* News type and area */}
@@ -506,7 +512,7 @@ const Update = ({ params }: newsProps) => {
                 {/* SEO Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold ">SEO Section:</h1>
-                  <CardContent className="space-y-5">
+            
                     <TextInput
                       control={form.control}
                       name="metaTitle"
@@ -526,7 +532,7 @@ const Update = ({ params }: newsProps) => {
                       label="Meta Keywords"
                       defaultValues={singleData?.metaKeywords || []}
                     />
-                  </CardContent>
+              
                 </section>
               </div>
             </div>

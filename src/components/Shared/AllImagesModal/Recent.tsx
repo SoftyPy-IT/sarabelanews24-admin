@@ -97,7 +97,7 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
           <div className="text-gray-900">
             {/* Folder selection */}
             <div className="w-full mt-5 flex justify-end items-center gap-2">
-              <div className="w-[400px]">
+              <div className="lg:w-[400px]">
                 <SelectInput
                   control={form.control}
                   name="folder"
@@ -179,7 +179,7 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
           </div>
 
           {/* Upload button */}
-          <div className="flex justify-end">
+          <div className="flex justify-end mb-8 lg:mb-0">
             <Button
               className="bg-green-500"
               onClick={handleUpload}

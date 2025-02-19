@@ -43,9 +43,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 interface RadioInputProps {
   title: string;
   defaultValue?: string;
-  onChange?: (value: boolean) => void; // Expecting boolean
+  onChange?: (value: boolean) => void; 
   name?: string;  
-  value: boolean; // Expecting boolean
+  value: boolean; 
 }
 
 const RadioInput: React.FC<RadioInputProps> = ({
@@ -55,20 +55,20 @@ const RadioInput: React.FC<RadioInputProps> = ({
   value,
 }) => {
   const handleValueChange = (newValue: string) => {
-    // Convert string values to boolean
+    // Convert string to boolean
     if (onChange) {
       onChange(newValue === "true");
     }
   };
 
   return (
-    <div className="flex gap-4 items-center justify-center">
-      <h1 className="font-semibold my-4 text-blue-500">{title}</h1>
+    <div className="grid grid-cols-1 lg:grid-cols-2 text-center md:text-left  gap-4">
+      <h1 className="font-semibold my-2 lg:my-4 text-blue-500">{title}</h1>
       <RadioGroup
         defaultValue={defaultValue}
         onValueChange={handleValueChange}
       >
-        <div className="flex gap-4">
+        <div className="flex justify-center md:justify-start gap-4 ">
           <div className="flex items-center gap-2">
             <RadioGroupItem value="true" id="yes" checked={value === true} />
             <Label htmlFor="yes">Yes</Label>

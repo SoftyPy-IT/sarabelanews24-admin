@@ -200,7 +200,7 @@ const AddImageForm = () => {
                 <div className="col-span-2">
                   {fields.map((field, index) => (
                     <div key={field.id} className="flex flex-col space-y-3">
-                      <div className="flex justify-between items-center gap-2 p-4">
+                      <div className="flex justify-between items-center gap-1 lg:gap-2 p-0 lg:p-4">
                         <Sheet
                           open={openSheetIndex === index}
                           onOpenChange={(open) =>
@@ -210,7 +210,7 @@ const AddImageForm = () => {
                           <SheetTrigger asChild>
                             <Button
                               variant="outline"
-                              className="p-8 border rounded-full mb-2"
+                              className=" lg:px-8 py-8  border rounded-full mb-2"
                             >
                               <ImageUpIcon color="red" size={50} /> Add Image
                             </Button>

@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import TextInput from "@/utils/Form_Inputs/TextInput";
 import { useCreateCategoriesMutation } from "@/redux/dailynews/category.api";
-
+import "./Topbar.css"
 
 type Inputs = {
   name: string;
@@ -50,7 +50,7 @@ const TopBar = () => {
 
   return (
     <>
-      <div className="flex flex-wrap justify-between items-center bg-white p-4 rounded mb-5 gap-4 md:gap-8">
+      <div className="flex flex-wrap justify-between items-center bg-white lg:p-4 rounded mb-5 gap-4 md:gap-8">
         {/* Header Section */}
         <div className="space-y-2 flex-1">
           <h2 className="text-lg md:text-3xl pl-2 font-semibold text-gray-900">
@@ -66,16 +66,16 @@ const TopBar = () => {
                 variant="outline"
                 className="bg-black text-white rounded"
               >
-                + Add Category
+                + Add Category 
               </Button>
             </div>
           </SheetTrigger>
-          <SheetContent side="right" style={{ maxWidth: "400px" }} className="overflow-auto">
+          <SheetContent side="right" className="responsive-sheet">
             <SheetTitle className="sr-only">Category</SheetTitle>
             
             <div className="pt-4">
               <Form {...form}>
-                <div className=" bg-white  p-1">
+                <div className=" bg-white  lg:p-1 pt-4">
                   <h1 className="font-semibold text-lg text-center">
                     Add New News Category :
                   </h1>

@@ -190,14 +190,14 @@ const NewsDataTable = () => {
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-12 w-[300px] rounded-lg border border-gray-200 pl-10 pr-4 text-sm outline-none focus:border-gray-300"
+              className="h-12 lg:w-[300px] rounded-lg border border-gray-200 pl-10 pr-4 text-sm outline-none focus:border-gray-300"
             />
           </div>
         </div>
 
         <DataTable columns={columns} data={newsData} />
-        <Pagination className="mt-5">
-          <PaginationContent>
+        {/* <Pagination className="mt-5 flex flex-wrap justify-center">
+        <PaginationContent className="flex flex-wrap items-center gap-1 overflow-x-auto">
             <PaginationItem>
               <PaginationPrevious
                 onClick={() => handlePaginationChange(meta.page - 1)}
@@ -268,7 +268,63 @@ const NewsDataTable = () => {
               />
             </PaginationItem>
           </PaginationContent>
-        </Pagination>
+        </Pagination> */}
+        <Pagination className="mt-5 flex justify-center">
+  <PaginationContent className="flex items-center gap-2">
+    {/* Show "Previous" only if not on the first page */}
+    {meta.page > 1 && (
+      <PaginationItem>
+        <PaginationPrevious
+          onClick={() => handlePaginationChange(meta.page - 1)}
+          className="cursor-pointer"
+        />
+      </PaginationItem>
+    )}
+
+    {/* First Page */}
+    <PaginationItem>
+      <PaginationLink
+        onClick={() => handlePaginationChange(1)}
+        isActive={meta.page === 1}
+        className="cursor-pointer"
+      >
+        1
+      </PaginationLink>
+    </PaginationItem>
+
+    {/* Ellipsis (if more than 2 pages) */}
+    {meta.totalPage > 2 && (
+      <PaginationItem>
+        <PaginationEllipsis />
+      </PaginationItem>
+    )}
+
+    {/* Last Page */}
+    {meta.totalPage > 1 && (
+      <PaginationItem>
+        <PaginationLink
+          onClick={() => handlePaginationChange(meta.totalPage)}
+          isActive={meta.page === meta.totalPage}
+          className="cursor-pointer"
+        >
+          {meta.totalPage}
+        </PaginationLink>
+      </PaginationItem>
+    )}
+
+    {/* Show "Next" only if not on the last page */}
+    {meta.page < meta.totalPage && (
+      <PaginationItem>
+        <PaginationNext
+          onClick={() => handlePaginationChange(meta.page + 1)}
+          className="cursor-pointer"
+        />
+      </PaginationItem>
+    )}
+  </PaginationContent>
+</Pagination>
+
+
 
       </div>
     </>

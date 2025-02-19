@@ -88,7 +88,7 @@ const AllImages = () => {
     <>
       <div className="w-full">
         <div className="text-gray-900">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 p-1 md:p-4">
+          <div className="grid grid-cols-4 gap-2 lg:gap-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 p-1 md:p-4">
             {images.map((image: any) => (
               <div key={image._id} className="relative group">
                 <Image

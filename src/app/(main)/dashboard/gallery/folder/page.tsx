@@ -4,8 +4,7 @@ import Folder from './_components/Folder';
 
 const Page = () => {
   return (
-    <>
-   
+    <>   
      <Folder/> 
     </>
   );

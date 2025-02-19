@@ -10,13 +10,13 @@ import { joditConfig } from '@/config';
 
 const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
 
-interface BNPEditorProps {
+interface DailyTimesEditorProps {
   name: string;
   label?: string;
 }
 
 
-const DailyTimesEditor: React.FC<BNPEditorProps> = ({ name, label }) => {
+const DailyTimesEditor: React.FC<DailyTimesEditorProps> = ({ name, label }) => {
   const { control } = useFormContext();
   const editorRef = useRef<Jodit | null>(null);
 

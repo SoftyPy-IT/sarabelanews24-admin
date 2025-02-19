@@ -244,7 +244,7 @@ const Update = ({ params }: newsProps) => {
                 <div className="col-span-2">
                   {fields.map((field, index) => (
                     <div key={field.id} className="flex flex-col space-y-3">
-                      <div className="flex justify-between items-center gap-2 p-4">
+                      <div className="flex justify-between items-center gap-2 pt-2 lg:p-4">
                         <Sheet
                           key={field.id}
                           open={openSheetIndex === index}

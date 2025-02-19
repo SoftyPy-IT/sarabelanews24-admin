@@ -58,7 +58,7 @@ export function DataTable<TData, TValue>({
               placeholder={filterPlaceholder}
               value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
               onChange={(event) => table.getColumn(filterKey)?.setFilterValue(event.target.value)}
-              className="pl-10 py-3 w-[300px] border border-blue-400 focus:border-blue-800 focus:ring-1 rounded"
+              className="pl-10 py-3 lg:w-[300px] border border-blue-400 focus:border-blue-800 focus:ring-1 rounded"
             />
           </div>
         )}

@@ -14,7 +14,7 @@ const AllImgModal = ({
 }) => {
   return (
     <div className="w-full mt-5">
-      <Tabs defaultValue="account" className="w-[750px]">
+      <Tabs defaultValue="account" className="responsive-sheet">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="account">Recent</TabsTrigger>
           <TabsTrigger value="password">New Upload</TabsTrigger>

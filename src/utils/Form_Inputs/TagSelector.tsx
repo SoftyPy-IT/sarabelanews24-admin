@@ -110,7 +110,7 @@ export default function TagSelector({
               <Button
                 type="button"
                 onClick={() => handleAddTag(onChange)}
-                className="whitespace-nowrap"
+                className="whitespace-nowrap px-2 lg:px-4"
               >
                 <PlusIcon className="w-4 h-4" /> Add Tag
               </Button>
