@@ -4,7 +4,6 @@
 
 import { DataTable } from "@/utils/Table/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import {
@@ -18,9 +17,7 @@ import Edit from "./Edit";
 import Loader from "@/components/Loader";
 
 const CategoryList = () => {
-  const router = useRouter();
 
-  // API call
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
 
   const [deleteCategories] = useDeleteCategoriesMutation();
@@ -72,12 +69,12 @@ const CategoryList = () => {
       accessorKey: "Action",
       header: () => <span className="font-bold">Action</span>,
       cell: ({ row }: any) => (
-        <div className="flex gap-2 -ml-5">
+        <div className="flex gap-2 lg:-ml-5">
           <Edit id={row.original.id} />
           <Trash2
             onClick={() => handleDelete(row.original.id)}
             color="red"
-            className="hover:bg-gray-200 rounded-full w-[40px] h-[40px] p-2 "
+            className="hover:bg-gray-200 rounded-full w-[20px] lg:w-[40px]  h-[20px] lg:h-[40px] lg:p-2 "
           />
         </div>
       ),
@@ -86,9 +83,9 @@ const CategoryList = () => {
 
   return (
     <>
-      <div className="overflow-x-auto w-[800px] mx-auto ">
+      {/* <div className="overflow-x-auto w-[800px] mx-auto "> */}
         <TopBar />
-        <div className="bg-white py-5 px-8 rounded">
+        <div className="bg-white lg:py-5 px-2 lg:px-8 rounded">
           <DataTable
             columns={columns}
             data={newsData ?? []}
@@ -96,7 +93,7 @@ const CategoryList = () => {
             filterPlaceholder="Search by Category Name"
           />
         </div>
-      </div>
+      {/* </div> */}
     </>
   );
 };
