@@ -20,6 +20,7 @@ const newsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["news"],
     }),
+
     getAllNews: builder.query({
       query: (args) => {
         const queryParams = new URLSearchParams();
@@ -35,6 +36,8 @@ const newsApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
+
+      
       transformResponse: (response: TNewsResponse) => {
         return {
           data: response.news,
@@ -53,6 +56,8 @@ const newsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["news"],
     }),
+
+
     updateNews: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `/news/${id}`,
@@ -61,6 +66,9 @@ const newsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["news"],
     }),
+
+
+
   }),
 });
 

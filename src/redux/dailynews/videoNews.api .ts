@@ -36,6 +36,7 @@ const videoNewsApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
+      
       transformResponse: (response: any) => {
         return {
           data: response.videoNews,
@@ -52,6 +53,9 @@ const videoNewsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["videoNews"],
     }),
+
+
+
     updateVideoNews: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `/video-news/${id}`,

@@ -210,7 +210,7 @@ const Update = ({ params }: newsProps) => {
                             files.filter((_, i) => i !== index)
                           );
                         }}
-                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
                       >
                         <CircleX />
                       </button>
@@ -323,7 +323,7 @@ const Update = ({ params }: newsProps) => {
                                   files.filter((_, i) => i !== index)
                                 );
                               }}
-                              className="absolute top-0 right-0 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="absolute top-0 right-0 bg-red-500 text-white rounded-full "
                             >
                               <CircleX />
                             </button>

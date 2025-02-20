@@ -388,6 +388,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         form={form}
                         name="displayLocation"
                         className=""
+                        rules={{ required: "News type is required" }}
                         setFirstPage={setFirstPage}
                       />
                     </div>
