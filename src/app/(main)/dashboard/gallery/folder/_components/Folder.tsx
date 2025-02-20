@@ -73,11 +73,11 @@ const Folder = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header Section */}
-      <div className="bg-white border shadow-md rounded-md py-3 px-6 flex flex-wrap justify-between items-center gap-4">
+      <div className="bg-white border shadow-md rounded-md py-3 px-2 lg:px-6 flex  justify-between items-center gap-4">
         <div>
           <h1 className="text-xl text-black font-bold flex-1">Image Manager</h1>
         </div>
-        <div>
+        <div className="hidden lg:flex">
           <div className="relative flex-grow">
             <div className="absolute p-3">
               <Search className="h-4 md:h-5 w-4 md:w-5" />
@@ -100,7 +100,7 @@ const Folder = () => {
 
       {/* Folder Grid Section */}
       <motion.div
-        className="py-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+        className="py-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 lg:gap-4"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -113,11 +113,11 @@ const Folder = () => {
             className="relative group"
           >
             <Link href={`/dashboard/gallery/folder/${folder.id}`}>
-              <Card className="cursor-pointer hover:bg-gray-200">
-                <CardHeader className="flex flex-col items-center">
+              <Card className="cursor-pointer hover:bg-gray-200 ">
+                <CardHeader className="flex flex-col items-center p-2 lg:p-6">
                   <div className=" flex items-center justify-center ">
                     <FolderOpen
-                      className="h-20 w-20 text-yellow-600 "
+                      className="h-10 lg:h-20 w-10 lg:w-20 text-yellow-600 "
                       fill="#FFEB00"
                     />
                   </div>

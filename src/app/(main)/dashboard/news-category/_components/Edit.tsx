@@ -68,7 +68,7 @@ const Edit = ({ id }: NewsProps) => {
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetTrigger asChild>
           <div className="flex justify-end">
-            <EditIcon />
+            <EditIcon className="hover:bg-gray-200 rounded-full w-[20px] lg:w-[40px]  h-[20px] lg:h-[40px] lg:p-2 "/>
           </div>
         </SheetTrigger>
         <SheetContent side="right" style={{ maxWidth: "400px" }} className="overflow-auto">

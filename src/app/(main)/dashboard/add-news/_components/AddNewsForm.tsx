@@ -98,6 +98,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
   const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const form = useForm<Inputs>({
     defaultValues: {
@@ -152,6 +153,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       newTagFiles[openSheetIndex] = images.map((img) => ({ url: img.url }));
       setTagSelectedFiles(newTagFiles);
     }
+    setSheetOpen(false); // Close the sheet after selection
   };
 
   const removeField = (index: number) => {
@@ -175,7 +177,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       postDate: new Date().toISOString(),
       images: mainSelectedFiles.map((item) => item.url),
     };
-  
+
     try {
       const res = await createNews(modifyData).unwrap();
       if (res) {
@@ -184,49 +186,52 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       }
     } catch (error: any) {
       console.error("Submission error:", error);
-  
+
       if (error?.data?.errorSources && Array.isArray(error.data.errorSources)) {
-        // Display each validation error in toast
         error.data.errorSources.forEach((err: any) => {
-          toast.error(`${err.message}`); // Show only the message
+          toast.error(`${err.message}`);
         });
       } else if (error?.data?.message) {
-        toast.error(error.data.message); // Show general error message
+        toast.error(error.data.message);
       } else {
-        toast.error("Something went wrong!"); // Fallback error
+        toast.error("Something went wrong!");
       }
     }
   };
-  
-  
 
   return (
     <>
-
       <div>
         <Form {...form}>
           <div className="grid grid-cols-12 gap-4 xl:6">
             <div className="lg:col-span-8 col-span-full space-y-3">
               {/* Reporter Info Section */}
-              <section className="bg-white border border-gray-300 rounded p-5">
-                <h1 className="mb-2 font-semibold  ">প্রতিনিধি তথ্য:</h1>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <SelectInput
-                    control={form.control}
-                    name="reporterType"
-                    placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
-                    options={reporterTypeOption}
-                    rules={{ required: "Reporter type is required" }}
-                  />
+              <section className="bg-white border border-gray-300 rounded p-3 lg:p-5">
+                <h1 className="mb-2 font-semibold">প্রতিনিধি তথ্য:</h1>
 
-                  <DateTimeInput
-                    control={form.control}
-                    type="datetime-local"
-                    name="reportedDate"
-                    rules={{ required: "Reported date and time is required" }}
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                  <div>
+                    <SelectInput
+                      control={form.control}
+                      name="reporterType"
+                      placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
+                      options={reporterTypeOption}
+                      rules={{ required: "Reporter type is required" }}
+                    />
+                  </div>
+                  <div>
+                    <DateTimeInput
+                      control={form.control}
+                      type="datetime-local"
+                      name="reportedDate"
+                      rules={{
+                        required: "Reported date and time is required",
+                      }}
+                    />
+                  </div>
 
-                  <div className="col-span-2">
+                  {/* Second Row - Full Width */}
+                  <div className="col-span-1 md:col-span-2">
                     <TextInput
                       control={form.control}
                       name="reporterName"
@@ -238,7 +243,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
               </section>
 
               {/* news type and area */}
-              <section className="bg-white border border-gray-300 rounded p-5">
+              <section className="bg-white border border-gray-300 rounded p-3 lg:p-5">
                 <h1 className="mb-2 font-semibold  ">নিউজ টাইপ:</h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -258,22 +263,28 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                   {newsType === "Bangladesh" && (
                     <>
                       <h1 className="mb-1 font-semibold ">নিউজ এলাকা</h1>
-                      <div className="col-span-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        <SelectorWithSearch
-                          name="division"
-                          options={divisionOption}
-                          label="বিভাগ নির্বাচন করুন"
-                        />
-                        <SelectorWithSearch
-                          name="district"
-                          options={districtOption}
-                          label="জেলা নির্বাচন করুন"
-                        />
-                        <SelectorWithSearch
-                          name="upazila"
-                          options={upazilaOption}
-                          label="উপজেলা নির্বাচন করুন"
-                        />
+                      <div className="grid grid-cols-1 lg:grid-cols-3 col-span-2 gap-4">
+                        <div>
+                          <SelectorWithSearch
+                            name="division"
+                            options={divisionOption}
+                            label="বিভাগ নির্বাচন করুন"
+                          />
+                        </div>
+                        <div>
+                          <SelectorWithSearch
+                            name="district"
+                            options={districtOption}
+                            label="জেলা নির্বাচন করুন"
+                          />
+                        </div>
+                        <div>
+                          <SelectorWithSearch
+                            name="upazila"
+                            options={upazilaOption}
+                            label="উপজেলা নির্বাচন করুন"
+                          />
+                        </div>
                       </div>
                     </>
                   )}
@@ -294,14 +305,16 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
               </section>
 
               {/* News Info Section */}
-              <section className="bg-white border border-gray-300 rounded p-5">
+              <section className="bg-white border border-gray-300 rounded p-3 lg:p-5">
                 <h1 className="mb-2 font-semibold  ">সংবাদের তথ্য:</h1>
+
                 <div>
-                  <Sheet>
+                  <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                     <SheetTrigger asChild>
                       <Button
                         variant="outline"
                         className="p-8 border rounded-full mb-2"
+                        onClick={() => setSheetOpen(true)}
                       >
                         <ImageUpIcon color="red" size={50} /> Add Image
                       </Button>
@@ -314,13 +327,13 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                       <SheetTitle>সংবাদের তথ্য</SheetTitle>
                       <AllImgModal
                         onImageSelect={handleImageSelect}
-                        onClose={() => setOpenSheetIndex(null)}
+                        onClose={() => setSheetOpen(false)}
                       />
                     </SheetContent>
                   </Sheet>
                 </div>
 
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-4 mb-3">
                   {mainSelectedFiles.map((file, index) => (
                     <div key={index} className="relative rounded-lg group">
                       <Image
@@ -328,7 +341,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         alt={`Preview ${index}`}
                         width={150}
                         height={150}
-                        className="h-[150px] w-[150px] rounded-lg object-cover"
+                        className="lg:h-[150px] lg:w-[150px] rounded-lg object-cover"
                       />
                       <button
                         onClick={() => {
@@ -336,7 +349,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                             files.filter((_, i) => i !== index)
                           );
                         }}
-                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
                       >
                         <CircleX />
                       </button>
@@ -345,46 +358,49 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div className="col-span-2">
-                      <TextInput
-                        control={form.control}
-                        rules={{ required: "Photographer name is required" }}
-                        name="photojournalistName"
-                        placeholder="ফটো সাংবাদিক নাম"
-                      />
-                    </div>
-
-                    <SelectInput
-                      control={form.control}
-                      name="category"
-                      placeholder="নিউজ ক্যাটাগরি নির্বাচন করুন"
-                      rules={{ required: "News Category is required" }}
-                      options={
-                        data?.categories?.map(
-                          (program: { name: string; _id: string }) => ({
-                            label: program.name,
-                            value: program._id,
-                          })
-                        ) || []
-                      }
-                    />
-
-                    <NewsType
-                      form={form}
-                      name="displayLocation"
-                      className="mb-4"
-                      setFirstPage={setFirstPage}
-                    />
-                  </div>
-
                   <div className="col-span-2">
                     <TextInput
                       control={form.control}
-                      name="newsTitle"
-                      placeholder="শিরোনাম"
-                      rules={{ required: "News title is required" }}
+                      rules={{ required: "Photographer name is required" }}
+                      name="photojournalistName"
+                      placeholder="ফটো সাংবাদিক নাম"
                     />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                    <div>
+                      <SelectInput
+                        control={form.control}
+                        name="category"
+                        placeholder="নিউজ ক্যাটাগরি নির্বাচন করুন"
+                        rules={{ required: "News Category is required" }}
+                        options={
+                          data?.categories?.map(
+                            (program: { name: string; _id: string }) => ({
+                              label: program.name,
+                              value: program._id,
+                            })
+                          ) || []
+                        }
+                      />
+                    </div>
+                    <div>
+                      <NewsType
+                        form={form}
+                        name="displayLocation"
+                        className=""
+                        rules={{ required: "News type is required" }}
+                        setFirstPage={setFirstPage}
+                      />
+                    </div>
+
+                    <div className="col-span-1 md:col-span-2">
+                      <TextInput
+                        control={form.control}
+                        name="newsTitle"
+                        placeholder="শিরোনাম"
+                        rules={{ required: "News title is required" }}
+                      />
+                    </div>
                   </div>
 
                   <div className="col-span-2">
@@ -398,10 +414,6 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
                   <div className="col-span-2">
                     <DailyTimesEditor name="description" />
-                    {/* <RichText
-                        name="description"
-                        placeholder={"বিস্তারিত বর্ণনা "}
-                      /> */}
                   </div>
                 </div>
               </section>
@@ -409,7 +421,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
             <div className="lg:col-span-4 col-span-full space-y-5">
               {/* Tags Section */}
-              <section className="bg-white border border-gray-300 rounded p-5">
+              <section className="bg-white border border-gray-300 rounded p-3 lg:p-5">
                 <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
                 <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
                   <TextInput
@@ -504,7 +516,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
               </section>
 
               {/* news showing position */}
-              <section className="bg-white border border-gray-300 rounded p-5">
+              <section className="bg-white border border-gray-300 rounded p-3 lg:p-5">
                 <h1 className="mb-2 font-semibold">
                   কোথায় ট্যাগ করতে চাচ্ছেন ?
                 </h1>
@@ -515,7 +527,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                 />
               </section>
 
-              <section className="bg-white border border-gray-300 rounded p-5">
+              <section className="bg-white border border-gray-300 rounded p-3 lg:p-5 pb-5 lg:pb-5">
                 <RadioInput
                   title={"ক্যারেন্ট নিউজ হিসেবে রাখতে চাচ্ছেন ?"}
                   name="currentNews"
@@ -525,7 +537,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
               </section>
 
               {/* Admin Section */}
-              <section className="bg-white border border-gray-300 rounded p-5">
+              <section className="bg-white border border-gray-300 rounded p-3 lg:p-5">
                 <h1 className="mb-2 font-semibold ">Admin Section:</h1>
                 <div className="col-span-2">
                   <div className="col-span-2">
@@ -537,7 +549,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-1  gap-4">
+                  <div className="grid grid-cols-1  gap-4 mt-2">
                     <DateTimeInput
                       control={form.control}
                       name="publishedDate"
@@ -550,9 +562,9 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
               </section>
 
               {/* SEO Section */}
-              <section className="bg-white border border-gray-300 rounded p-5">
+              <section className="bg-white border border-gray-300 rounded p-3 lg:p-5">
                 <h1 className="mb-2 font-semibold ">SEO Section:</h1>
-                <CardContent className="space-y-5">
+                <div className="col-span-2">
                   <TextInput
                     control={form.control}
                     name="metaTitle"
@@ -560,19 +572,22 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                     type="text"
                     placeholder="Enter Meta Title"
                   />
+                </div>
+                <div className="col-span-2">
                   <TextArea
                     control={form.control}
                     name="metaDescription"
                     label="Meta Description"
                     placeholder="Enter Meta Description"
                   />
-
+                </div>
+                <div className="col-span-2">
                   <TagSelector
                     name="metaKeywords"
                     label="Meta Keywords"
                     defaultValues={initialData?.metaKeywords || []}
                   />
-                </CardContent>
+                </div>
               </section>
             </div>
           </div>

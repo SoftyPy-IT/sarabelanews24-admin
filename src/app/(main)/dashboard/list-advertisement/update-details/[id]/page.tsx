@@ -128,14 +128,16 @@ const Update = ({ params }: newsProps) => {
     <>
       <div className="max-w-xl mx-auto">
         <UpdateTopBar />
-        <div className="bg-white rounded border-gray-300 p-8 shadow-sm">
-          {/* ... header section remains the same ... */}
+        <div className="bg-white rounded border-gray-300 p-4 lg:p-8 shadow-sm">
+          
 
           <Form {...form}>
      
      
-              <div className="space-y-8">
+              <div className="space-y-4 lg:space-y-8">
+              <h1 className="font-bold">Update Image</h1>
                 <div className="flex flex-col items-center p-6 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                  
                   <Sheet open={openSheetIndex !== null} onOpenChange={(open) => !open && setOpenSheetIndex(null)}>
                     <SheetTrigger asChild>
                       <Button

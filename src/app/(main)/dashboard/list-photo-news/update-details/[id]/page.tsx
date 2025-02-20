@@ -210,7 +210,7 @@ const Update = ({ params }: newsProps) => {
                             files.filter((_, i) => i !== index)
                           );
                         }}
-                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
                       >
                         <CircleX />
                       </button>
@@ -244,7 +244,7 @@ const Update = ({ params }: newsProps) => {
                 <div className="col-span-2">
                   {fields.map((field, index) => (
                     <div key={field.id} className="flex flex-col space-y-3">
-                      <div className="flex justify-between items-center gap-2 p-4">
+                      <div className="flex justify-between items-center gap-2 pt-2 lg:p-4">
                         <Sheet
                           key={field.id}
                           open={openSheetIndex === index}
@@ -323,7 +323,7 @@ const Update = ({ params }: newsProps) => {
                                   files.filter((_, i) => i !== index)
                                 );
                               }}
-                              className="absolute top-0 right-0 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="absolute top-0 right-0 bg-red-500 text-white rounded-full "
                             >
                               <CircleX />
                             </button>

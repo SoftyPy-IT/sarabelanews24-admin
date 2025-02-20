@@ -197,23 +197,28 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                 {/* Reporter Info Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">প্রতিনিধি তথ্য:</h1>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <SelectInput
-                      control={form.control}
-                      name="reporterType"
-                      placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
-                      options={reporterTypeOption}
-                      rules={{ required: "Reporter type is required" }}
-                    />
 
-                    <DateTimeInput
-                      control={form.control}
-                      type="datetime-local"
-                      name="reportedDate"
-                      rules={{ required: "Reported date and time is required" }}
-                    />
-
-                    <div className="col-span-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                    <div>
+                      <SelectInput
+                        control={form.control}
+                        name="reporterType"
+                        placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
+                        options={reporterTypeOption}
+                        rules={{ required: "Reporter type is required" }}
+                      />
+                    </div>
+                    <div>
+                      <DateTimeInput
+                        control={form.control}
+                        type="datetime-local"
+                        name="reportedDate"
+                        rules={{
+                          required: "Reported date and time is required",
+                        }}
+                      />
+                    </div>
+                    <div className="col-span-1 md:col-span-2">
                       <TextInput
                         control={form.control}
                         name="reporterName"
@@ -321,40 +326,44 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                   ))}
 
                   <div className="space-y-2">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                      <div className="col-span-2">
-                        <TextInput
-                          control={form.control}
-                          rules={{ required: "Photographer name is required" }}
-                          name="photojournalistName"
-                          placeholder="ফটো সাংবাদিক নাম"
-                        />
-                      </div>
-
-                      <SelectInput
+                    <div className="col-span-2">
+                      <TextInput
                         control={form.control}
-                        name="category"
-                        placeholder="নিউজ ক্যাটাগরি নির্বাচন করুন"
-                        rules={{ required: "News Category is required" }}
-                        options={
-                          data?.categories?.map(
-                            (program: { name: string; _id: string }) => ({
-                              label: program.name,
-                              value: program._id,
-                            })
-                          ) || []
-                        }
-                      />
-
-                      <NewsType
-                        form={form}
-                        name="displayLocation"
-                        className="mb-4"
-                        setFirstPage={setFirstPage}
+                        rules={{ required: "Photographer name is required" }}
+                        name="photojournalistName"
+                        placeholder="ফটো সাংবাদিক নাম"
                       />
                     </div>
 
-                    <div className="col-span-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                      <div>
+                        <SelectInput
+                          control={form.control}
+                          name="category"
+                          placeholder="নিউজ ক্যাটাগরি নির্বাচন করুন"
+                          rules={{ required: "News Category is required" }}
+                          options={
+                            data?.categories?.map(
+                              (program: { name: string; _id: string }) => ({
+                                label: program.name,
+                                value: program._id,
+                              })
+                            ) || []
+                          }
+                        />
+                      </div>
+                      <div>
+                        <NewsType
+                          form={form}
+                          name="displayLocation"
+                          className="mb-4"
+                          rules={{ required: "News type is required" }}
+                          setFirstPage={setFirstPage}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-span-1 md:col-span-2">
                       <TextInput
                         control={form.control}
                         name="newsTitle"
@@ -415,9 +424,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                             rules={{
                               required: "Additional Link is required",
                               pattern: {
-                                
-                                message:
-                                  "Please enter a valid URL",
+                                message: "Please enter a valid URL",
                               },
                             }}
                           />
@@ -489,7 +496,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                 {/* SEO Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold ">SEO Section:</h1>
-                  <CardContent className="space-y-5">
+             
                     <TextInput
                       control={form.control}
                       name="metaTitle"
@@ -509,7 +516,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                       label="Meta Keywords"
                       defaultValues={initialData?.metaKeywords || []}
                     />
-                  </CardContent>
+            
                 </section>
               </div>
             </div>

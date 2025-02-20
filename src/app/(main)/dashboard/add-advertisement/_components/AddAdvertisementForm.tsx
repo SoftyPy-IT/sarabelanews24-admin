@@ -94,7 +94,7 @@ const router = useRouter();
     <>
       <div className="max-w-xl mx-auto">
         <TopBar />
-        <div className="bg-white rounded border-gray-300 p-8 shadow-sm">
+        <div className="bg-white rounded border-gray-300 p-4 lg:p-8 shadow-sm">
           <div className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-2">
               Add Image
@@ -154,15 +154,7 @@ const router = useRouter();
                   ))}
                 </div>
 
-              {/* {mainSelectedFiles.map((file, index) => (
-                <Image
-                  key={index}
-                  src={file.url}
-                  alt={`Preview ${index}`}
-                  width={130}
-                  height={100}
-                />
-              ))} */}
+             
 
               {/* Additional Link Section */}
               <div className="space-y-2">
@@ -176,8 +168,8 @@ const router = useRouter();
                   rules={{
                     required: "Additional Link is required",
                     pattern: {
-                      value:
-                        /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
+                      // value:
+                        // /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
                       message: "Please enter a valid URL with https://",
                     },
                   }}

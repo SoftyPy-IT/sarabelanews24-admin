@@ -20,7 +20,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       {/* Sidebar */}
       <aside
         className={`fixed lg:static w-64 h-screen bg-sky-950 text-white z-30 
-          transition-transform duration-300 lg:translate-x-0 
+          transition-transform duration-300 lg:translate-x-0 overflow-auto
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="flex items-center justify-between p-4 lg:hidden">
@@ -32,8 +32,9 @@ const Layout = ({ children }: { children: ReactNode }) => {
             <X className="h-6 w-6" />
           </button>
         </div>
-        <div className="h-[calc(100vh-64px)] overflow-y-scroll ">
-          <Aside />
+        <div className="w-full overflow-y-auto">
+        <Aside toggleSidebar={toggleSidebar} />
+
         </div>
       </aside>
 
@@ -53,7 +54,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         </nav>
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 md:p-6 bg-[#eceff1] overflow-y-auto">
+        <main className="flex-1 p-3 md:p-6 bg-[#eceff1] overflow-y-auto">
           {children}
         </main>
       </div>

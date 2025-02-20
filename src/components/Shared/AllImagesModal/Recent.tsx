@@ -20,12 +20,10 @@ interface RecentProps {
 const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
   const [selectedImages, setSelectedImages] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [imagesPerPage, setImagesPerPage] = useState<number>(10); // Default images per page
+  const [imagesPerPage, setImagesPerPage] = useState<number>(10); 
 
   const { data: foldersData } = useGetAllFolderQuery({});
-  // const { data, isLoading, isError } = useGetAllFolderQuery({});
-
-  // Initialize params with page and limit
+ 
   const [params, setParams] = useState<TQueryParam[]>([
     { name: "page", value: currentPage.toString() },
     { name: "limit", value: imagesPerPage.toString() },
@@ -49,17 +47,17 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
     ]);
   };
 
-  // Handle checkbox selection
+
   const handleCheckboxChange = (image: any, checked: boolean) => {
     setSelectedImages((prev) =>
       checked ? [...prev, image] : prev.filter((img) => img._id !== image._id)
     );
   };
 
-  // Handle upload
+  
   const handleUpload = () => {
     onImageSelect(selectedImages);
-    onClose();
+    // onClose(); 
   };
 
   // Handle page change
@@ -75,7 +73,7 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
   const handleImagesPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newLimit = parseInt(e.target.value, 10);
     setImagesPerPage(newLimit);
-    setCurrentPage(1); // Reset to first page when changing limit
+    setCurrentPage(1); 
     setParams([
       { name: "page", value: "1" },
       { name: "limit", value: newLimit.toString() },
@@ -97,7 +95,7 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
           <div className="text-gray-900">
             {/* Folder selection */}
             <div className="w-full mt-5 flex justify-end items-center gap-2">
-              <div className="w-[400px]">
+              <div className="lg:w-[400px]">
                 <SelectInput
                   control={form.control}
                   name="folder"
@@ -116,7 +114,7 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
             {/* Total images and images per page selector */}
             <div className="my-4 flex justify-between items-center">
               <span className="text-gray-500">
-                {/* Total Images: {metaData?.total || 0} */}
+               
               </span>
               <div>
                 <label htmlFor="imagesPerPage" className="text-gray-500 mr-2">
@@ -132,18 +130,19 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
                   <option value={20}>20</option>
                   <option value={50}>50</option>
                   <option value={100}>100</option>
+                  <option value={200}>200</option>
                 </select>
               </div>
             </div>
 
             {/* Image grid */}
             {images?.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 p-1 my-4">
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 lg:gap-4  p-1 my-4">
                 {images.map((row: any) => (
                   <div key={row._id} className="relative group">
                     <Image
                       src={row.url}
-                      className={`w-full h-full rounded shadow-sm bg-gray-500 aspect-square cursor-pointer ${
+                      className={`lg:w-full lg:h-full rounded shadow-sm bg-gray-500 aspect-square cursor-pointer ${
                         selectedImages.some((img) => img._id === row._id)
                           ? "ring-4 ring-blue-500"
                           : ""
@@ -179,7 +178,7 @@ const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
           </div>
 
           {/* Upload button */}
-          <div className="flex justify-end">
+          <div className="flex justify-end mb-8 lg:mb-0">
             <Button
               className="bg-green-500"
               onClick={handleUpload}

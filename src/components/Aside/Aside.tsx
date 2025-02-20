@@ -25,7 +25,7 @@ import {
   ArchiveRestore,
 } from "lucide-react";
 
-const Aside = () => {
+const Aside = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   const pathname = usePathname();
 
   const routes = [
@@ -124,7 +124,7 @@ const Aside = () => {
       icon: UserRoundCog,
     },
     {
-      href: "/dashboard",
+      href: "/dashboard/backup",
       label: "Backup & Settings",
       icon: DatabaseBackup,
       children: [
@@ -143,32 +143,21 @@ const Aside = () => {
   ];
 
   return (
-    <aside className="text-white h-full ">
-      {/* Logo and Branding */}
+    <aside className="text-white h-full overflow-auto">
       <div className="text-center">
         <Link
           href="/dashboard"
           className="inline-block transition-transform hover:scale-105"
+          onClick={toggleSidebar} // Close sidebar when clicked
         >
-          <Image
-            src={logo}
-            alt="sarabelanews24"
-            width={180}
-            height={100}
-            priority
-          />
+          <Image src={logo} alt="sarabelanews24" width={180} height={100} priority />
         </Link>
       </div>
 
-      {/* Navigation Menu */}
       <nav>
         <Accordion type="single" collapsible className="space-y-4">
           {routes.map((route) => (
-            <AccordionItem
-              key={route.href}
-              value={route.href}
-              className="border-none"
-            >
+            <AccordionItem key={route.href} value={route.href} className="border-none">
               {route.children ? (
                 <>
                   <AccordionTrigger
@@ -190,11 +179,11 @@ const Aside = () => {
                           key={child.href}
                           href={child.href}
                           className={cn(
-                            "flex items-center px-4 py-2 text-sm  transition-colors",
+                            "flex items-center px-4 py-2 text-sm transition-colors",
                             "hover:bg-blue-600/20",
-                            pathname === child.href &&
-                            "text-blue-200  border-b-2 border-white"
+                            pathname === child.href && "text-blue-200 border-b-2 border-white"
                           )}
+                          onClick={toggleSidebar} // Close sidebar when clicked
                         >
                           <child.icon className="w-4 h-4 mr-2" />
                           {child.label}
@@ -207,11 +196,11 @@ const Aside = () => {
                 <Link
                   href={route.href}
                   className={cn(
-                    "flex items-center px-4 py-3 text-sm font-medium  transition-colors",
+                    "flex items-center px-4 py-3 text-sm font-medium transition-colors",
                     "hover:bg-blue-600/20",
-                    pathname === route.href &&
-                    "text-blue-200 border-b-2 border-white"
+                    pathname === route.href && "text-blue-200 border-b-2 border-white"
                   )}
+                  onClick={toggleSidebar} // Close sidebar when clicked
                 >
                   <route.icon className="w-5 h-5 mr-2" />
                   {route.label}

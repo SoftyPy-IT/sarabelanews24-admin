@@ -109,8 +109,12 @@ const AddImageForm = () => {
   };
 
   const removeField = (index: number) => {
-    remove(index);
-    setTagSelectedFiles(tagSelectedFiles.filter((_, i) => i !== index));
+    if (fields.length > 1) {
+      remove(index);
+      setTagSelectedFiles(tagSelectedFiles.filter((_, i) => i !== index));
+    } else {
+      toast.error("Cannot remove the last section!");
+    }
   };
 
   return (
@@ -164,7 +168,7 @@ const AddImageForm = () => {
                             files.filter((_, i) => i !== index)
                           );
                         }}
-                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 "
                       >
                         <CircleX />
                       </button>
@@ -183,7 +187,7 @@ const AddImageForm = () => {
                   </div>
 
                   <div className="col-span-2">
-                  <DailyTimesEditor name="description" />
+                    <DailyTimesEditor name="description" />
                     {/* <RichText
                       name="description"
                       placeholder={"বিস্তারিত বর্ণনা"}
@@ -195,12 +199,12 @@ const AddImageForm = () => {
 
             <div className="lg:col-span-4 col-span-full space-y-5">
               {/* Tags Section */}
-              <section className="bg-white border border-gray-300 rounded p-5">
+              <section className="bg-white border border-gray-300 rounded p-5 ">
                 <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
                 <div className="col-span-2">
                   {fields.map((field, index) => (
-                    <div key={field.id} className="flex flex-col space-y-3">
-                      <div className="flex justify-between items-center gap-2 p-4">
+                    <div key={field.id} className="flex flex-col lg:space-y-3">
+                      <div className="flex justify-between items-center gap-1 lg:gap-2 p-0 lg:p-4">
                         <Sheet
                           open={openSheetIndex === index}
                           onOpenChange={(open) =>
@@ -210,7 +214,7 @@ const AddImageForm = () => {
                           <SheetTrigger asChild>
                             <Button
                               variant="outline"
-                              className="p-8 border rounded-full mb-2"
+                              className=" lg:px-8 py-8  border rounded-full mb-2"
                             >
                               <ImageUpIcon color="red" size={50} /> Add Image
                             </Button>
@@ -233,15 +237,24 @@ const AddImageForm = () => {
                         </Sheet>
 
                         <div className="flex justify-end gap-2">
-                          {/* Remove button for every field */}
-                          <Button
+                          {fields.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => removeField(index)}
+                            >
+                              <Delete className="w-4 h-4" />
+                            </Button>
+                          )}
+                          {/* <Button
                             type="button"
                             variant="destructive"
                             size="sm"
                             onClick={() => removeField(index)}
                           >
                             <Delete className="w-4 h-4" />
-                          </Button>
+                          </Button> */}
 
                           {/* Add button for every field */}
                           <Button
@@ -275,7 +288,8 @@ const AddImageForm = () => {
                                   files.filter((_, i) => i !== index)
                                 );
                               }}
-                              className="absolute top-0 right-0 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              // className="absolute top-0 right-0 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="absolute top-0 right-0 bg-red-500 text-white rounded-full"
                             >
                               <CircleX />
                             </button>
@@ -283,7 +297,7 @@ const AddImageForm = () => {
                         ))}
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4 pb-2">
                         <TextInput
                           control={form.control}
                           name={`galleries.${index}.imageTagline`}

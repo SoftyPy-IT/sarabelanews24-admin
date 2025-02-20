@@ -99,8 +99,8 @@ const Upload = ({ onSuccess }: { onSuccess: () => void }) => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="space-y-5">
-            <div className="w-full mt-5 flex justify-end items-center gap-2">
-              <div className="w-[400px]">
+            <div className="w-full mt-5 lg:flex justify-end items-center gap-2 space-y-4 ">
+              <div className="lg:w-[400px]">
                 <SelectInput
                   control={form.control}
                   name="folder"
@@ -114,10 +114,12 @@ const Upload = ({ onSuccess }: { onSuccess: () => void }) => {
                   rules={{ required: "Select A Folder is required" }}
                 />
               </div>
-              <h1>OR</h1>
-              <Button className="h-[46px] " onClick={() => setOpen(true)}>
+              <h1 className="text-center">OR</h1>
+              <div className="flex justify-center">
+              <Button className="lg:h-[46px] " onClick={() => setOpen(true)}>
                 Create New Folder
               </Button>
+              </div>
             </div>
             <FileInput
               control={form.control}
