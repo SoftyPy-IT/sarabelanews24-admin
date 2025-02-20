@@ -109,8 +109,12 @@ const AddImageForm = () => {
   };
 
   const removeField = (index: number) => {
-    remove(index);
-    setTagSelectedFiles(tagSelectedFiles.filter((_, i) => i !== index));
+    if (fields.length > 1) {
+      remove(index);
+      setTagSelectedFiles(tagSelectedFiles.filter((_, i) => i !== index));
+    } else {
+      toast.error("Cannot remove the last section!");
+    }
   };
 
   return (
@@ -233,15 +237,24 @@ const AddImageForm = () => {
                         </Sheet>
 
                         <div className="flex justify-end gap-2">
-                          {/* Remove button for every field */}
-                          <Button
+                        {fields.length > 1 && (
+  <Button
+    type="button"
+    variant="destructive"
+    size="sm"
+    onClick={() => removeField(index)}
+  >
+    <Delete className="w-4 h-4" />
+  </Button>
+)}
+                          {/* <Button
                             type="button"
                             variant="destructive"
                             size="sm"
                             onClick={() => removeField(index)}
                           >
                             <Delete className="w-4 h-4" />
-                          </Button>
+                          </Button> */}
 
                           {/* Add button for every field */}
                           <Button
