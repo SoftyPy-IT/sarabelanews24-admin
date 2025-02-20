@@ -98,6 +98,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
   const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const form = useForm<Inputs>({
     defaultValues: {
@@ -152,6 +153,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       newTagFiles[openSheetIndex] = images.map((img) => ({ url: img.url }));
       setTagSelectedFiles(newTagFiles);
     }
+    setSheetOpen(false); // Close the sheet after selection
   };
 
   const removeField = (index: number) => {
@@ -186,14 +188,13 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       console.error("Submission error:", error);
 
       if (error?.data?.errorSources && Array.isArray(error.data.errorSources)) {
-        // Display each validation error in toast
         error.data.errorSources.forEach((err: any) => {
-          toast.error(`${err.message}`); // Show only the message
+          toast.error(`${err.message}`);
         });
       } else if (error?.data?.message) {
-        toast.error(error.data.message); // Show general error message
+        toast.error(error.data.message);
       } else {
-        toast.error("Something went wrong!"); // Fallback error
+        toast.error("Something went wrong!");
       }
     }
   };
@@ -209,7 +210,6 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                 <h1 className="mb-2 font-semibold">প্রতিনিধি তথ্য:</h1>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-            
                   <div>
                     <SelectInput
                       control={form.control}
@@ -263,22 +263,22 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                   {newsType === "Bangladesh" && (
                     <>
                       <h1 className="mb-1 font-semibold ">নিউজ এলাকা</h1>
-                      <div className="col-span-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        <div className="col-span-2">
+                      <div className="grid grid-cols-1 lg:grid-cols-3 col-span-2 gap-4">
+                        <div>
                           <SelectorWithSearch
                             name="division"
                             options={divisionOption}
                             label="বিভাগ নির্বাচন করুন"
                           />
                         </div>
-                        <div className="col-span-2">
+                        <div>
                           <SelectorWithSearch
                             name="district"
                             options={districtOption}
                             label="জেলা নির্বাচন করুন"
                           />
                         </div>
-                        <div className="col-span-2">
+                        <div>
                           <SelectorWithSearch
                             name="upazila"
                             options={upazilaOption}
@@ -307,12 +307,14 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
               {/* News Info Section */}
               <section className="bg-white border border-gray-300 rounded p-3 lg:p-5">
                 <h1 className="mb-2 font-semibold  ">সংবাদের তথ্য:</h1>
+
                 <div>
-                  <Sheet>
+                  <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                     <SheetTrigger asChild>
                       <Button
                         variant="outline"
                         className="p-8 border rounded-full mb-2"
+                        onClick={() => setSheetOpen(true)}
                       >
                         <ImageUpIcon color="red" size={50} /> Add Image
                       </Button>
@@ -325,13 +327,13 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                       <SheetTitle>সংবাদের তথ্য</SheetTitle>
                       <AllImgModal
                         onImageSelect={handleImageSelect}
-                        onClose={() => setOpenSheetIndex(null)}
+                        onClose={() => setSheetOpen(false)}
                       />
                     </SheetContent>
                   </Sheet>
                 </div>
 
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-4 mb-3">
                   {mainSelectedFiles.map((file, index) => (
                     <div key={index} className="relative rounded-lg group">
                       <Image
@@ -339,7 +341,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         alt={`Preview ${index}`}
                         width={150}
                         height={150}
-                        className="h-[150px] w-[150px] rounded-lg object-cover"
+                        className="lg:h-[150px] lg:w-[150px] rounded-lg object-cover"
                       />
                       <button
                         onClick={() => {
@@ -347,7 +349,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                             files.filter((_, i) => i !== index)
                           );
                         }}
-                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
                       >
                         <CircleX />
                       </button>

@@ -195,11 +195,11 @@ const AddImageForm = () => {
 
             <div className="lg:col-span-4 col-span-full space-y-5">
               {/* Tags Section */}
-              <section className="bg-white border border-gray-300 rounded p-5">
+              <section className="bg-white border border-gray-300 rounded p-5 ">
                 <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
                 <div className="col-span-2">
                   {fields.map((field, index) => (
-                    <div key={field.id} className="flex flex-col space-y-3">
+                    <div key={field.id} className="flex flex-col lg:space-y-3">
                       <div className="flex justify-between items-center gap-1 lg:gap-2 p-0 lg:p-4">
                         <Sheet
                           open={openSheetIndex === index}
@@ -283,7 +283,7 @@ const AddImageForm = () => {
                         ))}
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4 pb-2">
                         <TextInput
                           control={form.control}
                           name={`galleries.${index}.imageTagline`}
