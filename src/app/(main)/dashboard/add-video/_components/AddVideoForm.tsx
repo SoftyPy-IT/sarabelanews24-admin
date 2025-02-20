@@ -357,6 +357,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                           form={form}
                           name="displayLocation"
                           className="mb-4"
+                          rules={{ required: "News type is required" }}
                           setFirstPage={setFirstPage}
                         />
                       </div>

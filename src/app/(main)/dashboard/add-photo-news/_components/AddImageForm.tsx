@@ -168,7 +168,7 @@ const AddImageForm = () => {
                             files.filter((_, i) => i !== index)
                           );
                         }}
-                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 "
                       >
                         <CircleX />
                       </button>
@@ -187,7 +187,7 @@ const AddImageForm = () => {
                   </div>
 
                   <div className="col-span-2">
-                  <DailyTimesEditor name="description" />
+                    <DailyTimesEditor name="description" />
                     {/* <RichText
                       name="description"
                       placeholder={"বিস্তারিত বর্ণনা"}
@@ -237,16 +237,16 @@ const AddImageForm = () => {
                         </Sheet>
 
                         <div className="flex justify-end gap-2">
-                        {fields.length > 1 && (
-  <Button
-    type="button"
-    variant="destructive"
-    size="sm"
-    onClick={() => removeField(index)}
-  >
-    <Delete className="w-4 h-4" />
-  </Button>
-)}
+                          {fields.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => removeField(index)}
+                            >
+                              <Delete className="w-4 h-4" />
+                            </Button>
+                          )}
                           {/* <Button
                             type="button"
                             variant="destructive"
@@ -288,7 +288,8 @@ const AddImageForm = () => {
                                   files.filter((_, i) => i !== index)
                                 );
                               }}
-                              className="absolute top-0 right-0 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              // className="absolute top-0 right-0 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="absolute top-0 right-0 bg-red-500 text-white rounded-full"
                             >
                               <CircleX />
                             </button>

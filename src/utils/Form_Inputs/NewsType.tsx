@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import RadioInput from "@/utils/Form_Inputs/RadioInput";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
@@ -9,12 +10,14 @@ interface NewsTypeProps<T extends FieldValues> {
   name: Path<T>;
   className?: string;
   setFirstPage: (value: string) => void;
+  rules?: Record<string, any>
 }
 
 const NewsType = <T extends FieldValues>({
   form,
   name,
   className,
+  rules,
 }: NewsTypeProps<T>) => {
   const selectedNewsType = useWatch({
     control: form.control,
@@ -28,7 +31,8 @@ const NewsType = <T extends FieldValues>({
         control={form.control}
         name={name}
         placeholder="কোথায় প্রদর্শন করতে চাচ্ছেন ?"
-        rules={{ required: "News type is required" }}
+        rules={rules}
+        
         options={[
           { label: "Lead-1", value: "Lead-1" },
           { label: "Lead-2", value: "Lead-2" },

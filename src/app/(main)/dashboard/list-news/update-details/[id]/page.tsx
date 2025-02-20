@@ -9,7 +9,7 @@ import RichText from "@/utils/Form_Inputs/RichText";
 import TextArea from "@/utils/Form_Inputs/TextArea";
 import TextInput from "@/utils/Form_Inputs/TextInput";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
-import {  ImageUpIcon } from "lucide-react";
+import { CircleX, ImageUpIcon } from "lucide-react";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import {
   useGetSingleNewsQuery,
@@ -85,9 +85,11 @@ const Page = ({ params }: newsProps) => {
   const router = useRouter();
   const [firstPage, setFirstPage] = useState("");
   const [currentNews, setCurrentNews] = useState<boolean>(false);
+
   const [updateNews] = useUpdateNewsMutation();
 
   const { data: singleData } = useGetSingleNewsQuery(id);
+
   const [mainSelectedFiles, setMainSelectedFiles] = React.useState<
     { url: string }[]
   >([]);
@@ -97,6 +99,7 @@ const Page = ({ params }: newsProps) => {
   >([]);
 
   const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
+
   const form = useForm<Inputs>({
     defaultValues: {
       reportedDate: "",
@@ -129,6 +132,9 @@ const Page = ({ params }: newsProps) => {
   });
 
   useEffect(() => {
+    // if (singleData && Object.keys(singleData).length > 0) {
+    //   const formatDate = (isoString: string) =>
+    //     isoString ? isoString.slice(0, 16) : "";
     if (singleData && Object.keys(singleData).length > 0) {
       const formatDate = (isoString: string) =>
         isoString ? isoString.slice(0, 16) : "";
@@ -189,10 +195,7 @@ const Page = ({ params }: newsProps) => {
     name: "newsType",
   });
 
-
-
   const onSubmit = async (data: Inputs) => {
-    
     const modifyData = {
       ...data,
       category: data.category,
@@ -230,7 +233,6 @@ const Page = ({ params }: newsProps) => {
     }
   };
 
-
   if (isLoading) {
     return <Loading />;
   }
@@ -247,20 +249,20 @@ const Page = ({ params }: newsProps) => {
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">প্রতিনিধি তথ্য:</h1>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-                  <div>
-                    <SelectInput
-                      control={form.control}
-                      name="reporterType"
-                      placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
-                      options={reporterTypeOption}
-                    />
+                    <div>
+                      <SelectInput
+                        control={form.control}
+                        name="reporterType"
+                        placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
+                        options={reporterTypeOption}
+                      />
                     </div>
-  <div>
-                    <DateTimeInput
-                      control={form.control}
-                      type="datetime-local"
-                      name="reportedDate"
-                    />
+                    <div>
+                      <DateTimeInput
+                        control={form.control}
+                        type="datetime-local"
+                        name="reportedDate"
+                      />
                     </div>
                     <div className="col-span-1 md:col-span-2">
                       <TextInput
@@ -337,7 +339,11 @@ const Page = ({ params }: newsProps) => {
                           <ImageUpIcon color="red" size={50} /> Add Image
                         </Button>
                       </SheetTrigger>
-                      <SheetContent side="right" style={{ maxWidth: "800px" }} className="overflow-auto">
+                      <SheetContent
+                        side="right"
+                        style={{ maxWidth: "800px" }}
+                        className="overflow-auto"
+                      >
                         <SheetTitle className="sr-only">
                           Image Selection Modal
                         </SheetTitle>
@@ -348,19 +354,31 @@ const Page = ({ params }: newsProps) => {
                       </SheetContent>
                     </Sheet>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-6 mb-4 ">
+
+                  <div className="flex flex-wrap gap-4 mb-3">
                     {mainSelectedFiles.map((file, index) => (
-                      <div key={index} className="rounded-lg">
+                      <div key={index} className="relative rounded-lg group">
                         <Image
                           src={file.url}
                           alt={`Preview ${index}`}
-                          width={100}
-                          height={0}
-                          className="h-[150px] w-[150px] rounded-lg"
+                          width={150}
+                          height={150}
+                          className="lg:h-[150px] lg:w-[150px] rounded-lg object-cover"
                         />
+                        <button
+                          onClick={() => {
+                            setMainSelectedFiles((files) =>
+                              files.filter((_, i) => i !== index)
+                            );
+                          }}
+                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                        >
+                          <CircleX />
+                        </button>
                       </div>
                     ))}
                   </div>
+
                   <div className="space-y-2">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       <div className="col-span-2">
@@ -410,7 +428,7 @@ const Page = ({ params }: newsProps) => {
                     <div className="col-span-2">
                       <RichText
                         name="description"
-                      // placeholder="বিস্তারিত বর্ণনা"
+                        // placeholder="বিস্তারিত বর্ণনা"
                       />
                     </div>
                   </div>
@@ -431,7 +449,7 @@ const Page = ({ params }: newsProps) => {
                     </div>
                   </div>
                 </section>
-                
+
                 {/* News showing position */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">
@@ -478,27 +496,26 @@ const Page = ({ params }: newsProps) => {
                 {/* SEO Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">SEO Section:</h1>
-           
-                    <TextInput
-                      control={form.control}
-                      name="metaTitle"
-                      label="Meta Title"
-                      type="text"
-                      placeholder="Enter Meta Title"
-                    />
-                    <TextArea
-                      control={form.control}
-                      name="metaDescription"
-                      label="Meta Description"
-                      placeholder="Enter Meta Description"
-                    />
-                    {/* <TagSelector name="metaKeywords" label="Meta Keywords" /> */}
-                    <TagSelector
-                      name="metaKeywords"
-                      label="Meta Keywords"
-                      defaultValues={singleData?.metaKeywords || []}
-                    />
-           
+
+                  <TextInput
+                    control={form.control}
+                    name="metaTitle"
+                    label="Meta Title"
+                    type="text"
+                    placeholder="Enter Meta Title"
+                  />
+                  <TextArea
+                    control={form.control}
+                    name="metaDescription"
+                    label="Meta Description"
+                    placeholder="Enter Meta Description"
+                  />
+                  {/* <TagSelector name="metaKeywords" label="Meta Keywords" /> */}
+                  <TagSelector
+                    name="metaKeywords"
+                    label="Meta Keywords"
+                    defaultValues={singleData?.metaKeywords || []}
+                  />
                 </section>
               </div>
             </div>
