@@ -87,7 +87,8 @@ const NewsDataTable = () => {
   }, [searchQuery]);
 
   const handleEdit = (rowData: any) => {
-    router.push(`/dashboard/list-news/update-details/${rowData.slug}`);
+    router.push(`/dashboard/list-news/update-details/${rowData.id}`);
+    console.log("id:",rowData)
   };
 
   const handleDelete = async (id: string) => {
