@@ -48,8 +48,8 @@ const SelectInput = <T extends FieldValues>({
         <FormItem>
           <Select
             onValueChange={(value) => {
-              field.onChange(value); // Update the form field value
-              onValueChange?.(value); // Call the onValueChange callback if provided
+              field.onChange(value); 
+              onValueChange?.(value); 
             }}
             value={field.value}
           >
