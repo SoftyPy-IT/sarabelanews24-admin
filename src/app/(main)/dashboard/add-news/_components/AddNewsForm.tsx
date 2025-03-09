@@ -23,7 +23,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MultiSelector from "@/utils/Form_Inputs/MultiSelector";
 import {
   districtOption,
@@ -100,6 +100,23 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
   const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
+  const [locationData, setLocationData] = useState<
+    Record<string, Record<string, string[]>>
+  >({});
+  const [districtOptions, setDistrictOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [upazilaOptions, setUpazilaOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+
+  // Load location data
+  useEffect(() => {
+    fetch("/data/location.json")
+      .then((res) => res.json())
+      .then((data) => setLocationData(data));
+  }, []);
+
   const form = useForm<Inputs>({
     defaultValues: {
       reportedDate: "",
@@ -130,6 +147,35 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       metaDescription: "",
     },
   });
+
+  const division = useWatch({ control: form.control, name: "division" });
+  const district = useWatch({ control: form.control, name: "district" });
+
+  useEffect(() => {
+    if (division && locationData[division]) {
+      setDistrictOptions(
+        Object.keys(locationData[division]).map((district) => ({
+          label: district,
+          value: district,
+        }))
+      );
+      form.setValue("district", ""); // Reset district
+      form.setValue("upazila", ""); // Reset upazila
+      setUpazilaOptions([]); // Clear upazila options
+    }
+  }, [division, locationData, form]);
+
+  useEffect(() => {
+    if (district && division && locationData[division][district]) {
+      setUpazilaOptions(
+        locationData[division][district].map((upazila) => ({
+          label: upazila,
+          value: upazila,
+        }))
+      );
+      form.setValue("upazila", ""); // Reset upazila
+    }
+  }, [district, division, locationData, form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -264,7 +310,31 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                     <>
                       <h1 className="mb-1 font-semibold ">নিউজ এলাকা</h1>
                       <div className="grid grid-cols-1 lg:grid-cols-3 col-span-2 gap-4">
-                        <div>
+                        <SelectorWithSearch
+                          name="division"
+                          options={Object.keys(locationData).map(
+                            (division) => ({
+                              label: division,
+                              value: division,
+                            })
+                          )}
+                          label="বিভাগ নির্বাচন করুন"
+                        />
+
+                        <SelectorWithSearch
+                          name="district"
+                          options={districtOptions}
+                          label="জেলা নির্বাচন করুন"
+                          // disabled={!division}
+                        />
+
+                        <SelectorWithSearch
+                          name="upazila"
+                          options={upazilaOptions}
+                          label="উপজেলা নির্বাচন করুন"
+                          // disabled={!district}
+                        />
+                        {/* <div>
                           <SelectorWithSearch
                             name="division"
                             options={divisionOption}
@@ -284,7 +354,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                             options={upazilaOption}
                             label="উপজেলা নির্বাচন করুন"
                           />
-                        </div>
+                        </div> */}
                       </div>
                     </>
                   )}
