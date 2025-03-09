@@ -1,9 +1,6 @@
 import React from "react";
 import Select from "react-tailwindcss-select";
-import {
-  Options,
-  Option,
-} from "react-tailwindcss-select/dist/components/type";
+import { Options, Option } from "react-tailwindcss-select/dist/components/type";
 import { Controller, useFormContext } from "react-hook-form";
 
 type FormSelectInputProps = {
@@ -21,19 +18,17 @@ export default function SelectMultiValue({
 }: FormSelectInputProps) {
   const { control } = useFormContext();
 
-  // Function to flatten options and remove GroupOption if needed
   const flattenOptions = (options: Options): Option[] => {
     return options.reduce((acc: Option[], option) => {
-      // If it's a GroupOption, merge its options
       if ("options" in option) {
         return [...acc, ...option.options];
       }
-      // Otherwise, it's an Option, so add it to the accumulator
+
       return [...acc, option];
     }, []);
   };
 
-  const flatOptions = flattenOptions(options); // Flatten the options to make sure they're all Option types
+  const flatOptions = flattenOptions(options);
 
   return (
     <div className="space-y-2">
@@ -47,7 +42,6 @@ export default function SelectMultiValue({
           name={name}
           control={control}
           render={({ field: { value, onChange }, fieldState: { error } }) => {
-            // Find the selected option from the flattened list using the value
             const selectedOption = flatOptions.find(
               (option) => option.value === value
             );
@@ -57,18 +51,20 @@ export default function SelectMultiValue({
                 <Select
                   isSearchable
                   primaryColor=""
-                  value={selectedOption || null} // Make sure it gets the object format
+                  value={selectedOption || null}
                   onChange={(selected) => {
                     if (Array.isArray(selected)) {
-                      // If multiple options are selected, extract an array of values
                       onChange(selected.map((option) => option.value));
                     } else {
-                      // If single option is selected, extract the value
                       onChange(selected ? selected.value : null);
                     }
                   }}
-                  options={flatOptions} // Use the flattened options list
+                  options={flatOptions}
                   placeholder={label}
+                  classNames={{
+                    searchIcon:
+                      "absolute top-1/2 transform -translate-y-1/2 text-gray-400 h-5 pl-2 ",
+                  }}
                 />
                 {error && (
                   <p className="mt-1 text-sm text-red-600">{error.message}</p>
