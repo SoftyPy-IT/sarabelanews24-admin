@@ -24,7 +24,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MultiSelector from "@/utils/Form_Inputs/MultiSelector";
 import {
   districtOption,
@@ -104,7 +104,22 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
 
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
   const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
+  const [locationData, setLocationData] = useState<
+    Record<string, Record<string, string[]>>
+  >({});
+  const [districtOptions, setDistrictOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [upazilaOptions, setUpazilaOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
 
+  // Load location data
+  useEffect(() => {
+    fetch("/data/location.json")
+      .then((res) => res.json())
+      .then((data) => setLocationData(data));
+  }, []);
   const form = useForm<Inputs>({
     defaultValues: {
       reportedDate: "",
@@ -138,6 +153,35 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
       metaDescription: "",
     },
   });
+
+  const division = useWatch({ control: form.control, name: "division" });
+  const district = useWatch({ control: form.control, name: "district" });
+
+  useEffect(() => {
+    if (division && locationData[division]) {
+      setDistrictOptions(
+        Object.keys(locationData[division]).map((district) => ({
+          label: district,
+          value: district,
+        }))
+      );
+      form.setValue("district", ""); // Reset district
+      form.setValue("upazila", ""); // Reset upazila
+      setUpazilaOptions([]); // Clear upazila options
+    }
+  }, [division, locationData, form]);
+
+  useEffect(() => {
+    if (district && division && locationData[division][district]) {
+      setUpazilaOptions(
+        locationData[division][district].map((upazila) => ({
+          label: upazila,
+          value: upazila,
+        }))
+      );
+      form.setValue("upazila", ""); // Reset upazila
+    }
+  }, [district, division, locationData, form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -253,6 +297,30 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                         <div className="col-span-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
                           <SelectorWithSearch
                             name="division"
+                            options={Object.keys(locationData).map(
+                              (division) => ({
+                                label: division,
+                                value: division,
+                              })
+                            )}
+                            label="বিভাগ নির্বাচন করুন"
+                          />
+
+                          <SelectorWithSearch
+                            name="district"
+                            options={districtOptions}
+                            label="জেলা নির্বাচন করুন"
+                            // disabled={!division}
+                          />
+
+                          <SelectorWithSearch
+                            name="upazila"
+                            options={upazilaOptions}
+                            label="উপজেলা নির্বাচন করুন"
+                            // disabled={!district}
+                          />
+                          {/* <SelectorWithSearch
+                            name="division"
                             options={divisionOption}
                             label="বিভাগ নির্বাচন করুন"
                           />
@@ -265,7 +333,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                             name="upazila"
                             options={upazilaOption}
                             label="উপজেলা নির্বাচন করুন"
-                          />
+                          /> */}
                         </div>
                       </>
                     )}
@@ -496,27 +564,26 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                 {/* SEO Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold ">SEO Section:</h1>
-             
-                    <TextInput
-                      control={form.control}
-                      name="metaTitle"
-                      label="Meta Title"
-                      type="text"
-                      placeholder="Enter Meta Title"
-                    />
-                    <TextArea
-                      control={form.control}
-                      name="metaDescription"
-                      label="Meta Description"
-                      placeholder="Enter Meta Description"
-                    />
 
-                    <TagSelector
-                      name="metaKeywords"
-                      label="Meta Keywords"
-                      defaultValues={initialData?.metaKeywords || []}
-                    />
-            
+                  <TextInput
+                    control={form.control}
+                    name="metaTitle"
+                    label="Meta Title"
+                    type="text"
+                    placeholder="Enter Meta Title"
+                  />
+                  <TextArea
+                    control={form.control}
+                    name="metaDescription"
+                    label="Meta Description"
+                    placeholder="Enter Meta Description"
+                  />
+
+                  <TagSelector
+                    name="metaKeywords"
+                    label="Meta Keywords"
+                    defaultValues={initialData?.metaKeywords || []}
+                  />
                 </section>
               </div>
             </div>
