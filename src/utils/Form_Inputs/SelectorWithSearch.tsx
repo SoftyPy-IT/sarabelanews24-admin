@@ -10,7 +10,7 @@ type FormSelectInputProps = {
   labelShown?: boolean;
 };
 
-export default function SelectMultiValue({
+export default function SelectorWithSearch({
   name,
   options,
   label,
