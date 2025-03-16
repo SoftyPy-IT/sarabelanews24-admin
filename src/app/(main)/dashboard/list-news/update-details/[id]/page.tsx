@@ -60,7 +60,7 @@ type Inputs = {
   newsCategory: string;
   newsTitle: string;
   adminName: string;
-  slug: string;
+  // slug: string;
   category: string;
   publishedDate: string;
   shortDescription: string;
@@ -119,7 +119,7 @@ const Page = ({ params }: newsProps) => {
       newsCategory: "",
       newsTitle: "",
       adminName: "",
-      slug: "",
+      // slug: "",
       category: "",
       publishedDate: "",
       shortDescription: "",
@@ -158,7 +158,7 @@ const Page = ({ params }: newsProps) => {
         newsCategory: singleData.newsCategory || "",
         newsTitle: singleData.newsTitle || "",
         adminName: singleData.adminName || "",
-        slug: singleData.slug || "",
+        // slug: singleData.slug || "",
         category: singleData.category?._id || "",
         publishedDate: formatDate(singleData.publishedDate),
         shortDescription: singleData.shortDescription || "",
@@ -198,6 +198,7 @@ const Page = ({ params }: newsProps) => {
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
       ...data,
+      
       category: data.category,
       postDate: new Date().toISOString(),
       images: mainSelectedFiles.map((item) => item.url),

@@ -75,8 +75,8 @@ const TopBar = () => {
         {/* Create User Button */}
         <Sheet>
           <SheetTrigger asChild>
-            <Button className="lg:w-full text-white hover:bg-blue-600">
-              Create User
+            <Button className=" text-white hover:bg-blue-600">
+              + Create User
             </Button>
           </SheetTrigger>
           <SheetContent side="right" className="pt-12 px-6 overflow-auto">
