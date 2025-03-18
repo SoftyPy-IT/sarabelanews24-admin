@@ -57,9 +57,9 @@ const Page = () => {
     }
   };
 
-  const handleView = (rowData: any) => {
-    router.push(`/dashboard/list-video-gallery/view-details/${rowData?.id}`);
-  };
+  // const handleView = (rowData: any) => {
+  //   router.push(`/dashboard/list-video-gallery/view-details/${rowData?.id}`);
+  // };
 
   //the columns :
   const columns: ColumnDef<any, any>[] = [

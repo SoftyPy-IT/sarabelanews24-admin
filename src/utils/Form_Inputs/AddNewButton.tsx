@@ -8,17 +8,20 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Route } from "next";
+
 type AddNewButtonProps = {
   href: string;
   toolTipText: string;
 };
+
 export default function AddNewButton({ href, toolTipText }: AddNewButtonProps) {
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button asChild variant={"outline"} size={"sm"}>
-            <Link href={href}>
+          <Button asChild variant="outline" size="sm">
+            <Link href={href as Route<string>}>
               <Plus className="w-4 h-4" />
             </Link>
           </Button>

@@ -24,6 +24,7 @@ import {
   DatabaseBackup,
   ArchiveRestore,
 } from "lucide-react";
+import { Route } from "next";
 
 const Aside = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   const pathname = usePathname();
@@ -136,7 +137,7 @@ const Aside = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
         {
           href: "/dashboard/restore",
           label: "Restore Database",
-          icon: ArchiveRestore
+          icon: ArchiveRestore,
         },
       ],
     },
@@ -177,7 +178,7 @@ const Aside = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                       {route.children.map((child) => (
                         <Link
                           key={child.href}
-                          href={child.href}
+                          href={child.href as Route<string>}
                           className={cn(
                             "flex items-center px-4 py-2 text-sm transition-colors",
                             "hover:bg-blue-600/20",
@@ -194,7 +195,7 @@ const Aside = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                 </>
               ) : (
                 <Link
-                  href={route.href}
+                  href={route.href as Route<string>}
                   className={cn(
                     "flex items-center px-4 py-3 text-sm font-medium transition-colors",
                     "hover:bg-blue-600/20",
