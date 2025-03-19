@@ -95,7 +95,7 @@ const VideoList = () => {
   };
 
   const handleView = (rowData: any) => {
-    router.push(`/dashboard/list-video-gallery/view-details/${rowData?.id}`);
+    // router.push(`/dashboard/list-video-gallery/view-details/${rowData?.id}`);
   };
 
   const columns: ColumnDef<any, any>[] = [
