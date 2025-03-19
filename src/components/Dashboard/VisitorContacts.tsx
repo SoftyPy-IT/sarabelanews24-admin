@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useState } from "react"
@@ -33,329 +34,67 @@ import {
 } from "@/components/ui/pagination"
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Download,
-  Filter,
-  Mail,
-  MoreHorizontal,
-  Phone,
-  Search,
-  User,
-  MapPin,
-  Calendar,
-  Globe,
-  Clock,
-  Monitor,
-  Smartphone,
-  Tablet,
-  Facebook,
-  Twitter,
-  Linkedin,
-  Instagram,
-  ExternalLink,
-  Copy,
-  Eye,
-} from "lucide-react"
+import { Download, Filter, Mail, MoreHorizontal, Phone, Search, User, MapPin, Calendar, Globe, Clock, Monitor, Smartphone, Tablet, Facebook, Twitter, Linkedin, Instagram, ExternalLink, Copy, Eye } from 'lucide-react'
 import { useGetVisitorsQuery } from "@/redux/dailynews/visitorApi"
-
-// Enhanced visitor data with more comprehensive information
-const visitorData = [
-  {
-    id: "V-1001",
-    name: "John Smith",
-    email: "john.smith@example.com",
-    phone: "+1 (555) 123-4567",
-    address: {
-      street: "123 Main Street",
-      city: "New York",
-      state: "NY",
-      zipCode: "10001",
-      country: "USA",
-    },
-    lastVisit: "2025-03-16T14:32:00",
-    firstVisit: "2024-11-05T09:15:00",
-    pageViews: 27,
-    totalVisits: 42,
-    subscribed: true,
-    location: "New York, USA",
-    device: "Desktop",
-    browser: "Chrome",
-    os: "Windows 11",
-    interests: ["Politics", "Technology", "Business"],
-    referrer: "Google Search",
-    socialProfiles: {
-      twitter: "@johnsmith",
-      linkedin: "johnsmith",
-      facebook: "john.smith.123",
-    },
-    tags: ["Premium", "Active"],
-    notes: "Interested in subscription offers. Called on 2025-02-15 about premium content access.",
-    avgTimeOnSite: "4m 12s",
-    conversionRate: 3.2,
-    purchaseHistory: [
-      { date: "2025-01-15", product: "Premium Subscription", amount: 49.99 },
-      { date: "2024-12-10", product: "Special Report", amount: 9.99 },
-    ],
-  },
-  {
-    id: "V-1002",
-    name: "Emma Johnson",
-    email: "emma.j@example.com",
-    phone: "+1 (555) 987-6543",
-    address: {
-      street: "45 Park Avenue",
-      city: "London",
-      state: "",
-      zipCode: "SW1A 1AA",
-      country: "UK",
-    },
-    lastVisit: "2025-03-17T09:15:00",
-    firstVisit: "2024-10-22T15:30:00",
-    pageViews: 42,
-    totalVisits: 67,
-    subscribed: true,
-    location: "London, UK",
-    device: "Mobile",
-    browser: "Safari",
-    os: "iOS 18",
-    interests: ["Business", "Entertainment", "Fashion"],
-    referrer: "Direct",
-    socialProfiles: {
-      twitter: "@emmaj",
-      instagram: "emma.johnson",
-      linkedin: "emmajohnson",
-    },
-    tags: ["Premium", "Influencer"],
-    notes: "Marketing partnership potential. Has large social media following.",
-    avgTimeOnSite: "6m 45s",
-    conversionRate: 5.7,
-    purchaseHistory: [
-      { date: "2025-02-20", product: "Annual Subscription", amount: 129.99 },
-      { date: "2025-01-05", product: "Financial Report Bundle", amount: 24.99 },
-    ],
-  },
-  {
-    id: "V-1003",
-    name: "Raj Patel",
-    email: "raj.patel@example.com",
-    phone: "+91 98765 43210",
-    address: {
-      street: "78 Marine Drive",
-      city: "Mumbai",
-      state: "Maharashtra",
-      zipCode: "400001",
-      country: "India",
-    },
-    lastVisit: "2025-03-16T22:45:00",
-    firstVisit: "2024-12-01T11:20:00",
-    pageViews: 15,
-    totalVisits: 23,
-    subscribed: false,
-    location: "Mumbai, India",
-    device: "Tablet",
-    browser: "Chrome",
-    os: "Android 15",
-    interests: ["Sports", "Technology", "Local News"],
-    referrer: "Facebook",
-    socialProfiles: {
-      twitter: "@rajpatel",
-      facebook: "raj.patel.official",
-    },
-    tags: ["Free Tier"],
-    notes: "Frequently reads sports content. Potential for sports newsletter subscription.",
-    avgTimeOnSite: "2m 30s",
-    conversionRate: 0.8,
-    purchaseHistory: [],
-  },
-  {
-    id: "V-1004",
-    name: "Maria Garcia",
-    email: "maria.g@example.com",
-    phone: "+34 612 345 678",
-    address: {
-      street: "Calle Gran Vía 25",
-      city: "Madrid",
-      state: "",
-      zipCode: "28013",
-      country: "Spain",
-    },
-    lastVisit: "2025-03-17T11:20:00",
-    firstVisit: "2024-09-15T08:45:00",
-    pageViews: 31,
-    totalVisits: 58,
-    subscribed: true,
-    location: "Madrid, Spain",
-    device: "Desktop",
-    browser: "Firefox",
-    os: "macOS 15",
-    interests: ["Politics", "Entertainment", "Travel"],
-    referrer: "Newsletter",
-    socialProfiles: {
-      instagram: "maria.garcia.travel",
-      linkedin: "mariagarcia",
-    },
-    tags: ["Premium", "International"],
-    notes: "Interested in international politics coverage. Speaks English and Spanish.",
-    avgTimeOnSite: "5m 15s",
-    conversionRate: 4.2,
-    purchaseHistory: [
-      { date: "2025-03-01", product: "Premium Subscription", amount: 49.99 },
-      { date: "2025-02-15", product: "Political Analysis Report", amount: 14.99 },
-    ],
-  },
-  {
-    id: "V-1005",
-    name: "Liu Wei",
-    email: "liu.wei@example.com",
-    phone: "+86 139 1234 5678",
-    address: {
-      street: "123 Nanjing Road",
-      city: "Shanghai",
-      state: "",
-      zipCode: "200000",
-      country: "China",
-    },
-    lastVisit: "2025-03-16T18:05:00",
-    firstVisit: "2025-01-10T09:30:00",
-    pageViews: 19,
-    totalVisits: 27,
-    subscribed: false,
-    location: "Shanghai, China",
-    device: "Mobile",
-    browser: "Chrome",
-    os: "Android 15",
-    interests: ["Business", "Technology", "International Trade"],
-    referrer: "LinkedIn",
-    socialProfiles: {
-      linkedin: "liuwei",
-      twitter: "@liuwei_tech",
-    },
-    tags: ["Free Tier", "Business Reader"],
-    notes: "Reads primarily business and technology articles. Works in international trade.",
-    avgTimeOnSite: "3m 50s",
-    conversionRate: 1.5,
-    purchaseHistory: [],
-  },
-  {
-    id: "V-1006",
-    name: "Sarah Williams",
-    email: "sarah.w@example.com",
-    phone: "+1 (555) 234-5678",
-    address: {
-      street: "456 Queen Street",
-      city: "Toronto",
-      state: "ON",
-      zipCode: "M5V 2A8",
-      country: "Canada",
-    },
-    lastVisit: "2025-03-17T08:40:00",
-    firstVisit: "2024-08-20T14:15:00",
-    pageViews: 53,
-    totalVisits: 89,
-    subscribed: true,
-    location: "Toronto, Canada",
-    device: "Desktop",
-    browser: "Edge",
-    os: "Windows 11",
-    interests: ["Politics", "Sports", "Health"],
-    referrer: "Twitter",
-    socialProfiles: {
-      twitter: "@sarahw",
-      linkedin: "sarahwilliams",
-      instagram: "sarah.williams",
-    },
-    tags: ["Premium", "Long-term"],
-    notes: "Subscriber since 2024. Very engaged with political content and opinion pieces.",
-    avgTimeOnSite: "7m 20s",
-    conversionRate: 6.8,
-    purchaseHistory: [
-      { date: "2025-01-10", product: "Annual Subscription", amount: 129.99 },
-      { date: "2024-11-05", product: "Election Special Report", amount: 19.99 },
-      { date: "2024-09-15", product: "Political Analysis Bundle", amount: 29.99 },
-    ],
-  },
-  {
-    id: "V-1007",
-    name: "Ahmed Hassan",
-    email: "ahmed.h@example.com",
-    phone: "+20 100 123 4567",
-    address: {
-      street: "15 Tahrir Square",
-      city: "Cairo",
-      state: "",
-      zipCode: "11511",
-      country: "Egypt",
-    },
-    lastVisit: "2025-03-16T20:15:00",
-    firstVisit: "2024-11-30T12:45:00",
-    pageViews: 24,
-    totalVisits: 36,
-    subscribed: true,
-    location: "Cairo, Egypt",
-    device: "Mobile",
-    browser: "Safari",
-    os: "iOS 18",
-    interests: ["Sports", "Business", "Middle East News"],
-    referrer: "Google Search",
-    socialProfiles: {
-      facebook: "ahmed.hassan.official",
-      twitter: "@ahmedhassan",
-    },
-    tags: ["International", "Sports Fan"],
-    notes: "Particularly interested in football coverage and Middle Eastern business news.",
-    avgTimeOnSite: "4m 05s",
-    conversionRate: 3.5,
-    purchaseHistory: [{ date: "2025-02-01", product: "Premium Subscription", amount: 49.99 }],
-  },
-  {
-    id: "V-1008",
-    name: "Anna Müller",
-    email: "anna.m@example.com",
-    phone: "+49 170 1234567",
-    address: {
-      street: "Friedrichstraße 123",
-      city: "Berlin",
-      state: "",
-      zipCode: "10117",
-      country: "Germany",
-    },
-    lastVisit: "2025-03-17T10:30:00",
-    firstVisit: "2024-10-05T16:20:00",
-    pageViews: 37,
-    totalVisits: 62,
-    subscribed: false,
-    location: "Berlin, Germany",
-    device: "Desktop",
-    browser: "Chrome",
-    os: "Windows 11",
-    interests: ["Technology", "Entertainment", "European Politics"],
-    referrer: "Newsletter",
-    socialProfiles: {
-      linkedin: "annamueller",
-      twitter: "@anna_mueller",
-    },
-    tags: ["Free Tier", "Tech Reader"],
-    notes: "Technology journalist. Reads tech news and reviews regularly.",
-    avgTimeOnSite: "5m 45s",
-    conversionRate: 2.3,
-    purchaseHistory: [],
-  },
-]
+import Loader from "../Loader"
 
 export function VisitorContacts() {
   const { data, error, isLoading } = useGetVisitorsQuery({});
-  console.log('vistor data', data)
   const [searchTerm, setSearchTerm] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const [filterSubscribed, setFilterSubscribed] = useState<string | null>(null)
-  const [selectedVisitor, setSelectedVisitor] = useState<(typeof visitorData)[0] | null>(null)
+  const [selectedVisitor, setSelectedVisitor] = useState<any | null>(null)
   const itemsPerPage = 5
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <Loader/>;
   if (error) return <p>Error loading visitors</p>;
 
+  // Map API data to the format our component expects
+  const visitorData = data?.map((visitor: any) => ({
+    id: visitor._id || `V-${Math.random().toString(36).substr(2, 5)}`,
+    name: `Visitor ${visitor._id?.substr(-5) || Math.random().toString(36).substr(2, 5)}`,
+    email: `visitor${visitor._id?.substr(-5) || Math.random().toString(36).substr(2, 5)}@example.com`,
+    phone: "+1 (555) 123-4567",
+    address: {
+      // street: "Unknown Street",
+      city: visitor.city || "Unknown",
+      state: visitor.region || "",
+      zipCode: visitor.zipCode || "00000",
+      country: visitor.country || "Unknown",
+    },
+    lastVisit: visitor.visitedAt || new Date().toISOString(),
+    firstVisit: visitor.visitedAt || new Date().toISOString(),
+    pageViews: Math.floor(Math.random() * 30) + 1,
+    totalVisits: Math.floor(Math.random() * 50) + 1,
+    subscribed: Math.random() > 0.5,
+    location: `${visitor.city || "Unknown"}, ${visitor.country || "Unknown"}`,
+    device: visitor.browser?.includes("Mobile") ? "Mobile" : "Desktop",
+    browser: visitor.browser ? visitor.browser.split(" ")[0] : "Unknown",
+    os: visitor.browser ? extractOS(visitor.browser) : "Unknown",
+    interests: ["News", "Technology"],
+    referrer: visitor.referrer || "Direct",
+    socialProfiles: {},
+    tags: ["Visitor"],
+    notes: "",
+    avgTimeOnSite: `${Math.floor(Math.random() * 10)}m ${Math.floor(Math.random() * 60)}s`,
+    conversionRate: parseFloat((Math.random() * 5).toFixed(1)),
+    purchaseHistory: [],
+    ip: visitor.ip || "Unknown",
+    isp: visitor.isp || "Unknown",
+  })) || [];
+
+  // Helper function to extract OS from user agent string
+  function extractOS(userAgent: string): string {
+    if (userAgent.includes("Windows")) return "Windows";
+    if (userAgent.includes("Mac")) return "macOS";
+    if (userAgent.includes("iPhone") || userAgent.includes("iPad")) return "iOS";
+    if (userAgent.includes("Android")) return "Android";
+    if (userAgent.includes("Linux")) return "Linux";
+    return "Unknown";
+  }
+
   // Filter visitors based on search term and subscription filter
-  const filteredVisitors = visitorData.filter((visitor) => {
+  const filteredVisitors = visitorData.filter((visitor:any) => {
     const matchesSearch =
       visitor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       visitor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -417,7 +156,7 @@ export function VisitorContacts() {
 
     const csvRows = [
       headers.join(","),
-      ...filteredVisitors.map((visitor) =>
+      ...filteredVisitors.map((visitor:any) =>
         [
           visitor.id,
           `"${visitor.name}"`,
@@ -564,7 +303,7 @@ export function VisitorContacts() {
               </TableHeader>
               <TableBody>
                 {currentVisitors.length > 0 ? (
-                  currentVisitors.map((visitor) => (
+                  currentVisitors.map((visitor:any) => (
                     <TableRow key={visitor.id}>
                       <TableCell>
                         <div className="flex flex-col">
@@ -592,7 +331,7 @@ export function VisitorContacts() {
                             {Object.entries(visitor.socialProfiles || {}).map(([platform, handle]) => (
                               <Badge key={platform} variant="outline" className="text-xs flex items-center">
                                 {getSocialIcon(platform)}
-                                <span className="ml-1">{handle}</span>
+                                <span className="ml-1">{handle as string}</span>
                               </Badge>
                             ))}
                           </div>
@@ -637,7 +376,7 @@ export function VisitorContacts() {
                             {visitor.subscribed ? "Subscribed" : "Not Subscribed"}
                           </Badge>
                           <div className="flex flex-wrap gap-1 mt-1">
-                            {visitor.tags.map((tag) => (
+                            {visitor.tags.map((tag:any) => (
                               <Badge key={tag} variant="secondary" className="text-xs">
                                 {tag}
                               </Badge>
@@ -703,12 +442,20 @@ export function VisitorContacts() {
                                             <div className="flex justify-between">
                                               <span className="text-muted-foreground">Tags:</span>
                                               <div className="flex flex-wrap gap-1 justify-end">
-                                                {selectedVisitor.tags.map((tag) => (
+                                                {selectedVisitor.tags.map((tag:any) => (
                                                   <Badge key={tag} variant="secondary" className="text-xs">
                                                     {tag}
                                                   </Badge>
                                                 ))}
                                               </div>
+                                            </div>
+                                            <div className="flex justify-between">
+                                              <span className="text-muted-foreground">IP Address:</span>
+                                              <span className="font-medium">{selectedVisitor.ip}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                              <span className="text-muted-foreground">ISP:</span>
+                                              <span className="font-medium">{selectedVisitor.isp}</span>
                                             </div>
                                           </CardContent>
                                         </Card>
@@ -754,7 +501,7 @@ export function VisitorContacts() {
                                           <div className="flex justify-between">
                                             <span className="text-muted-foreground">Interests:</span>
                                             <div className="flex flex-wrap gap-1 justify-end">
-                                              {selectedVisitor.interests.map((interest) => (
+                                              {selectedVisitor.interests.map((interest:any) => (
                                                 <Badge key={interest} variant="outline" className="text-xs">
                                                   {interest}
                                                 </Badge>
@@ -870,7 +617,7 @@ export function VisitorContacts() {
                                                     <span className="ml-2 capitalize">{platform}:</span>
                                                   </div>
                                                   <div className="flex items-center">
-                                                    <span className="font-medium mr-2">{handle}</span>
+                                                    <span className="font-medium mr-2">{handle as string}</span>
                                                     <Button variant="ghost" size="icon" className="h-6 w-6">
                                                       <ExternalLink className="h-3 w-3" />
                                                     </Button>
@@ -954,6 +701,16 @@ export function VisitorContacts() {
                                               <div className="mt-2 font-medium">{selectedVisitor.os}</div>
                                             </div>
                                           </div>
+                                          <div className="mt-4 border-t pt-4">
+                                            <div className="flex justify-between items-center mb-2">
+                                              <span className="text-muted-foreground">IP Address:</span>
+                                              <span className="font-medium">{selectedVisitor.ip}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                              <span className="text-muted-foreground">ISP:</span>
+                                              <span className="font-medium">{selectedVisitor.isp}</span>
+                                            </div>
+                                          </div>
                                         </CardContent>
                                       </Card>
                                     </TabsContent>
@@ -975,7 +732,7 @@ export function VisitorContacts() {
                                                 </TableRow>
                                               </TableHeader>
                                               <TableBody>
-                                                {selectedVisitor.purchaseHistory.map((purchase, index) => (
+                                                {selectedVisitor.purchaseHistory.map((purchase:any, index:number) => (
                                                   <TableRow key={index}>
                                                     <TableCell>
                                                       {new Date(purchase.date).toLocaleDateString()}
@@ -993,7 +750,7 @@ export function VisitorContacts() {
                                                   <TableCell className="text-right font-medium">
                                                     $
                                                     {selectedVisitor.purchaseHistory
-                                                      .reduce((sum, item) => sum + item.amount, 0)
+                                                      .reduce((sum:any, item:any) => sum + item.amount, 0)
                                                       .toFixed(2)}
                                                   </TableCell>
                                                 </TableRow>
@@ -1145,4 +902,3 @@ export function VisitorContacts() {
     </Card>
   )
 }
-

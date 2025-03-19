@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server"
 
+// API route to delete a subscriber
+
 export async function DELETE() {
   try {
-  
+
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}/subscribe`, {
       method: "DELETE",

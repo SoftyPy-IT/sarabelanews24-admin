@@ -1,17 +1,19 @@
 "use client"
 
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
-interface VisitorStatsProps {
-  data: {
-    name: string
-    visitors: number
-    pageViews: number
-  }[]
+interface VisitorStatsData {
+  name: string
+  visitors: number
+  pageViews: number
 }
 
-export function VisitorStatsChart({ data }: VisitorStatsProps) {
+interface VisitorStatsChartProps {
+  data: VisitorStatsData[]
+}
+
+export function VisitorStatsChart({ data }: VisitorStatsChartProps) {
   return (
     <ChartContainer
       config={{
@@ -24,49 +26,39 @@ export function VisitorStatsChart({ data }: VisitorStatsProps) {
           color: "hsl(var(--chart-2))",
         },
       }}
-      className="h-full"
     >
-      <LineChart
-        accessibilityLayer
-        data={data}
-        margin={{
-          left: 12,
-          right: 12,
-          top: 12,
-          bottom: 12,
-        }}
-      >
-        <CartesianGrid vertical={false} strokeDasharray="3 3" />
-        <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} />
-        <YAxis tickLine={false} axisLine={false} tickMargin={8} />
-        <ChartTooltip content={<ChartTooltipContent />} />
-        <Line
-          type="monotone"
-          dataKey="visitors"
-          stroke="var(--color-visitors)"
-          strokeWidth={2}
-          dot={{
-            fill: "var(--color-visitors)",
-            r: 4,
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart
+          data={data}
+          margin={{
+            top: 10,
+            right: 30,
+            left: 0,
+            bottom: 0,
           }}
-          activeDot={{
-            r: 6,
-          }}
-        />
-        <Line
-          type="monotone"
-          dataKey="pageViews"
-          stroke="var(--color-pageViews)"
-          strokeWidth={2}
-          dot={{
-            fill: "var(--color-pageViews)",
-            r: 4,
-          }}
-          activeDot={{
-            r: 6,
-          }}
-        />
-      </LineChart>
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <ChartTooltip content={<ChartTooltipContent />} />
+          <Area
+            type="monotone"
+            dataKey="visitors"
+            stackId="1"
+            stroke="var(--color-visitors)"
+            fill="var(--color-visitors)"
+            fillOpacity={0.6}
+          />
+          <Area
+            type="monotone"
+            dataKey="pageViews"
+            stackId="2"
+            stroke="var(--color-pageViews)"
+            fill="var(--color-pageViews)"
+            fillOpacity={0.6}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
     </ChartContainer>
   )
 }

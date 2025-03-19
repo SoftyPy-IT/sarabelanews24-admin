@@ -2,11 +2,11 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(
   request: NextRequest,
-  
+
 ) {
   try {
     const payload = await request.json();
-    // const id = params.id;
+
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_API_URL}/subscribe/send-notification`,
