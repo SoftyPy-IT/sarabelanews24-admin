@@ -1,0 +1,27 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "development",
+    "khairul",
+    "main",
+    "origin",
+    "sikder",
+    "talukder"
+  ],
+  "parent": {
+    "development": "main",
+    "khairul": "main",
+    "main": null,
+    "origin": "main",
+    "sikder": "main",
+    "talukder": "main"
+  },
+  "order": [
+    "main",
+    "development",
+    "khairul",
+    "origin",
+    "sikder",
+    "talukder"
+  ]
+}
