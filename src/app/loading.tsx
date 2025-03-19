@@ -1,25 +1,19 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-"use client";
-import dynamic from "next/dynamic";
-import { Suspense } from "react";
 
-const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
-const LoadingFallback = () => (
-  <div className="flex h-screen items-center justify-center">
-    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-  </div>
-);
+import Image from "next/image";
+import url from "../../src/loader.gif";
 
-const Loading = () => {
-  const loading = require("@public/assets/loading.json");
-
+const Loader = () => {
   return (
-    <div className="flex h-screen items-center justify-center">
-      <Suspense fallback={<LoadingFallback />}>
-        <Lottie animationData={loading} className="w-full max-w-[400px]" />
-      </Suspense>
+    <div className="flex justify-center items-center h-screen bg-white">
+      <Image
+        src={url}
+        height={60}
+        width={60}
+        alt={`A cute animal!`}
+        unoptimized={true}
+      />
     </div>
   );
 };
 
-export default Loading;
+export default Loader;

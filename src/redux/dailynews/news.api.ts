@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { TNewsResponse, TQueryParam, TResponseRedux } from "@/types/api.types";
 import { baseApi } from "../api/baseApi";
 
 const newsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+
+    
     createNews: builder.mutation({
       query: (data) => ({
         url: "/news",
@@ -18,14 +22,35 @@ const newsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["news"],
     }),
+
     getAllNews: builder.query({
-      query: () => ({
-        url: "/news",
-        method: "GET",
+      query: (args) => {
+        const queryParams = new URLSearchParams();
     
-      }),
+        if (args) {
+          args.forEach((item: TQueryParam) => {
+            queryParams.append(item.name, item.value as string);
+          });
+        }
+    
+        return {
+          url: `/news?${queryParams.toString()}`,
+          method: "GET",
+        };
+      },
+
+      
+      transformResponse: (response: TNewsResponse) => {
+        return {
+          data: response.news,
+          meta: response.meta,
+        };
+      },
       providesTags: ["news"],
     }),
+    
+    
+
     getSingleNews: builder.query({
       query: (id) => ({
         url: `/news/${id}`,
@@ -33,6 +58,8 @@ const newsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["news"],
     }),
+
+
     updateNews: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `/news/${id}`,
@@ -41,13 +68,16 @@ const newsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["news"],
     }),
+
+
+
   }),
 });
 
 export const {
-  useCreateNewsMutation, 
-  useDeleteNewsMutation, 
+  useCreateNewsMutation,
+  useDeleteNewsMutation,
   useGetAllNewsQuery,
   useGetSingleNewsQuery,
-  useUpdateNewsMutation
+  useUpdateNewsMutation,
 } = newsApi;

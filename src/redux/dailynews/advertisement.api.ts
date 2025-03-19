@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { TQueryParam } from "@/types/api.types";
 import { baseApi } from "../api/baseApi";
 
 const advertisementApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-
     createAdvertisement: builder.mutation({
       query: (data) => ({
         url: "/advertisement",
@@ -21,14 +22,28 @@ const advertisementApi = baseApi.injectEndpoints({
     }),
 
     getAllAdvertisement: builder.query({
-      query: () => ({
-        url: "/advertisement",
-        method: "GET",
-    
-      }),
+      query: (args) => {
+        const queryParams = new URLSearchParams();
+
+        if (args) {
+          args.forEach((item: TQueryParam) => {
+            queryParams.append(item.name, item.value as string);
+          });
+        }
+
+        return {
+          url: `/advertisement?${queryParams.toString()}`,
+          method: "GET",
+        };
+      },
+      transformResponse: (response: any) => {
+        return {
+          data: response.advertisements,
+          meta: response.meta,
+        };
+      },
       providesTags: ["advertisement"],
     }),
-
     getSingleAdvertisement: builder.query({
       query: (id) => ({
         url: `/advertisement/${id}`,
@@ -45,7 +60,6 @@ const advertisementApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["advertisement"],
     }),
-
   }),
 });
 

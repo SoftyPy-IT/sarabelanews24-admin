@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 export const joditConfig = {
   uploader: {
     url: `${process.env.NEXT_PUBLIC_BASE_API_URL}/uploads`,
-    format: "json",
+    format: 'json',
     prepareData: function (data: any) {
       return data;
     },
@@ -17,7 +18,7 @@ export const joditConfig = {
     },
   },
   height: 500,
-  toolbarAdaptive: false, // Disable adaptive toolbar
-  spellcheck: false, // Disable spellcheck if not needed
-  disablePlugins: ["speechRecognition"], // Example of disabling specific plugins
+  toolbarAdaptive: false, 
+  spellcheck: false, 
+  disablePlugins: ['speechRecognition'], 
 };

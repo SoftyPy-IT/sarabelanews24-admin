@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   FormControl,
   FormField,
@@ -13,7 +14,6 @@ type DateTimeInputProps<T extends FieldValues> = {
   placeholder?: string;
   label?: string;
   type?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rules?: Record<string, any>;
 };
 

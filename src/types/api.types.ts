@@ -30,3 +30,21 @@ export type TQueryParam = {
   name: string;
   value: boolean | React.Key;
 };
+
+export type TNews = {
+  _id: string;
+  newsTitle: string;
+  category: { name: string };
+  publishedDate: string;
+  description: string;
+  newsTag: string[];
+  newsType: string;
+  shortDescription: string;
+  slug: string;
+  images: string[];
+};
+
+export type TNewsResponse = {
+  news: TNews[];
+  meta: TMeta;
+};

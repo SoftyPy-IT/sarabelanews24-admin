@@ -4,6 +4,8 @@ export const tagTypesList = [
     "advertisement",
     "videoNews",
     "user",
-    "folder"
+    "folder",
+    "images",
+    "photoNews"
   ];
   

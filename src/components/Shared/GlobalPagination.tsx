@@ -27,7 +27,7 @@ const GlobalPagination: React.FC<PaginationProps> = ({
   };
 
   const generatePagination = () => {
-    const totalPageNumbers = siblingCount + 5; 
+    const totalPageNumbers = siblingCount + 5; // siblings + first + last + current + 2 ellipses
 
     if (totalPageNumbers >= totalPages) {
       return range(1, totalPages);

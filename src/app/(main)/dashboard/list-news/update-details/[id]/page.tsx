@@ -1,25 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import {
-  Form,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { CardContent } from "@/components/ui/card";
+
 import RichText from "@/utils/Form_Inputs/RichText";
 import TextArea from "@/utils/Form_Inputs/TextArea";
 import TextInput from "@/utils/Form_Inputs/TextInput";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
-import { Delete, ImageUpIcon, PlusIcon } from "lucide-react";
+import { CircleX, ImageUpIcon } from "lucide-react";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import {
-  useCreateNewsMutation,
   useGetSingleNewsQuery,
   useUpdateNewsMutation,
 } from "@/redux/dailynews/news.api";
@@ -35,7 +27,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { use, useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import MultiSelector from "@/utils/Form_Inputs/MultiSelector";
 import {
   districtOption,
@@ -46,7 +38,9 @@ import {
 } from "@/utils/options";
 import toast from "react-hot-toast";
 import NewsType from "@/utils/Form_Inputs/NewsType";
-import TopBar from "../../_components/TopBar";
+import Image from "next/image";
+import Loading from "@/app/loading";
+import UpdateTopBar from "../../_components/UpdateTopBar";
 
 type Inputs = {
   reportedDate: string;
@@ -61,12 +55,12 @@ type Inputs = {
   division: string;
   district: string;
   upazila: string;
-  newsTag: string | string[];
+  newsTag: string;
   newsType: string;
   newsCategory: string;
   newsTitle: string;
   adminName: string;
-  slug: string;
+  // slug: string;
   category: string;
   publishedDate: string;
   shortDescription: string;
@@ -87,20 +81,29 @@ type newsProps = {
 
 const Page = ({ params }: newsProps) => {
   const { id } = use(params);
-
-  const [createNews] = useCreateNewsMutation();
+  const { data, isLoading, isError } = useGetAllCategoriesQuery({});
   const router = useRouter();
   const [firstPage, setFirstPage] = useState("");
   const [currentNews, setCurrentNews] = useState<boolean>(false);
 
   const [updateNews] = useUpdateNewsMutation();
-  const { data: singleData, isLoading } = useGetSingleNewsQuery(id);
-  console.log(singleData);
+
+  const { data: singleData } = useGetSingleNewsQuery(id);
+
+  const [mainSelectedFiles, setMainSelectedFiles] = React.useState<
+    { url: string }[]
+  >([]);
+
+  const [tagSelectedFiles, setTagSelectedFiles] = React.useState<
+    { url: string }[][]
+  >([]);
+
+  const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
 
   const form = useForm<Inputs>({
     defaultValues: {
       reportedDate: "",
-      reporterType: "own_representative",
+      reporterType: "",
       reporterName: "",
       currentNews: false,
       displayLocation: "",
@@ -111,12 +114,12 @@ const Page = ({ params }: newsProps) => {
       division: "",
       district: "",
       upazila: "",
-      newsTag: [],
+      newsTag: "",
       newsType: "",
       newsCategory: "",
       newsTitle: "",
       adminName: "",
-      slug: "",
+      // slug: "",
       category: "",
       publishedDate: "",
       shortDescription: "",
@@ -129,11 +132,17 @@ const Page = ({ params }: newsProps) => {
   });
 
   useEffect(() => {
-    if (singleData) {
+    // if (singleData && Object.keys(singleData).length > 0) {
+    //   const formatDate = (isoString: string) =>
+    //     isoString ? isoString.slice(0, 16) : "";
+    if (singleData && Object.keys(singleData).length > 0) {
+      const formatDate = (isoString: string) =>
+        isoString ? isoString.slice(0, 16) : "";
+
       form.reset({
-        ...form.getValues(),
-        reportedDate: singleData.reportedDate || "",
-        reporterType: singleData.reporterType || "own_representative",
+        reportedDate: formatDate(singleData.reportedDate),
+        // reportedDate: singleData.reportedDate || "",
+        reporterType: singleData.reporterType || "",
         reporterName: singleData.reporterName || "",
         currentNews: singleData.currentNews || false,
         displayLocation: singleData.displayLocation || "",
@@ -149,11 +158,12 @@ const Page = ({ params }: newsProps) => {
         newsCategory: singleData.newsCategory || "",
         newsTitle: singleData.newsTitle || "",
         adminName: singleData.adminName || "",
-        slug: singleData.slug || "",
+        // slug: singleData.slug || "",
         category: singleData.category?._id || "",
-        publishedDate: singleData.publishedDate || "",
+        publishedDate: formatDate(singleData.publishedDate),
         shortDescription: singleData.shortDescription || "",
         description: singleData.description || "",
+
         tags: singleData.tags || [
           { imageTagline: "", photojournalistName: "", selectedImage: "" },
         ],
@@ -161,6 +171,17 @@ const Page = ({ params }: newsProps) => {
         metaKeywords: singleData.metaKeywords || [],
         metaDescription: singleData.metaDescription || "",
       });
+
+      const mainImages =
+        singleData.images?.map((url: string) => ({ url })) || [];
+      setMainSelectedFiles(mainImages);
+
+      // Initialize tag images from API
+      const initialTagFiles =
+        singleData.tags?.map((tag: any) =>
+          tag.selectedImage ? [{ url: tag.selectedImage }] : []
+        ) || [];
+      setTagSelectedFiles(initialTagFiles);
     }
   }, [singleData, form]);
 
@@ -177,67 +198,78 @@ const Page = ({ params }: newsProps) => {
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
       ...data,
+      
       category: data.category,
       postDate: new Date().toISOString(),
+      images: mainSelectedFiles.map((item) => item.url),
     };
+    console.log("modify value:", modifyData);
+    console.log(data);
 
     try {
-      const res = await createNews(modifyData).unwrap();
+      const res = await updateNews({ ...modifyData, id }).unwrap();
+      console.log("response:", res);
       if (res) {
-        toast.success("News Created Successfully!");
+        toast.success("News Update Successfully!");
         router.push("/dashboard/list-news");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create news");
     }
   };
 
-  const handleSubmit = async (data: Inputs) => {
-    try {
-      const res = await updateNews({ ...data, id }).unwrap();
-      toast.success(res.message);
-    } catch (err: any) {
-      console.error("Error:", err);
-      toast.error(err.message);
+  const handleImageSelect = (images: any[]) => {
+    if (openSheetIndex === null) {
+      const urls = images.map((img) => img.url);
+      setMainSelectedFiles(images);
+      form.setValue("selectedImage", urls[0] || "");
+    } else {
+      const newTagFiles = [...tagSelectedFiles];
+      newTagFiles[openSheetIndex] = images;
+      setTagSelectedFiles(newTagFiles);
+      form.setValue(
+        `tags.${openSheetIndex}.selectedImage`,
+        images[0]?.url || ""
+      );
     }
   };
 
   if (isLoading) {
-    return <p>Loading............</p>;
+    return <Loading />;
   }
 
   return (
     <>
-      <TopBar />
+      <UpdateTopBar />
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(id ? handleSubmit : onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="grid grid-cols-12 gap-4 xl:6">
               <div className="lg:col-span-8 col-span-full space-y-3">
                 {/* Reporter Info Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">প্রতিনিধি তথ্য:</h1>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <SelectInput
-                      control={form.control}
-                      name="reporterType"
-                      placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
-                      options={reporterTypeOption}
-                      rules={{ required: "Reporter type is required" }}
-                    />
-                    <DateTimeInput
-                      control={form.control}
-                      type="datetime-local"
-                      name="reportedDate"
-                      rules={{ required: "Reported date and time is required" }}
-                    />
-                    <div className="col-span-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                    <div>
+                      <SelectInput
+                        control={form.control}
+                        name="reporterType"
+                        placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
+                        options={reporterTypeOption}
+                      />
+                    </div>
+                    <div>
+                      <DateTimeInput
+                        control={form.control}
+                        type="datetime-local"
+                        name="reportedDate"
+                      />
+                    </div>
+                    <div className="col-span-1 md:col-span-2">
                       <TextInput
                         control={form.control}
                         name="reporterName"
                         placeholder="প্রতিনিধি নাম"
-                        rules={{ required: "Reporter name is required" }}
                       />
                     </div>
                   </div>
@@ -252,7 +284,6 @@ const Page = ({ params }: newsProps) => {
                         control={form.control}
                         name="newsType"
                         placeholder="নিউজ টাইপ নির্বাচন করুন"
-                        rules={{ required: "News Type is required" }}
                         options={[
                           { label: "Bangladesh", value: "Bangladesh" },
                           { label: "International", value: "International" },
@@ -289,9 +320,6 @@ const Page = ({ params }: newsProps) => {
                             control={form.control}
                             name="internationalArea"
                             placeholder="আন্তর্জাতিক এলাকা"
-                            rules={{
-                              required: "International area is required",
-                            }}
                           />
                         </div>
                       </>
@@ -312,14 +340,46 @@ const Page = ({ params }: newsProps) => {
                           <ImageUpIcon color="red" size={50} /> Add Image
                         </Button>
                       </SheetTrigger>
-                      <SheetContent side="right" style={{ maxWidth: "800px" }}>
+                      <SheetContent
+                        side="right"
+                        style={{ maxWidth: "800px" }}
+                        className="overflow-auto"
+                      >
                         <SheetTitle className="sr-only">
                           Image Selection Modal
                         </SheetTitle>
-                        <AllImgModal />
+                        <AllImgModal
+                          onImageSelect={handleImageSelect}
+                          onClose={() => setOpenSheetIndex(null)}
+                        />
                       </SheetContent>
                     </Sheet>
                   </div>
+
+                  <div className="flex flex-wrap gap-4 mb-3">
+                    {mainSelectedFiles.map((file, index) => (
+                      <div key={index} className="relative rounded-lg group">
+                        <Image
+                          src={file.url}
+                          alt={`Preview ${index}`}
+                          width={150}
+                          height={150}
+                          className="lg:h-[150px] lg:w-[150px] rounded-lg object-cover"
+                        />
+                        <button
+                          onClick={() => {
+                            setMainSelectedFiles((files) =>
+                              files.filter((_, i) => i !== index)
+                            );
+                          }}
+                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                        >
+                          <CircleX />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
                   <div className="space-y-2">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       <div className="col-span-2">
@@ -327,16 +387,15 @@ const Page = ({ params }: newsProps) => {
                           control={form.control}
                           name="photojournalistName"
                           placeholder="ফটো সাংবাদিক নাম"
-                          rules={{ required: "Photographer name is required" }}
                         />
                       </div>
+
                       <SelectInput
                         control={form.control}
                         name="category"
                         placeholder="নিউজ ক্যাটাগরি নির্বাচন করুন"
-                        rules={{ required: "News Category is required" }}
                         options={
-                          singleData?.categories?.map(
+                          data?.categories?.map(
                             (program: { name: string; _id: string }) => ({
                               label: program.name,
                               value: program._id,
@@ -344,6 +403,7 @@ const Page = ({ params }: newsProps) => {
                           ) || []
                         }
                       />
+
                       <NewsType
                         form={form}
                         name="displayLocation"
@@ -351,12 +411,12 @@ const Page = ({ params }: newsProps) => {
                         setFirstPage={setFirstPage}
                       />
                     </div>
+
                     <div className="col-span-2">
                       <TextInput
                         control={form.control}
                         name="newsTitle"
                         placeholder="শিরোনাম"
-                        rules={{ required: "News title is required" }}
                       />
                     </div>
                     <div className="col-span-2">
@@ -364,13 +424,12 @@ const Page = ({ params }: newsProps) => {
                         control={form.control}
                         name="shortDescription"
                         placeholder="সংক্ষিপ্ত বিবরণ"
-                        rules={{ required: "Short Description is required" }}
                       />
                     </div>
                     <div className="col-span-2">
                       <RichText
                         name="description"
-                        placeholder="বিস্তারিত বর্ণনা"
+                        // placeholder="বিস্তারিত বর্ণনা"
                       />
                     </div>
                   </div>
@@ -382,73 +441,13 @@ const Page = ({ params }: newsProps) => {
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
                   <div className="col-span-2">
-                    {fields.map((field, index) => (
-                      <div key={field.id} className="flex flex-col space-y-3">
-                        <div className="flex justify-between items-center gap-2 p-4">
-                          <Sheet>
-                            <SheetTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className="p-8 border rounded-full"
-                              >
-                                <ImageUpIcon color="red" size={50} />
-                                Add Image
-                              </Button>
-                            </SheetTrigger>
-                            <SheetContent
-                              side="right"
-                              style={{ maxWidth: "800px" }}
-                            >
-                              <AllImgModal />
-                            </SheetContent>
-                          </Sheet>
-                          <div className="flex justify-end gap-2">
-                            {fields.length > 1 && (
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => remove(index)}
-                              >
-                                <Delete className="w-4 h-4" />
-                              </Button>
-                            )}
-                            {index === fields.length - 1 && (
-                              <Button
-                                type="button"
-                                variant="default"
-                                size="sm"
-                                onClick={() =>
-                                  append({
-                                    imageTagline: "",
-                                    photojournalistName: "",
-                                    selectedImage: "",
-                                  })
-                                }
-                              >
-                                <PlusIcon className="w-4 h-4" />
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
-                          <TextInput
-                            control={form.control}
-                            name="imageTagline"
-                            placeholder="ইমেজ ট্যাগ লাইন"
-                            rules={{ required: "Image Tag Line is required" }}
-                          />
-                          <TextInput
-                            control={form.control}
-                            name="photojournalistName"
-                            placeholder="ফটো সাংবাদিক নাম"
-                            rules={{
-                              required: "Photo Journalist Name is required",
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ))}
+                    <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
+                      <TextInput
+                        control={form.control}
+                        name="imageTagline"
+                        placeholder="ইমেজ ট্যাগ লাইন"
+                      />
+                    </div>
                   </div>
                 </section>
 
@@ -482,7 +481,6 @@ const Page = ({ params }: newsProps) => {
                         control={form.control}
                         name="adminName"
                         placeholder="Admin Name"
-                        rules={{ required: "Admin name is required" }}
                       />
                     </div>
                     <div className="grid grid-cols-1 gap-4">
@@ -491,7 +489,6 @@ const Page = ({ params }: newsProps) => {
                         name="publishedDate"
                         label="Publish Date"
                         type="datetime-local"
-                        rules={{ required: "Post date is required" }}
                       />
                     </div>
                   </div>
@@ -500,22 +497,26 @@ const Page = ({ params }: newsProps) => {
                 {/* SEO Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">SEO Section:</h1>
-                  <CardContent className="space-y-5">
-                    <TextInput
-                      control={form.control}
-                      name="metaTitle"
-                      label="Meta Title"
-                      type="text"
-                      placeholder="Enter Meta Title"
-                    />
-                    <TextArea
-                      control={form.control}
-                      name="metaDescription"
-                      label="Meta Description"
-                      placeholder="Enter Meta Description"
-                    />
-                    <TagSelector name="metaKeywords" label="Meta Keywords"  />
-                  </CardContent>
+
+                  <TextInput
+                    control={form.control}
+                    name="metaTitle"
+                    label="Meta Title"
+                    type="text"
+                    placeholder="Enter Meta Title"
+                  />
+                  <TextArea
+                    control={form.control}
+                    name="metaDescription"
+                    label="Meta Description"
+                    placeholder="Enter Meta Description"
+                  />
+                  {/* <TagSelector name="metaKeywords" label="Meta Keywords" /> */}
+                  <TagSelector
+                    name="metaKeywords"
+                    label="Meta Keywords"
+                    defaultValues={singleData?.metaKeywords || []}
+                  />
                 </section>
               </div>
             </div>
@@ -523,7 +524,7 @@ const Page = ({ params }: newsProps) => {
             {/* Submit Section */}
             <section className="my-4 flex justify-end">
               <Button type="submit" className="w-[400px] text-white">
-                Submit
+                Update
               </Button>
             </section>
           </form>

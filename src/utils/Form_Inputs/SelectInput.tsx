@@ -21,6 +21,7 @@ type SelectInputProps<T extends FieldValues> = {
   placeholder: string;
   options: { label: string; value: string }[];
   rules?: Record<string, any>;
+  onValueChange?: (value: string) => void;
 };
 
 const SelectInput = <T extends FieldValues>({
@@ -29,6 +30,7 @@ const SelectInput = <T extends FieldValues>({
   placeholder,
   options,
   rules,
+  onValueChange,
 }: SelectInputProps<T>) => {
   const {
     fieldState: { error },
@@ -43,8 +45,14 @@ const SelectInput = <T extends FieldValues>({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem >
-          <Select onValueChange={field.onChange} value={field.value} >
+        <FormItem>
+          <Select
+            onValueChange={(value) => {
+              field.onChange(value); 
+              onValueChange?.(value); 
+            }}
+            value={field.value}
+          >
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder={placeholder} />
@@ -59,7 +67,9 @@ const SelectInput = <T extends FieldValues>({
             </SelectContent>
           </Select>
           {error && (
-            <FormMessage className="text-red-500 mt-1">{error.message}</FormMessage>
+            <FormMessage className="text-red-500 mt-1">
+              {error.message}
+            </FormMessage>
           )}
         </FormItem>
       )}

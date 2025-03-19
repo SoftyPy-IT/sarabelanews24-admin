@@ -1,137 +1,203 @@
-"use client";
-import React from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client"
+import React, { useState } from "react";
 import Image from "next/image";
-import img1 from "@public/assets/images/product-01.png";
-import img2 from "@public/assets/images/product-02.png";
-import img3 from "@public/assets/images/product-03.png";
-import img4 from "@public/assets/images/product-04.png";
-import img5 from "@public/assets/images/product-01.png";
-import img6 from "@public/assets/images/product-02.png";
-import img7 from "@public/assets/images/product-03.png";
-import img8 from "@public/assets/images/product-04.png";
-import img9 from "@public/assets/images/product-01.png";
-import img10 from "@public/assets/images/product-01.png";
-import img11 from "@public/assets/images/product-02.png";
-import img12 from "@public/assets/images/product-03.png";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
+import { useGetAllFolderQuery } from "@/redux/dailynews/folder.api";
+import { useGetAllImagesQuery } from "@/redux/dailynews/images.api";
+import { TQueryParam } from "@/types/api.types";
+import GlobalPagination from "../GlobalPagination";
 
-const initialImages = [
-  { id: 1, image: img1.src },
-  { id: 2, image: img2.src },
-  { id: 3, image: img3.src },
-  { id: 4, image: img4.src },
-  { id: 5, image: img5.src },
-  { id: 6, image: img6.src },
-  { id: 7, image: img7.src },
-  { id: 8, image: img8.src },
-  { id: 9, image: img9.src },
-  { id: 10, image: img10.src },
-  { id: 11, image: img11.src },
-  { id: 12, image: img12.src },
-];
+interface RecentProps {
+  onImageSelect: (images: any[]) => void;
+  onClose: () => void;
+}
 
-const Recent = () => {
-    const [selectedImages, setSelectedImages] = React.useState<number[]>([]);
+const Recent: React.FC<RecentProps> = ({ onImageSelect, onClose }) => {
+  const [selectedImages, setSelectedImages] = useState<any[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [imagesPerPage, setImagesPerPage] = useState<number>(10); 
 
-  const handleCheckboxChange = (id: number, checked: boolean) => {
+  const { data: foldersData } = useGetAllFolderQuery({});
+ 
+  const [params, setParams] = useState<TQueryParam[]>([
+    { name: "page", value: currentPage.toString() },
+    { name: "limit", value: imagesPerPage.toString() },
+  ]);
+
+  const {
+    data: allImages,
+    isLoading,
+    isFetching,
+  } = useGetAllImagesQuery([...params]) as any;
+
+  const metaData = allImages?.meta;
+  const images = allImages?.data;
+
+  const handleFolderChange = (value: any) => {
+    setCurrentPage(1);
+    setParams([
+      { name: "page", value: "1" },
+      { name: "limit", value: imagesPerPage.toString() },
+      { name: "folder", value },
+    ]);
+  };
+
+
+  const handleCheckboxChange = (image: any, checked: boolean) => {
     setSelectedImages((prev) =>
-      checked ? [...prev, id] : prev.filter((imageId) => imageId !== id)
+      checked ? [...prev, image] : prev.filter((img) => img._id !== image._id)
     );
   };
 
-  type Inputs = {
-    reporterType: string;
-    reporterName: string;
-    newsArea: string;
-    reportedDateAndTime: string;
-    selectedImage: string;
-    photoJournalistName: string;
-    img_type: string;
-    publishedDate: string;
-    newsTitle: string;
-    description: string;
-    newsTags: string[];
+  
+  const handleUpload = () => {
+    onImageSelect(selectedImages);
+    // onClose(); 
   };
 
-  const form = useForm<Inputs>({
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setParams((prevParams) => {
+      return prevParams.map((param) =>
+        param.name === "page" ? { ...param, value: page.toString() } : param
+      );
+    });
+  };
+
+  const handleImagesPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newLimit = parseInt(e.target.value, 10);
+    setImagesPerPage(newLimit);
+    setCurrentPage(1); 
+    setParams([
+      { name: "page", value: "1" },
+      { name: "limit", value: newLimit.toString() },
+      ...params.filter((param) => param.name !== "limit" && param.name !== "page"),
+    ]);
+  };
+
+  // Form setup
+  const form = useForm({
     defaultValues: {
-      reporterType: "",
-      reporterName: "",
-      newsArea: "",
-      reportedDateAndTime: "",
-      photoJournalistName: "",
-      img_type: "",
-      publishedDate: "",
-      newsTitle: "",
-      description: "",
-      newsTags: [""],
+      folder: "",
     },
   });
-    return (
-        <>
-         <div className="text-gray-900">
-          <Form {...form}>
-            <div className="w-full mt-5 flex justify-end gap-2">
-              <div className="w-[400px]">
+
+  return (
+    <>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(() => {})}>
+          <div className="text-gray-900">
+            {/* Folder selection */}
+            <div className="w-full mt-5 flex justify-end items-center gap-2">
+              <div className="lg:w-[400px]">
                 <SelectInput
                   control={form.control}
-                  name="img_type"
+                  name="folder"
                   placeholder="Select From Folder"
-                  options={[
-                    { label: "Folder1", value: "Folder1" },
-                    { label: "Folder1", value: "Folder2" },
-                    { label: "Folder1", value: "Folder3" },
-                    { label: "Folder1", value: "Folder4" },
-                    { label: "Folder1", value: "Folder5" },
-                  ]}
+                  options={
+                    foldersData?.map((folder: { name: string; _id: string }) => ({
+                      label: folder.name,
+                      value: folder._id,
+                    })) || []
+                  }
+                  onValueChange={handleFolderChange}
                 />
               </div>
-             
             </div>
-          </Form>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 p-1 md:p-1 my-4">
-            {initialImages.map((row) => (
-              <div key={row.id} className="relative group ">
-                <Image
-                  src={row.image}
-                  className={`w-full h-full rounded shadow-sm bg-gray-500 aspect-square cursor-pointer ${
-                    selectedImages.includes(row.id)
-                      ? "ring-4 ring-blue-500"
-                      : ""
-                  }`}
-                  alt={`Image ${row.id}`}
-                  width={100}
-                  height={100}
-                />
-                <div
-                  className={`absolute top-1 right-1 text-white rounded-full transition ${
-                    selectedImages.includes(row.id)
-                      ? "opacity-100"
-                      : "opacity-0 group-hover:opacity-100"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    className="w-5 h-5 cursor-pointer"
-                    checked={selectedImages.includes(row.id)}
-                    onChange={(e) =>
-                      handleCheckboxChange(row.id, e.target.checked)
-                    }
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        <div className="flex justify-end">
-          <Button className="bg-green-500">Upload</Button>
-        </div>   
-        </>
-    );
+            {/* Total images and images per page selector */}
+            <div className="my-4 flex justify-between items-center">
+              <span className="text-gray-500">
+               
+              </span>
+              <div>
+                <label htmlFor="imagesPerPage" className="text-gray-500 mr-2">
+                  Images per page:
+                </label>
+                <select
+                  id="imagesPerPage"
+                  value={imagesPerPage}
+                  onChange={handleImagesPerPageChange}
+                  className="p-2 border rounded"
+                >
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                  <option value={200}>200</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Image grid */}
+            {images?.length > 0 ? (
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 lg:gap-4  p-1 my-4">
+                {images.map((row: any) => (
+                  <div key={row._id} className="relative group">
+                    <Image
+                      src={row.url}
+                      className={`lg:w-full lg:h-full rounded shadow-sm bg-gray-500 aspect-square cursor-pointer ${
+                        selectedImages.some((img) => img._id === row._id)
+                          ? "ring-4 ring-blue-500"
+                          : ""
+                      }`}
+                      alt={`Image ${row._id}`}
+                      width={100}
+                      height={100}
+                    />
+                    <div
+                      className={`absolute top-1 right-1 text-white rounded-full transition ${
+                        selectedImages.some((img) => img._id === row._id)
+                          ? "opacity-100"
+                          : "opacity-0"
+                      } group-hover:opacity-100`}
+                    >
+                      <input
+                        type="checkbox"
+                        className="w-5 h-5 cursor-pointer"
+                        checked={selectedImages.some(
+                          (img) => img._id === row._id
+                        )}
+                        onChange={(e) =>
+                          handleCheckboxChange(row, e.target.checked)
+                        }
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-gray-500 my-4">No images found.</div>
+            )}
+          </div>
+
+          {/* Upload button */}
+          <div className="flex justify-end mb-8 lg:mb-0">
+            <Button
+              className="bg-green-500"
+              onClick={handleUpload}
+              disabled={selectedImages.length === 0}
+            >
+              Upload
+            </Button>
+          </div>
+
+          {/* Pagination */}
+          <GlobalPagination
+            currentPage={currentPage}
+            totalPages={metaData?.totalPages || 1}
+            onPageChange={handlePageChange}
+          />
+        </form>
+      </Form>
+    </>
+  );
 };
 
 export default Recent;
