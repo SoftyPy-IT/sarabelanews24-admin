@@ -2,14 +2,14 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Record<string, string> } // ✅ Fix: Generalized params type
+  
 ) {
   try {
     const payload = await request.json();
-    const id = params.id; // ✅ Now correctly typed
+    // const id = params.id;
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API_URL}/subscribe/send-notification/${id}`,
+      `${process.env.NEXT_PUBLIC_BASE_API_URL}/subscribe/send-notification`,
       {
         method: "POST",
         headers: {
