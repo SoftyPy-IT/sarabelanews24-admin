@@ -4,7 +4,7 @@ const visitorApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     trackVisitor: builder.mutation({
       query: (data) => ({
-        url: "/visitor",
+        url: "/visitor-tracker",
         method: "POST",
         data,
       }),
@@ -12,7 +12,7 @@ const visitorApi = baseApi.injectEndpoints({
     }),
     getVisitors: builder.query({
       query: () => ({
-        url: "/visitor",
+        url: "/visitor-tracker",
         method: "GET",
       }),
       providesTags: ["visitor"],

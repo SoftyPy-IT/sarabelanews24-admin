@@ -23,6 +23,7 @@ import {
   NotebookIcon,
   DatabaseBackup,
   ArchiveRestore,
+  Bell,
 } from "lucide-react";
 import { Route } from "next";
 
@@ -90,6 +91,11 @@ const Aside = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
       ],
     },
     {
+      href: "/dashboard/send-notification",
+      label: "Send Notification",
+      icon: Bell,
+    },
+    {
       href: "/Advertisement",
       label: "Advertisement",
       icon: NotebookIcon,
@@ -119,11 +125,13 @@ const Aside = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
         { href: "/dashboard/gallery/folder", label: "Folder", icon: Folder },
       ],
     },
+
     {
       href: "/dashboard/user",
       label: "User Management",
       icon: UserRoundCog,
     },
+
     {
       href: "/dashboard/backup",
       label: "Backup & Settings",

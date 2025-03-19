@@ -36,13 +36,13 @@ export default function DashboardContent() {
 
   return (
     <div className="lg:p-4 space-y-4">
-      {/* Visitor Tracker Component */}
+
       <VisitorTracker />
 
-      {/* Visitor Contacts Component */}
+    
       <VisitorContacts />
 
-      {/* Top Stats Cards */}
+   
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="flex items-center p-6">
