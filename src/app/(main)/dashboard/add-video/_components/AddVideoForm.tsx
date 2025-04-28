@@ -119,6 +119,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
       .then((res) => res.json())
       .then((data) => setLocationData(data));
   }, []);
+  
   const form = useForm<Inputs>({
     defaultValues: {
       reportedDate: "",

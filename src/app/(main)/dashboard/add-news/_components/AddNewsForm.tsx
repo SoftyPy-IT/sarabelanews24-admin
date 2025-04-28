@@ -202,13 +202,13 @@ const AddNewsForm = ({ initialData }: CourseFormProps) => {
 
   const onSubmit = async (data: Inputs) => {
 
-    console.log("Form data before submission:", data);
+    // console.log("Form data before submission:", data);
 
 
-    console.log("localNews value:", data.localNews);
+    // console.log("localNews value:", data.localNews);
 
-    console.log("newsLocation value:", data.newsLocation);
-    console.log("meta Keywords value:", data.metaKeywords);
+    // console.log("newsLocation value:", data.newsLocation);
+    // console.log("meta Keywords value:", data.metaKeywords);
 
     const modifyData = {
         ...data,
@@ -219,14 +219,15 @@ const AddNewsForm = ({ initialData }: CourseFormProps) => {
         firstPage: data.firstPage === "yes",
       };
 
-    console.log("Data being sent to API:", modifyData);
+    // console.log("Data being sent to API:", modifyData);
 
     try {
         
       const res = await createNews(modifyData).unwrap();
-      if (res.data) {      
+      if (res) {      
         toast.success("News Created Successfully!");
         router.push("/dashboard/list-news");
+        return; 
       }
 
       console.log("API response:", res);
