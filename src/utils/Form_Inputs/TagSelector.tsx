@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
@@ -25,33 +26,21 @@ export default function TagSelector({
   toolTipText,
   labelShown = true,
   isMultiple = true,
-  defaultValues = [],
 }: TagSelectorProps) {
-  const { control, setValue } = useFormContext();
-  const [tags, setTags] = useState<string[]>(defaultValues);
+  const { control, watch, setValue } = useFormContext();
+  const tags = watch(name) || []; // This will get the current values from the form
   const [inputValue, setInputValue] = useState<string>("");
 
-  useEffect(() => {
-    setValue(name, defaultValues);
-  }, [name, defaultValues, setValue]);
-
-  const handleAddTag = (onChange: (value: string[]) => void) => {
+  const handleAddTag = () => {
     if (inputValue && !tags.includes(inputValue)) {
       const newTags = isMultiple ? [...tags, inputValue] : [inputValue];
-      setTags(newTags);
-      setInputValue("");
-      onChange(newTags);
       setValue(name, newTags);
+      setInputValue("");
     }
   };
 
-  const handleRemoveTag = (
-    tagToRemove: string,
-    onChange: (value: string[]) => void
-  ) => {
-    const updatedTags = tags.filter((tag) => tag !== tagToRemove);
-    setTags(updatedTags);
-    onChange(updatedTags);
+  const handleRemoveTag = (tagToRemove: string) => {
+    const updatedTags = tags.filter((tag:any) => tag !== tagToRemove);
     setValue(name, updatedTags);
   };
 
@@ -63,7 +52,7 @@ export default function TagSelector({
         </h2>
       )}
       <div className="flex flex-wrap gap-2">
-        {tags.map((tag) => (
+        {tags.map((tag:any) => (
           <div
             key={tag}
             className="bg-gray-100 px-3 py-1 rounded flex items-center text-sm"
@@ -72,9 +61,7 @@ export default function TagSelector({
             <button
               type="button"
               className="ml-2 text-gray-400 hover:text-red-500 transition-colors"
-              onClick={() =>
-                handleRemoveTag(tag, (newTags) => setValue(name, newTags))
-              }
+              onClick={() => handleRemoveTag(tag)}
             >
               <X size={14} />
             </button>
@@ -97,7 +84,7 @@ export default function TagSelector({
                   onKeyPress={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
-                      handleAddTag(onChange);
+                      handleAddTag();
                     }
                   }}
                   placeholder={`Add a ${label}`}
@@ -109,7 +96,7 @@ export default function TagSelector({
               </div>
               <Button
                 type="button"
-                onClick={() => handleAddTag(onChange)}
+                onClick={handleAddTag}
                 className="whitespace-nowrap px-2 lg:px-4"
               >
                 <PlusIcon className="w-4 h-4" /> Add Tag

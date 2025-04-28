@@ -4,7 +4,6 @@
 import { Form } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { CardContent } from "@/components/ui/card";
 import TextArea from "@/utils/Form_Inputs/TextArea";
 import TextInput from "@/utils/Form_Inputs/TextInput";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
@@ -13,10 +12,9 @@ import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import { useCreateNewsMutation } from "@/redux/dailynews/news.api";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
-import SelectorWithSearch from "@/utils/Form_Inputs/SelectorWithSearch";
 import TagSelector from "@/utils/Form_Inputs/TagSelector";
 import RadioInput from "@/utils/Form_Inputs/RadioInput";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import {
   Sheet,
   SheetContent,
@@ -26,23 +24,23 @@ import {
 import React, { useState, useEffect } from "react";
 import MultiSelector from "@/utils/Form_Inputs/MultiSelector";
 import {
-  districtOption,
-  divisionOption,
   newsTagOption,
   reporterTypeOption,
-  upazilaOption,
 } from "@/utils/options";
 import toast from "react-hot-toast";
-import NewsType from "@/utils/Form_Inputs/NewsType";
 import Image from "next/image";
 import DailyTimesEditor from "@/utils/Form_Inputs/JodiEditor";
+import SelecteWithSearch from "@/utils/Form_Inputs/SelecteWithSearch";
+import NewsLocation from "@/utils/Form_Inputs/NewsLocation";
 
 type Inputs = {
+  firstPage: string;
   reportedDate: string;
   reporterType: string;
   reporterName: string;
   currentNews: boolean;
-  displayLocation: string;
+  localNews: boolean;
+  newsLocation: string;
   selectedImage: string;
   imageTagline: string;
   photojournalistName: string;
@@ -60,13 +58,11 @@ type Inputs = {
   publishedDate: string;
   shortDescription: string;
   description: string;
-
   tags: {
     imageTagline: string;
     photojournalistName: string;
     selectedImage: string;
   }[];
-
   metaTitle: string;
   metaKeywords: string | string[];
   metaDescription: string;
@@ -77,12 +73,8 @@ type CourseFormProps = {
   initialData?: any | undefined | null;
 };
 
-interface FileWithPreview {
-  file: File;
-  preview: string;
-}
+const AddNewsForm = ({ initialData }: CourseFormProps) => {
 
-const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
   const [mainSelectedFiles, setMainSelectedFiles] = React.useState<
     { url: string }[]
   >([]);
@@ -92,23 +84,35 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
   >([]);
 
   const [createNews] = useCreateNewsMutation({});
+
   const router = useRouter();
+
   const [firstPage, setFirstPage] = useState("");
-  const [currentNews, setCurrentNews] = useState<boolean>(false);
+
+  const [currentNews, setCurrentNews] = useState<boolean>(initialData?.currentNews || false);
+
+  const [localNews, setLocalNews] = useState<boolean>(initialData?.localNews || false);
 
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
+
   const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
+
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const [locationData, setLocationData] = useState<
     Record<string, Record<string, string[]>>
   >({});
+
   const [districtOptions, setDistrictOptions] = useState<
     { label: string; value: string }[]
   >([]);
+
   const [upazilaOptions, setUpazilaOptions] = useState<
     { label: string; value: string }[]
   >([]);
+
+  const now = new Date();
+  const formattedNow = now.toISOString().slice(0, 16);
 
   // Load location data
   useEffect(() => {
@@ -119,37 +123,41 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
   const form = useForm<Inputs>({
     defaultValues: {
-      reportedDate: "",
-      reporterType: "",
-      reporterName: "",
-      currentNews: true || false,
-      displayLocation: "",
-      selectedImage: "",
-      imageTagline: "",
-      photojournalistName: "",
-      internationalArea: "",
-      division: "",
-      district: "",
-      upazila: "",
-      newsTag: "",
-      newsType: "",
-      newsCategory: "",
-      newsTitle: "",
-      adminName: "",
-      slug: "",
-      category: "",
-      publishedDate: "",
-      shortDescription: "",
-      description: "",
-      tags: [{ imageTagline: "", photojournalistName: "", selectedImage: "" }],
-      metaTitle: "",
-      metaKeywords: "",
-      metaDescription: "",
+      firstPage: initialData?.firstPage || "no",
+      reportedDate: formattedNow,
+      reporterType: initialData?.reporterType || "",
+      reporterName: initialData?.reporterName || "",
+      currentNews: initialData?.currentNews || false,
+      localNews: initialData?.localNews || false,
+      newsLocation: initialData?.newsLocation || "",
+      selectedImage: initialData?.selectedImage || "",
+      imageTagline: initialData?.imageTagline || "",
+      photojournalistName: initialData?.photojournalistName || "",
+      internationalArea: initialData?.internationalArea || "",
+      division: initialData?.division || "",
+      district: initialData?.district || "",
+      upazila: initialData?.upazila || "",
+      newsTag: initialData?.newsTag || "",
+      newsType: initialData?.newsType || "",
+      newsCategory: initialData?.newsCategory || "",
+      newsTitle: initialData?.newsTitle || "",
+      adminName: initialData?.adminName || "",
+      slug: initialData?.slug || "",
+      category: initialData?.category?._id || "",
+      publishedDate: initialData?.publishedDate || "",
+      shortDescription: initialData?.shortDescription || "",
+      description: initialData?.description || "",
+      tags: initialData?.tags || [{ imageTagline: "", photojournalistName: "", selectedImage: "" }],
+      metaTitle: initialData?.metaTitle || "",
+      metaKeywords: initialData?.metaKeywords || "",
+      metaDescription: initialData?.metaDescription || "",
     },
   });
 
   const division = useWatch({ control: form.control, name: "division" });
   const district = useWatch({ control: form.control, name: "district" });
+  const newsType = useWatch({ control: form.control, name: "newsType" });
+
 
   useEffect(() => {
     if (division && locationData[division]) {
@@ -159,9 +167,9 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
           value: district,
         }))
       );
-      form.setValue("district", ""); // Reset district
-      form.setValue("upazila", ""); // Reset upazila
-      setUpazilaOptions([]); // Clear upazila options
+      form.setValue("district", "");
+      form.setValue("upazila", "");
+      setUpazilaOptions([]);
     }
   }, [division, locationData, form]);
 
@@ -173,23 +181,9 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
           value: upazila,
         }))
       );
-      form.setValue("upazila", ""); // Reset upazila
+      form.setValue("upazila", "");
     }
   }, [district, division, locationData, form]);
-
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "tags",
-  });
-
-  const appendField = () => {
-    append({
-      imageTagline: "",
-      photojournalistName: "",
-      selectedImage: "",
-    });
-    setTagSelectedFiles([...tagSelectedFiles, []]);
-  };
 
   const handleImageSelect = (images: any[]) => {
     if (openSheetIndex === null) {
@@ -199,37 +193,44 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
       newTagFiles[openSheetIndex] = images.map((img) => ({ url: img.url }));
       setTagSelectedFiles(newTagFiles);
     }
-    setSheetOpen(false); // Close the sheet after selection
+    setSheetOpen(false);
   };
-
-  const removeField = (index: number) => {
-    remove(index);
-    setTagSelectedFiles(tagSelectedFiles.filter((_, i) => i !== index));
-  };
-
-  const newsType = useWatch({
-    control: form.control,
-    name: "newsType",
-  });
 
   if (isLoading) {
     return <h1>loading</h1>;
   }
 
   const onSubmit = async (data: Inputs) => {
+
+    console.log("Form data before submission:", data);
+
+
+    console.log("localNews value:", data.localNews);
+
+    console.log("newsLocation value:", data.newsLocation);
+    console.log("meta Keywords value:", data.metaKeywords);
+
     const modifyData = {
-      ...data,
-      category: data.category,
-      postDate: new Date().toISOString(),
-      images: mainSelectedFiles.map((item) => item.url),
-    };
+        ...data,
+        category: data.category,
+        postDate: new Date().toISOString(),
+        images: mainSelectedFiles.map((item) => item.url),
+        localNews: Boolean(data.localNews),
+        firstPage: data.firstPage === "yes",
+      };
+
+    console.log("Data being sent to API:", modifyData);
 
     try {
+        
       const res = await createNews(modifyData).unwrap();
-      if (res) {
+      if (res.data) {      
         toast.success("News Created Successfully!");
         router.push("/dashboard/list-news");
       }
+
+      console.log("API response:", res);
+
     } catch (error: any) {
       console.error("Submission error:", error);
 
@@ -251,10 +252,9 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
         <Form {...form}>
           <div className="grid grid-cols-12 gap-4 xl:6">
             <div className="lg:col-span-8 col-span-full space-y-3">
-              {/* Reporter Info Section */}
+              {/* Reporter Section */}
               <section className="bg-white border border-gray-300 rounded p-3 lg:p-5">
                 <h1 className="mb-2 font-semibold">প্রতিনিধি তথ্য:</h1>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                   <div>
                     <SelectInput
@@ -265,18 +265,17 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                       rules={{ required: "Reporter type is required" }}
                     />
                   </div>
+
                   <div>
                     <DateTimeInput
                       control={form.control}
                       type="datetime-local"
                       name="reportedDate"
-                      rules={{
-                        required: "Reported date and time is required",
-                      }}
+                      rules={{ required: "Reported date and time is required" }}
                     />
                   </div>
 
-                  {/* Second Row - Full Width */}
+
                   <div className="col-span-1 md:col-span-2">
                     <TextInput
                       control={form.control}
@@ -288,10 +287,9 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                 </div>
               </section>
 
-              {/* news type and area */}
+              {/* News Type Section */}
               <section className="bg-white border border-gray-300 rounded p-3 lg:p-5">
-                <h1 className="mb-2 font-semibold  ">নিউজ টাইপ:</h1>
-
+                <h1 className="mb-2 font-semibold">নিউজ টাইপ:</h1>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div className="col-span-2">
                     <SelectInput
@@ -308,60 +306,83 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
                   {newsType === "Bangladesh" && (
                     <>
-                      <h1 className="mb-1 font-semibold ">নিউজ এলাকা</h1>
+                      <h1 className="mb-1 font-semibold">নিউজ এলাকা</h1>
                       <div className="grid grid-cols-1 lg:grid-cols-3 col-span-2 gap-4">
-                        <SelectorWithSearch
+                        <SelecteWithSearch
                           name="division"
-                          options={Object.keys(locationData).map(
-                            (division) => ({
-                              label: division,
-                              value: division,
-                            })
-                          )}
+                          options={Object.keys(locationData).map((division) => ({
+                            label: division,
+                            value: division,
+                          }))}
                           label="বিভাগ নির্বাচন করুন"
+                          onChange={(value) => {
+                            // Reset district and upazila when division changes
+                            form.setValue("district", "");
+                            form.setValue("upazila", "");
+                            setUpazilaOptions([]);
+
+                            // Update district options based on selected division
+                            if (value && locationData[value]) {
+                              setDistrictOptions(
+                                Object.keys(locationData[value]).map((district) => ({
+                                  label: district,
+                                  value: district,
+                                }))
+                              );
+                            } else {
+                              setDistrictOptions([]);
+                            }
+                          }}
                         />
 
-                        <SelectorWithSearch
+                        <SelecteWithSearch
                           name="district"
                           options={districtOptions}
                           label="জেলা নির্বাচন করুন"
-                          // disabled={!division}
+                          onChange={(value) => {
+                            // Reset upazila when district changes
+                            form.setValue("upazila", "");
+
+                            // Update upazila options based on selected district and division
+                            const currentDivision = form.getValues("division");
+                            if (value && currentDivision && locationData[currentDivision][value]) {
+                              setUpazilaOptions(
+                                locationData[currentDivision][value].map((upazila) => ({
+                                  label: upazila,
+                                  value: upazila,
+                                }))
+                              );
+                            } else {
+                              setUpazilaOptions([]);
+                            }
+                          }}
                         />
 
-                        <SelectorWithSearch
+                        <SelecteWithSearch
                           name="upazila"
                           options={upazilaOptions}
                           label="উপজেলা নির্বাচন করুন"
-                          // disabled={!district}
                         />
-                        {/* <div>
-                          <SelectorWithSearch
-                            name="division"
-                            options={divisionOption}
-                            label="বিভাগ নির্বাচন করুন"
+
+
+                        <section className="bg-white py-3 border-2 border-dashed rounded-lg mt-2 md:col-span-2 xl:col-span-1">
+                          <RadioInput
+                            title={"জনপদের সংবাদ?"}
+                            name="localNews"
+                            value={localNews}
+                            onChange={(value: boolean) => {
+                              setLocalNews(value);
+                              form.setValue("localNews", value);
+                            }}
                           />
-                        </div>
-                        <div>
-                          <SelectorWithSearch
-                            name="district"
-                            options={districtOption}
-                            label="জেলা নির্বাচন করুন"
-                          />
-                        </div>
-                        <div>
-                          <SelectorWithSearch
-                            name="upazila"
-                            options={upazilaOption}
-                            label="উপজেলা নির্বাচন করুন"
-                          />
-                        </div> */}
+                        </section>
                       </div>
                     </>
                   )}
 
                   {newsType === "International" && (
                     <>
-                      <h1 className="mb-1 font-semibold ">নিউজ এলাকা</h1>
+                      <h1 className="mb-1 font-semibold">নিউজ এলাকা</h1>
                       <div className="col-span-2">
                         <TextInput
                           control={form.control}
@@ -376,8 +397,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
               {/* News Info Section */}
               <section className="bg-white border border-gray-300 rounded p-3 lg:p-5">
-                <h1 className="mb-2 font-semibold  ">সংবাদের তথ্য:</h1>
-
+                <h1 className="mb-2 font-semibold">সংবাদের তথ্য:</h1>
                 <div>
                   <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                     <SheetTrigger asChild>
@@ -453,16 +473,15 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                         }
                       />
                     </div>
-                    <div>
-                      <NewsType
+                    <div>                      
+                      <NewsLocation
                         form={form}
-                        name="displayLocation"
+                        name="newsLocation"
                         className=""
                         rules={{ required: "News type is required" }}
                         setFirstPage={setFirstPage}
-                      />
+                      />                      
                     </div>
-
                     <div className="col-span-1 md:col-span-2">
                       <TextInput
                         control={form.control}
@@ -501,91 +520,9 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                     rules={{ required: "Image Tag Line is required" }}
                   />
                 </div>
-                {/* <div className="col-span-2">
-                    {fields.map((field, index) => (
-                      <div key={field.id} className="flex flex-col space-y-3">
-                        <div className="flex justify-between items-center gap-2 p-4">
-                          <Sheet
-                            key={field.id}
-                            open={openSheetIndex === index}
-                            onOpenChange={(open) =>
-                              setOpenSheetIndex(open ? index : null)
-                            }
-                          >
-                            <SheetTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className="p-8 border rounded-full mb-2"
-                              >
-                                <ImageUpIcon color="red" size={50} /> Add Image
-                              </Button>
-                            </SheetTrigger>
-                            <SheetContent
-                              side="right"
-                              className="pt-4 overflow-y-auto"
-                              style={{ maxWidth: "800px" }}
-                            >
-                              <SheetTitle>সংবাদ ট্যাগ</SheetTitle>
-                              <AllImgModal
-                                onImageSelect={(images: any) => {
-                                  const newTagFiles = [...tagSelectedFiles];
-                                  newTagFiles[index] = images;
-                                  setTagSelectedFiles(newTagFiles);
-                                }}
-                                onClose={() => setOpenSheetIndex(null)}
-                              />
-                            </SheetContent>
-                          </Sheet>
-
-                          <div className="flex justify-end gap-2">
-                            {fields.length > 1 && (
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => removeField(index)}
-                              >
-                                <Delete className="w-4 h-4" />
-                              </Button>
-                            )}
-                            {index === fields.length - 1 && (
-                              <Button
-                                type="button"
-                                variant="default"
-                                size="sm"
-                                onClick={appendField}
-                              >
-                                <PlusIcon className="w-4 h-4" />
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Tag Image Display */}
-                {/* {tagSelectedFiles[index]?.map((file, imgIndex) => (
-                          <Image
-                            key={imgIndex}
-                            src={file.url}
-                            alt={`Preview ${imgIndex}`}
-                            width={130}
-                            height={100}
-                          />
-                        ))}
-
-                        <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
-                          <TextInput
-                            control={form.control}
-                            name="imageTagline"
-                            placeholder="ইমেজ ট্যাগ লাইন"
-                            rules={{ required: "Image Tag Line is required" }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div> */}
               </section>
 
-              {/* news showing position */}
+              {/* News Showing Position */}
               <section className="bg-white border border-gray-300 rounded p-3 lg:p-5">
                 <h1 className="mb-2 font-semibold">
                   কোথায় ট্যাগ করতে চাচ্ছেন ?
@@ -602,13 +539,16 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                   title={"ক্যারেন্ট নিউজ হিসেবে রাখতে চাচ্ছেন ?"}
                   name="currentNews"
                   value={currentNews}
-                  onChange={(value: boolean) => setCurrentNews(value)}
+                  onChange={(value: boolean) => {
+                    setCurrentNews(value);
+                    form.setValue("currentNews", value);
+                  }}
                 />
               </section>
 
               {/* Admin Section */}
               <section className="bg-white border border-gray-300 rounded p-3 lg:p-5">
-                <h1 className="mb-2 font-semibold ">Admin Section:</h1>
+                <h1 className="mb-2 font-semibold">Admin Section:</h1>
                 <div className="col-span-2">
                   <div className="col-span-2">
                     <TextInput
@@ -618,8 +558,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                       rules={{ required: "Admin name is required" }}
                     />
                   </div>
-
-                  <div className="grid grid-cols-1  gap-4 mt-2">
+                  <div className="grid grid-cols-1 gap-4 mt-2">
                     <DateTimeInput
                       control={form.control}
                       name="publishedDate"
@@ -633,7 +572,7 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
 
               {/* SEO Section */}
               <section className="bg-white border border-gray-300 rounded p-3 lg:p-5">
-                <h1 className="mb-2 font-semibold ">SEO Section:</h1>
+                <h1 className="mb-2 font-semibold">SEO Section:</h1>
                 <div className="col-span-2">
                   <TextInput
                     control={form.control}
@@ -660,24 +599,24 @@ const AddNewsForm = ({ editingId, initialData }: CourseFormProps) => {
                 </div>
               </section>
             </div>
-          </div>
+          </div >
 
-          {/* Submit Section */}
-          <section className="my-4 flex justify-end">
+          {/* Submit Button */}
+          <section className="my-4 flex justify-end" >
             <Button
               type="submit"
-              className="w-[400px] text-white "
+              className="w-[400px] text-white"
               onClick={form.handleSubmit(onSubmit)}
             >
               Submit
             </Button>
-          </section>
-          {/* <form onSubmit={}>
-          </form> */}
-        </Form>
+          </section >
+        </Form >
       </div>
     </>
   );
 };
 
+
 export default AddNewsForm;
+

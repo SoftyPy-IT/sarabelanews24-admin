@@ -4,7 +4,6 @@
 import { Form } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-
 import RichText from "@/utils/Form_Inputs/RichText";
 import TextArea from "@/utils/Form_Inputs/TextArea";
 import TextInput from "@/utils/Form_Inputs/TextInput";
@@ -17,7 +16,6 @@ import {
 } from "@/redux/dailynews/news.api";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
-import SelectorWithSearch from "@/utils/Form_Inputs/SelectorWithSearch";
 import TagSelector from "@/utils/Form_Inputs/TagSelector";
 import RadioInput from "@/utils/Form_Inputs/RadioInput";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
@@ -30,24 +28,23 @@ import {
 import React, { use, useEffect, useState } from "react";
 import MultiSelector from "@/utils/Form_Inputs/MultiSelector";
 import {
-  districtOption,
-  divisionOption,
   newsTagOption,
   reporterTypeOption,
-  upazilaOption,
 } from "@/utils/options";
 import toast from "react-hot-toast";
-import NewsType from "@/utils/Form_Inputs/NewsType";
 import Image from "next/image";
 import Loading from "@/app/loading";
 import UpdateTopBar from "../../_components/UpdateTopBar";
+import SelecteWithSearch from "@/utils/Form_Inputs/SelecteWithSearch";
+import NewsLocation from "@/utils/Form_Inputs/NewsLocation";
 
 type Inputs = {
   reportedDate: string;
   reporterType: string;
   reporterName: string;
   currentNews: boolean;
-  displayLocation: string;
+  localNews: boolean;
+  newsLocation: string;
   selectedImage: string;
   imageTagline: string;
   photojournalistName: string;
@@ -60,7 +57,6 @@ type Inputs = {
   newsCategory: string;
   newsTitle: string;
   adminName: string;
-  // slug: string;
   category: string;
   publishedDate: string;
   shortDescription: string;
@@ -83,8 +79,9 @@ const Page = ({ params }: newsProps) => {
   const { id } = use(params);
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
   const router = useRouter();
-  const [firstPage, setFirstPage] = useState("");
+  const [firstPage, setFirstPage] = useState<string>("no");
   const [currentNews, setCurrentNews] = useState<boolean>(false);
+  const [localNews, setLocalNews] = useState<boolean>(false);
 
   const [updateNews] = useUpdateNewsMutation();
 
@@ -99,14 +96,34 @@ const Page = ({ params }: newsProps) => {
   >([]);
 
   const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  // Add state for location data
+  const [locationData, setLocationData] = useState<
+    Record<string, Record<string, string[]>>
+  >({});
+  const [districtOptions, setDistrictOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [upazilaOptions, setUpazilaOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+
+  // Load location data
+  useEffect(() => {
+    fetch("/data/location.json")
+      .then((res) => res.json())
+      .then((data) => setLocationData(data));
+  }, []);
 
   const form = useForm<Inputs>({
     defaultValues: {
       reportedDate: "",
       reporterType: "",
       reporterName: "",
-      currentNews: false,
-      displayLocation: "",
+      currentNews: true || false,
+      localNews: true || false,
+      newsLocation: "",
       selectedImage: "",
       imageTagline: "",
       photojournalistName: "",
@@ -119,7 +136,6 @@ const Page = ({ params }: newsProps) => {
       newsCategory: "",
       newsTitle: "",
       adminName: "",
-      // slug: "",
       category: "",
       publishedDate: "",
       shortDescription: "",
@@ -131,21 +147,60 @@ const Page = ({ params }: newsProps) => {
     },
   });
 
+  // Watch for changes to division, district, and newsType
+  const division = useWatch({
+    control: form.control,
+    name: "division",
+  });
+
+  const district = useWatch({
+    control: form.control,
+    name: "district",
+  });
+
+  const newsType = useWatch({
+    control: form.control,
+    name: "newsType",
+  });
+
+  // Update district options when division changes
   useEffect(() => {
-    // if (singleData && Object.keys(singleData).length > 0) {
-    //   const formatDate = (isoString: string) =>
-    //     isoString ? isoString.slice(0, 16) : "";
+    if (division && locationData[division]) {
+      setDistrictOptions(
+        Object.keys(locationData[division]).map((district) => ({
+          label: district,
+          value: district,
+        }))
+      );
+    }
+  }, [division, locationData]);
+
+  // Update upazila options when district changes
+  useEffect(() => {
+    if (division && district && locationData[division]?.[district]) {
+      setUpazilaOptions(
+        locationData[division][district].map((upazila) => ({
+          label: upazila,
+          value: upazila,
+        }))
+      );
+    }
+  }, [district, division, locationData]);
+
+  // Load existing data and initialize form
+  useEffect(() => {
     if (singleData && Object.keys(singleData).length > 0) {
       const formatDate = (isoString: string) =>
         isoString ? isoString.slice(0, 16) : "";
 
+      // Set form values from single data
       form.reset({
         reportedDate: formatDate(singleData.reportedDate),
-        // reportedDate: singleData.reportedDate || "",
         reporterType: singleData.reporterType || "",
         reporterName: singleData.reporterName || "",
         currentNews: singleData.currentNews || false,
-        displayLocation: singleData.displayLocation || "",
+        localNews: singleData.localNews || false,
+        newsLocation: singleData.newsLocation || "",
         selectedImage: singleData.images?.[0] || "",
         imageTagline: singleData.imageTagline || "",
         photojournalistName: singleData.photojournalistName || "",
@@ -158,12 +213,10 @@ const Page = ({ params }: newsProps) => {
         newsCategory: singleData.newsCategory || "",
         newsTitle: singleData.newsTitle || "",
         adminName: singleData.adminName || "",
-        // slug: singleData.slug || "",
         category: singleData.category?._id || "",
         publishedDate: formatDate(singleData.publishedDate),
         shortDescription: singleData.shortDescription || "",
         description: singleData.description || "",
-
         tags: singleData.tags || [
           { imageTagline: "", photojournalistName: "", selectedImage: "" },
         ],
@@ -172,6 +225,11 @@ const Page = ({ params }: newsProps) => {
         metaDescription: singleData.metaDescription || "",
       });
 
+      // Update currentNews and localNews state
+      setCurrentNews(singleData.currentNews || false);
+      setLocalNews(singleData.localNews || false);
+
+      // Set main images
       const mainImages =
         singleData.images?.map((url: string) => ({ url })) || [];
       setMainSelectedFiles(mainImages);
@@ -185,20 +243,39 @@ const Page = ({ params }: newsProps) => {
     }
   }, [singleData, form]);
 
+  // Initialize location dropdowns after both location data and news data are loaded
+  useEffect(() => {
+    if (singleData && Object.keys(locationData).length > 0) {
+      // If division is set, update district options
+      if (singleData.division && locationData[singleData.division]) {
+        setDistrictOptions(
+          Object.keys(locationData[singleData.division]).map((district) => ({
+            label: district,
+            value: district,
+          }))
+        );
+
+        // If district is set, update upazila options
+        if (singleData.district && locationData[singleData.division][singleData.district]) {
+          setUpazilaOptions(
+            locationData[singleData.division][singleData.district].map((upazila) => ({
+              label: upazila,
+              value: upazila,
+            }))
+          );
+        }
+      }
+    }
+  }, [singleData, locationData]);
+
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "tags",
   });
 
-  const newsType = useWatch({
-    control: form.control,
-    name: "newsType",
-  });
-
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
       ...data,
-      
       category: data.category,
       postDate: new Date().toISOString(),
       images: mainSelectedFiles.map((item) => item.url),
@@ -232,6 +309,7 @@ const Page = ({ params }: newsProps) => {
         images[0]?.url || ""
       );
     }
+    setSheetOpen(false);
   };
 
   if (isLoading) {
@@ -294,22 +372,48 @@ const Page = ({ params }: newsProps) => {
                       <>
                         <h1 className="mb-1 font-semibold">নিউজ এলাকা</h1>
                         <div className="col-span-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
-                          <SelectorWithSearch
+                          <SelecteWithSearch
                             name="division"
-                            options={divisionOption}
+                            options={Object.keys(locationData).map((div) => ({
+                              label: div,
+                              value: div,
+                            }))}
                             label="বিভাগ নির্বাচন করুন"
+                            onChange={(value) => {
+                              // Reset district and upazila when division changes
+                              form.setValue("district", "");
+                              form.setValue("upazila", "");
+                              setUpazilaOptions([]);
+                            }}
                           />
-                          <SelectorWithSearch
+
+                          <SelecteWithSearch
                             name="district"
-                            options={districtOption}
+                            options={districtOptions}
                             label="জেলা নির্বাচন করুন"
+                            onChange={(value) => {
+                              // Reset upazila when district changes
+                              form.setValue("upazila", "");
+                            }}
                           />
-                          <SelectorWithSearch
+
+                          <SelecteWithSearch
                             name="upazila"
-                            options={upazilaOption}
+                            options={upazilaOptions}
                             label="উপজেলা নির্বাচন করুন"
                           />
                         </div>
+                        <section className="bg-white py-3 border-2 border-dashed rounded-lg mt-2 md:col-span-2 xl:col-span-1">
+                          <RadioInput
+                            title={"জনপদের সংবাদ?"}
+                            name="localNews"
+                            value={localNews}
+                            onChange={(value: boolean) => {
+                              setLocalNews(value);
+                              form.setValue("localNews", value);
+                            }}
+                          />
+                        </section>
                       </>
                     )}
                     {newsType === "International" && (
@@ -331,11 +435,12 @@ const Page = ({ params }: newsProps) => {
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">সংবাদের তথ্য:</h1>
                   <div>
-                    <Sheet>
+                    <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                       <SheetTrigger asChild>
                         <Button
                           variant="outline"
                           className="p-8 border rounded-full mb-5"
+                          onClick={() => setOpenSheetIndex(null)}
                         >
                           <ImageUpIcon color="red" size={50} /> Add Image
                         </Button>
@@ -404,10 +509,11 @@ const Page = ({ params }: newsProps) => {
                         }
                       />
 
-                      <NewsType
+                      <NewsLocation
                         form={form}
-                        name="displayLocation"
-                        className="mb-4"
+                        name="newsLocation"
+                        className=""
+                        rules={{ required: "News type is required" }}
                         setFirstPage={setFirstPage}
                       />
                     </div>
@@ -429,7 +535,6 @@ const Page = ({ params }: newsProps) => {
                     <div className="col-span-2">
                       <RichText
                         name="description"
-                        // placeholder="বিস্তারিত বর্ণনা"
                       />
                     </div>
                   </div>
@@ -468,7 +573,10 @@ const Page = ({ params }: newsProps) => {
                     title="ক্যারেন্ট নিউজ হিসেবে রাখতে চাচ্ছেন ?"
                     name="currentNews"
                     value={currentNews}
-                    onChange={(value: boolean) => setCurrentNews(value)}
+                    onChange={(value: boolean) => {
+                      setCurrentNews(value);
+                      form.setValue("currentNews", value);
+                    }}
                   />
                 </section>
 
@@ -511,11 +619,14 @@ const Page = ({ params }: newsProps) => {
                     label="Meta Description"
                     placeholder="Enter Meta Description"
                   />
-                  {/* <TagSelector name="metaKeywords" label="Meta Keywords" /> */}
+                  {/* <TagSelector
+                    name="metaKeywords"
+                    label="Meta Keywords"
+                  /> */}
                   <TagSelector
                     name="metaKeywords"
                     label="Meta Keywords"
-                    defaultValues={singleData?.metaKeywords || []}
+                    // defaultValues={singleData?.metaKeywords || []}
                   />
                 </section>
               </div>

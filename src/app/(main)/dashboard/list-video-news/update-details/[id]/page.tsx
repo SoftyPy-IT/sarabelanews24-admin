@@ -14,7 +14,7 @@ import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
-import SelectorWithSearch from "@/utils/Form_Inputs/SelectorWithSearch";
+import SelecteWithSearch from "@/utils/Form_Inputs/SelecteWithSearch";
 import TagSelector from "@/utils/Form_Inputs/TagSelector";
 
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
@@ -34,7 +34,6 @@ import {
   upazilaOption,
 } from "@/utils/options";
 import toast from "react-hot-toast";
-import NewsType from "@/utils/Form_Inputs/NewsType";
 import TopBar from "../../_components/TopBar";
 import Image from "next/image";
 import Loading from "@/app/loading";
@@ -43,6 +42,7 @@ import {
   useGetSingleVideoNewsQuery,
   useUpdateVideoNewsMutation,
 } from "@/redux/dailynews/videoNews.api ";
+import NewsLocation from "@/utils/Form_Inputs/NewsLocation";
 
 type Inputs = {
   reportedDate: string;
@@ -288,17 +288,17 @@ const Update = ({ params }: newsProps) => {
                     <>
                       <h1 className="mb-1 font-semibold">নিউজ এলাকা</h1>
                       <div className="col-span-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        <SelectorWithSearch
+                        <SelecteWithSearch
                           name="division"
                           options={divisionOption}
                           label="বিভাগ নির্বাচন করুন"
                         />
-                        <SelectorWithSearch
+                        <SelecteWithSearch
                           name="district"
                           options={districtOption}
                           label="জেলা নির্বাচন করুন"
                         />
-                        <SelectorWithSearch
+                        <SelecteWithSearch
                           name="upazila"
                           options={upazilaOption}
                           label="উপজেলা নির্বাচন করুন"
@@ -386,7 +386,7 @@ const Update = ({ params }: newsProps) => {
                       }
                     />
 
-                    <NewsType
+                    <NewsLocation
                       form={form}
                       name="displayLocation"
                       className="mb-4"
@@ -525,7 +525,7 @@ const Update = ({ params }: newsProps) => {
                 <TagSelector
                   name="metaKeywords"
                   label="Meta Keywords"
-                  defaultValues={singleData?.metaKeywords || []}
+                  // defaultValues={singleData?.metaKeywords || []}
                 />
               </section>
             </div>

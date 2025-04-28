@@ -14,7 +14,7 @@ import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import { useCreateNewsMutation } from "@/redux/dailynews/news.api";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
-import SelectorWithSearch from "@/utils/Form_Inputs/SelectorWithSearch";
+import SelecteWithSearch from "@/utils/Form_Inputs/SelecteWithSearch";
 import TagSelector from "@/utils/Form_Inputs/TagSelector";
 import RadioInput from "@/utils/Form_Inputs/RadioInput";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
@@ -34,9 +34,9 @@ import {
   upazilaOption,
 } from "@/utils/options";
 import toast from "react-hot-toast";
-import NewsType from "@/utils/Form_Inputs/NewsType";
 import Image from "next/image";
 import { useCreateVideoNewsMutation } from "@/redux/dailynews/videoNews.api ";
+import NewsLocation from "@/utils/Form_Inputs/NewsLocation";
 
 type Inputs = {
   reportedDate: string;
@@ -45,7 +45,6 @@ type Inputs = {
   currentNews: boolean;
   displayLocation: string;
   // firstPage: boolean;
-
   selectedImage: string;
   imageTagline: string;
   photojournalistName: string;
@@ -295,7 +294,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                       <>
                         <h1 className="mb-1 font-semibold ">নিউজ এলাকা</h1>
                         <div className="col-span-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
-                          <SelectorWithSearch
+                          <SelecteWithSearch
                             name="division"
                             options={Object.keys(locationData).map(
                               (division) => ({
@@ -306,14 +305,14 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                             label="বিভাগ নির্বাচন করুন"
                           />
 
-                          <SelectorWithSearch
+                          <SelecteWithSearch
                             name="district"
                             options={districtOptions}
                             label="জেলা নির্বাচন করুন"
                             // disabled={!division}
                           />
 
-                          <SelectorWithSearch
+                          <SelecteWithSearch
                             name="upazila"
                             options={upazilaOptions}
                             label="উপজেলা নির্বাচন করুন"
@@ -421,7 +420,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                         />
                       </div>
                       <div>
-                        <NewsType
+                        <NewsLocation
                           form={form}
                           name="displayLocation"
                           className="mb-4"

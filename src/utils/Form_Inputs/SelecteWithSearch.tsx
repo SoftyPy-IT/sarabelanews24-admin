@@ -3,19 +3,23 @@ import Select from "react-tailwindcss-select";
 import { Options, Option } from "react-tailwindcss-select/dist/components/type";
 import { Controller, useFormContext } from "react-hook-form";
 
-type FormSelectInputProps = {
+type SelecteWithSearchProps = {
   name: string;
   options: Options;
   label: string;
   labelShown?: boolean;
+  onChange?: (value: string) => void;
+  value?: string; // Add this to handle controlled value
 };
 
-export default function SelectorWithSearch({
+export default function SelecteWithSearch({
   name,
   options,
   label,
   labelShown = false,
-}: FormSelectInputProps) {
+  onChange,
+  value: externalValue,
+}: SelecteWithSearchProps) {
   const { control } = useFormContext();
 
   const flattenOptions = (options: Options): Option[] => {
@@ -23,7 +27,6 @@ export default function SelectorWithSearch({
       if ("options" in option) {
         return [...acc, ...option.options];
       }
-
       return [...acc, option];
     }, []);
   };
@@ -41,9 +44,12 @@ export default function SelectorWithSearch({
         <Controller
           name={name}
           control={control}
-          render={({ field: { value, onChange }, fieldState: { error } }) => {
+          render={({ field, fieldState: { error } }) => {
+            // Use either the external value or the field value
+            const currentValue = externalValue !== undefined ? externalValue : field.value;
+            
             const selectedOption = flatOptions.find(
-              (option) => option.value === value
+              (option) => option.value === currentValue
             );
 
             return (
@@ -52,18 +58,29 @@ export default function SelectorWithSearch({
                   isSearchable
                   primaryColor=""
                   value={selectedOption || null}
-                  onChange={(selected) => {
-                    if (Array.isArray(selected)) {
-                      onChange(selected.map((option) => option.value));
+                  onChange={(selected: Option | Option[] | null) => {
+                    let newValue = null;
+                    if (selected === null) {
+                      newValue = null;
+                    } else if (Array.isArray(selected)) {
+                      newValue = selected[0]?.value || null;
                     } else {
-                      onChange(selected ? selected.value : null);
+                      newValue = selected.value;
+                    }
+                    
+                    // Update the form field
+                    field.onChange(newValue);
+                    
+                    // Call the custom onChange handler if provided
+                    if (onChange && newValue) {
+                      onChange(newValue);
                     }
                   }}
                   options={flatOptions}
                   placeholder={label}
                   classNames={{
                     searchIcon:
-                      "absolute top-1/2 transform -translate-y-1/2 text-gray-400 h-5 pl-2 ",
+                      "absolute top-1/2 transform -translate-y-1/2 text-gray-400 h-5 pl-2",
                   }}
                 />
                 {error && (
