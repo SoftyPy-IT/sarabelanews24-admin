@@ -39,6 +39,7 @@ import SelecteWithSearch from "@/utils/Form_Inputs/SelecteWithSearch";
 import NewsLocation from "@/utils/Form_Inputs/NewsLocation";
 
 type Inputs = {
+  firstPage: string;
   reportedDate: string;
   reporterType: string;
   reporterName: string;
@@ -118,6 +119,7 @@ const Page = ({ params }: newsProps) => {
 
   const form = useForm<Inputs>({
     defaultValues: {
+      firstPage:"", 
       reportedDate: "",
       reporterType: "",
       reporterName: "",
@@ -189,7 +191,7 @@ const Page = ({ params }: newsProps) => {
 
   // Load existing data and initialize form
   useEffect(() => {
-    if (singleData && Object.keys(singleData).length > 0) {
+   if (singleData && Object.keys(singleData).length > 0) {
       const formatDate = (isoString: string) =>
         isoString ? isoString.slice(0, 16) : "";
 
@@ -200,6 +202,7 @@ const Page = ({ params }: newsProps) => {
         reporterName: singleData.reporterName || "",
         currentNews: singleData.currentNews || false,
         localNews: singleData.localNews || false,
+        firstPage: singleData.firstPage ? "yes" : "no",     
         newsLocation: singleData.newsLocation || "",
         selectedImage: singleData.images?.[0] || "",
         imageTagline: singleData.imageTagline || "",
@@ -240,7 +243,9 @@ const Page = ({ params }: newsProps) => {
           tag.selectedImage ? [{ url: tag.selectedImage }] : []
         ) || [];
       setTagSelectedFiles(initialTagFiles);
+      setFirstPage(singleData.firstPage ? "yes" : "no");
     }
+
   }, [singleData, form]);
 
   // Initialize location dropdowns after both location data and news data are loaded
@@ -268,7 +273,7 @@ const Page = ({ params }: newsProps) => {
     }
   }, [singleData, locationData]);
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({ 
     control: form.control,
     name: "tags",
   });
@@ -276,6 +281,7 @@ const Page = ({ params }: newsProps) => {
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
       ...data,
+          firstPage: data.firstPage === "yes",
       category: data.category,
       postDate: new Date().toISOString(),
       images: mainSelectedFiles.map((item) => item.url),
@@ -341,6 +347,12 @@ const Page = ({ params }: newsProps) => {
                         control={form.control}
                         type="datetime-local"
                         name="reportedDate"
+
+                      
+                   
+                     
+                       
+                
                       />
                     </div>
                     <div className="col-span-1 md:col-span-2">
@@ -515,6 +527,7 @@ const Page = ({ params }: newsProps) => {
                         className=""
                         rules={{ required: "News type is required" }}
                         setFirstPage={setFirstPage}
+                        initialFirstPage={singleData?.firstPage}
                       />
                     </div>
 

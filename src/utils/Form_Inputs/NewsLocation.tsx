@@ -11,9 +11,11 @@ interface NewsTypeProps<T extends FieldValues> {
   className?: string
   setFirstPage: (value: string) => void
   rules?: Record<string, any>
+  initialFirstPage?: boolean;
 }
 
-const NewsLocation = <T extends FieldValues>({ form, name, className, setFirstPage, rules }: NewsTypeProps<T>) => {
+const NewsLocation = <T extends FieldValues>({ form, name, className, setFirstPage,  rules, initialFirstPage = false  }: NewsTypeProps<T>) => {
+ 
   const selectedNewsType = useWatch({
     control: form.control,
     name,
@@ -22,32 +24,38 @@ const NewsLocation = <T extends FieldValues>({ form, name, className, setFirstPa
   console.log("NewsLocation name prop:", name);
   console.log("Selected newsLocation:", selectedNewsType);
 
+
+
+
   const firstPageValue = useWatch({
     control: form.control,
     name: "firstPage" as Path<T>,
+  });
+
+   const firstPageBool = typeof firstPageValue === 'boolean' 
+    ? firstPageValue 
+    : firstPageValue === "yes";
+
+
+
+
+ const handleFirstPageChange = (value: boolean) => {
+  const newValue = value ? "yes" : "no"
+  setFirstPage(newValue)
+  form.setValue("firstPage" as Path<T>, newValue as any, {
+    shouldValidate: true,
+    shouldDirty: true,
+    shouldTouch: true,
   })
+}
 
-  // Convert string to boolean for the RadioInput component
-  const firstPageBool = firstPageValue === "yes"
-
-  const handleFirstPageChange = (value: boolean) => {
-    // Update the parent component's state
-    setFirstPage(value ? "yes" : "no")
-    // Also make sure it's captured in the form data with explicit options
-    form.setValue("firstPage" as Path<T>, (value ? "yes" : "no") as any, {
-      shouldValidate: true,
-      shouldDirty: true,
-      shouldTouch: true,
-    })
-    console.log("firstPage updated to:", value ? "yes" : "no")
-    console.log("Form values after update:", form.getValues())
-  }
-
+   // null check for initialFirstPage
   React.useEffect(() => {
-    if (selectedNewsType) {
-      console.log("displayLocation selected:", selectedNewsType)
+    if (typeof initialFirstPage !== 'undefined') {
+      handleFirstPageChange(initialFirstPage);
     }
-  }, [selectedNewsType])
+  }, [initialFirstPage]);
+
 
   return (
     <div className={className}>
@@ -57,13 +65,15 @@ const NewsLocation = <T extends FieldValues>({ form, name, className, setFirstPa
         placeholder="কোথায় প্রদর্শন করতে চাচ্ছেন ?"
         rules={rules}
         options={[
-          { label: "Lead-1", value: "Lead-1" },
-          { label: "Lead-2", value: "Lead-2" },
-          { label: "Lead-3", value: "Lead-3" },
+          { label: "Lead News", value: "Lead-1" },
+          { label: "Lead 2", value: "Lead-2" },
+          { label: "Lead 3", value: "Lead-3" },
+          { label: "Heading (সম্ভার)", value: "Heading" },
+          { label: "Not Now", value: "Not-Now" },
         ]}
       />
 
-      {selectedNewsType === "Lead-1" || selectedNewsType === "Lead-2" ? (
+      {selectedNewsType === "Lead-1" ? (
         <div className="mt-2">
           <RadioInput
             title="প্রথম পৃষ্ঠায় দেখবেন ?"

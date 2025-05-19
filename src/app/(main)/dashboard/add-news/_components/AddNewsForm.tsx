@@ -211,23 +211,26 @@ const AddNewsForm = ({ initialData }: CourseFormProps) => {
     // console.log("meta Keywords value:", data.metaKeywords);
 
     const modifyData = {
-        ...data,
-        category: data.category,
-        postDate: new Date().toISOString(),
-        images: mainSelectedFiles.map((item) => item.url),
-        localNews: Boolean(data.localNews),
-        firstPage: data.firstPage === "yes",
-      };
+      ...data,
+      metaKeywords: Array.isArray(data.metaKeywords)
+        ? data.metaKeywords
+        : [data.metaKeywords].filter(Boolean),
+      category: data.category,
+      postDate: new Date().toISOString(),
+      images: mainSelectedFiles.map((item) => item.url),
+      localNews: Boolean(data.localNews),
+      firstPage: data.firstPage === "yes",
+    };
 
     // console.log("Data being sent to API:", modifyData);
 
     try {
-        
+
       const res = await createNews(modifyData).unwrap();
-      if (res) {      
+      if (res) {
         toast.success("News Created Successfully!");
         router.push("/dashboard/list-news");
-        return; 
+        return;
       }
 
       console.log("API response:", res);
@@ -474,14 +477,14 @@ const AddNewsForm = ({ initialData }: CourseFormProps) => {
                         }
                       />
                     </div>
-                    <div>                      
+                    <div>
                       <NewsLocation
                         form={form}
                         name="newsLocation"
                         className=""
                         rules={{ required: "News type is required" }}
                         setFirstPage={setFirstPage}
-                      />                      
+                      />
                     </div>
                     <div className="col-span-1 md:col-span-2">
                       <TextInput
