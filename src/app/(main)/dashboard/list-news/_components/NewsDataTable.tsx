@@ -47,7 +47,7 @@ const NewsDataTable = () => {
   const router = useRouter();
   const [params, setParams] = useState<TQueryParam[]>([
     { name: "page", value: "1" },
-    { name: "limit", value: "5" },
+    { name: "limit", value: "10" },
   ]);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -59,7 +59,8 @@ const NewsDataTable = () => {
   const newsData =
     fetchAllNews?.map((item: any, index: any) => ({
       id: item._id,
-      slNo: index + 1,
+      // Calculate SL No based on page number and limit
+      slNo: (meta?.page - 1) * meta?.limit + index + 1,
       images: item.images || "N/A",
       title: item.newsTitle || "N/A",
       category: item.category?.name || "N/A",
@@ -113,9 +114,9 @@ const NewsDataTable = () => {
     }
   };
 
-  const handleView = (rowData: any) => {
-    router.push(`/dashboard/list-news/view-details/${rowData.id}`);
-  };
+  // const handleView = (rowData: any) => {
+  //   router.push(`/dashboard/list-news/view-details/${rowData.id}`);
+  // };
 
   const columns: ColumnDef<any, any>[] = [
     {
@@ -155,7 +156,6 @@ const NewsDataTable = () => {
       accessorKey: "title",
       header: () => <span className="font-bold">Title</span>,
     },
-
     {
       accessorKey: "category",
       header: () => <div className="w-32 font-bold">Category</div>,
@@ -207,7 +207,6 @@ const NewsDataTable = () => {
       cell: ({ row }) => (
         <ActionDropdown
           row={row}
-          onView={handleView}
           onUpdate={handleEdit}
           onDelete={() => handleDelete(row.original.id)}
         />
@@ -216,12 +215,86 @@ const NewsDataTable = () => {
   ];
 
   const handlePaginationChange = (page: number) => {
-    setParams((prev) => updatePaginationParams(prev, page, meta?.limit || 5));
+    if (page < 1 || page > meta.totalPage) return;
+    setParams((prev) => updatePaginationParams(prev, page, meta?.limit || 10));
   };
 
   if (isLoading) {
     return <Loading />;
   }
+
+  // Function to generate pagination items
+  const renderPaginationItems = () => {
+    const items = [];
+    const currentPage = meta.page;
+    const totalPages = meta.totalPage;
+
+    // Always show first page
+    items.push(
+      <PaginationItem key={1}>
+        <PaginationLink
+          onClick={() => handlePaginationChange(1)}
+          isActive={currentPage === 1}
+          className="cursor-pointer"
+        >
+          1
+        </PaginationLink>
+      </PaginationItem>
+    );
+
+    // Show ellipsis if current page is far from start
+    if (currentPage > 3) {
+      items.push(
+        <PaginationItem key="start-ellipsis">
+          <PaginationEllipsis />
+        </PaginationItem>
+      );
+    }
+
+    // Show pages around current page
+    const startPage = Math.max(2, currentPage - 1);
+    const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            onClick={() => handlePaginationChange(i)}
+            isActive={currentPage === i}
+            className="cursor-pointer"
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    // Show ellipsis if current page is far from end
+    if (currentPage < totalPages - 2) {
+      items.push(
+        <PaginationItem key="end-ellipsis">
+          <PaginationEllipsis />
+        </PaginationItem>
+      );
+    }
+
+    // Show last page if there is more than one page
+    if (totalPages > 1) {
+      items.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink
+            onClick={() => handlePaginationChange(totalPages)}
+            isActive={currentPage === totalPages}
+            className="cursor-pointer"
+          >
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    return items;
+  };
 
   return (
     <>
@@ -240,134 +313,34 @@ const NewsDataTable = () => {
           </div>
         </div>
 
-        <DataTable columns={columns} data={newsData} />
-        {/* <Pagination className="mt-5 flex flex-wrap justify-center">
-        <PaginationContent className="flex flex-wrap items-center gap-1 overflow-x-auto">
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => handlePaginationChange(meta.page - 1)}
-                className="cursor-pointer"
-              />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink
-                onClick={() => handlePaginationChange(1)}
-                isActive={meta.page === 1}
-                className="cursor-pointer"
-              >
-                1
-              </PaginationLink>
-            </PaginationItem>
-
-            {meta.page > 3 && (
-              <PaginationItem>
-                <PaginationEllipsis className="cursor-pointer" />
-              </PaginationItem>
-            )}
-
-            {[...Array(meta.totalPage)].map((_, i) => {
-              const pageNumber = i + 1;
-              if (
-                pageNumber !== 1 &&
-                pageNumber !== meta.totalPage &&
-                pageNumber >= meta.page - 1 &&
-                pageNumber <= meta.page + 1
-              ) {
-                return (
-                  <PaginationItem key={i}>
-                    <PaginationLink
-                      onClick={() => handlePaginationChange(pageNumber)}
-                      isActive={meta.page === pageNumber}
-                      className="cursor-pointer"
-                    >
-                      {pageNumber}
-                    </PaginationLink>
-                  </PaginationItem>
-                );
-              }
-              return null;
-            })}
-
-            {meta.page < meta.totalPage - 2 && (
-              <PaginationItem>
-                <PaginationEllipsis className="cursor-pointer" />
-              </PaginationItem>
-            )}
-
-            {meta.totalPage > 1 && (
-              <PaginationItem>
-                <PaginationLink
-                  onClick={() => handlePaginationChange(meta.totalPage)}
-                  isActive={meta.page === meta.totalPage}
-                  className="cursor-pointer"
-                >
-                  {meta.totalPage}
-                </PaginationLink>
-              </PaginationItem>
-            )}
-
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => handlePaginationChange(meta.page + 1)}
-                className="cursor-pointer"
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination> */}
-        <Pagination className="mt-5 flex justify-center">
-          <PaginationContent className="flex items-center gap-2">
-            {/* Show "Previous" only if not on the first page */}
-            {meta.page > 1 && (
+        <DataTable columns={columns} data={newsData} />    
+        {meta && meta.totalPage > 1 && (
+          <Pagination className="mt-5">
+            <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
                   onClick={() => handlePaginationChange(meta.page - 1)}
-                  className="cursor-pointer"
+                  className={`cursor-pointer ${
+                    meta.page === 1 ? "opacity-50 pointer-events-none" : ""
+                  }`}
                 />
               </PaginationItem>
-            )}
 
-            {/* First Page */}
-            <PaginationItem>
-              <PaginationLink
-                onClick={() => handlePaginationChange(1)}
-                isActive={meta.page === 1}
-                className="cursor-pointer"
-              >
-                1
-              </PaginationLink>
-            </PaginationItem>
+              {renderPaginationItems()}
 
-            {/* Ellipsis (if more than 2 pages) */}
-            {meta.totalPage > 2 && (
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-            )}
-
-            {/* Last Page */}
-            {meta.totalPage > 1 && (
-              <PaginationItem>
-                <PaginationLink
-                  onClick={() => handlePaginationChange(meta.totalPage)}
-                  isActive={meta.page === meta.totalPage}
-                  className="cursor-pointer"
-                >
-                  {meta.totalPage}
-                </PaginationLink>
-              </PaginationItem>
-            )}
-
-            {/* Show "Next" only if not on the last page */}
-            {meta.page < meta.totalPage && (
               <PaginationItem>
                 <PaginationNext
                   onClick={() => handlePaginationChange(meta.page + 1)}
-                  className="cursor-pointer"
+                  className={`cursor-pointer ${
+                    meta.page === meta.totalPage
+                      ? "opacity-50 pointer-events-none"
+                      : ""
+                  }`}
                 />
               </PaginationItem>
-            )}
-          </PaginationContent>
-        </Pagination>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
     </>
   );

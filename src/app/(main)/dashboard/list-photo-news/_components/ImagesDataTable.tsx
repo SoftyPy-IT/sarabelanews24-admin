@@ -84,12 +84,10 @@ const ImagesDataTable = () => {
     }
   };
 
+  // const handleView = (rowData: any) => {
+  //   router.push(`/dashboard/list-news/view-details/${rowData.id}`);
+  // };
 
-
-
-  const handleView = (rowData: any) => {
-    router.push(`/dashboard/list-news/view-details/${rowData.id}`);
-  };
   const handlePaginationChange = (page: number) => {
     setParams((prev) => updatePaginationParams(prev, page, meta?.limit || 5))
   }
@@ -144,7 +142,7 @@ const ImagesDataTable = () => {
       cell: ({ row }: any) => (
         <ActionDropdown
           row={row}
-          onView={handleView}
+          // onView={handleView}
           onUpdate={handleEdit}
           onDelete={() => handleDelete(row.original.id)}
         />

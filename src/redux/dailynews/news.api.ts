@@ -4,8 +4,6 @@ import { baseApi } from "../api/baseApi";
 
 const newsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-
-    
     createNews: builder.mutation({
       query: (data) => ({
         url: "/news",

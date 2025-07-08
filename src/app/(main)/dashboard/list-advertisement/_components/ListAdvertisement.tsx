@@ -82,9 +82,9 @@ const ListAdvertisement = () => {
     }
   };
 
-  const handleView = (rowData: any) => {
-    router.push(`/dashboard/list-news/view-details/${rowData.id}`);
-  };
+  // const handleView = (rowData: any) => {
+  //   router.push(`/dashboard/list-news/view-details/${rowData.id}`);
+  // };
 
   const columns: ColumnDef<any, any>[] = [
     {
@@ -132,7 +132,7 @@ const ListAdvertisement = () => {
       cell: ({ row }: any) => (
         <ActionDropdown
           row={row}
-          onView={handleView}
+          // onView={handleView}
           onUpdate={handleEdit}
           onDelete={() => handleDelete(row.original.id)}
         />
