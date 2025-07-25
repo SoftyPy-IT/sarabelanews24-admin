@@ -94,9 +94,9 @@ const VideoList = () => {
     }
   };
 
-  const handleView = (rowData: any) => {
-    // router.push(`/dashboard/list-video-gallery/view-details/${rowData?.id}`);
-  };
+  // const handleView = (rowData: any) => {
+  //   router.push(`/dashboard/list-video-gallery/view-details/${rowData?.id}`);
+  // };
 
   const columns: ColumnDef<any, any>[] = [
     {
@@ -159,7 +159,7 @@ const VideoList = () => {
       cell: ({ row }: any) => (
         <ActionDropdown
           row={row}
-          onView={handleView}
+          // onView={handleView}
           onUpdate={handleEdit}
           onDelete={() => handleDelete(row.original.id)}
         />
