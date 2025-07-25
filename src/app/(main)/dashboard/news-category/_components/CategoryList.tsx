@@ -18,7 +18,7 @@ import Loader from "@/components/Loader";
 
 const CategoryList = () => {
 
-  const { data, isLoading, isError } = useGetAllCategoriesQuery({});
+  const { data, isLoading } = useGetAllCategoriesQuery({});
 
   const [deleteCategories] = useDeleteCategoriesMutation();
 

@@ -55,7 +55,7 @@ const NewsDataTable = () => {
   const fetchAllNews = data?.data;
   const meta = data?.meta as TMeta;
   const [deleteNews] = useDeleteNewsMutation();
-
+console.log('all ', fetchAllNews)
   const newsData =
     fetchAllNews?.map((item: any, index: any) => ({
       id: item._id,
