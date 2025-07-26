@@ -7,8 +7,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { removeCookie } from "@/axios/Cookies";
+import { authKey } from "@/constant/authkey";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
+  const router = useRouter()
+
+  const handleLogout = () => {
+    removeCookie(authKey)
+    router.push('/')
+
+  }
   return (
     <div className="flex justify-end items-center gap-4 ">
       {/* Admin Label */}
@@ -21,7 +31,7 @@ const Navbar = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center justify-center p-2 rounded-full hover:bg-gray-200 transition">
-              <CircleUser size={36}  />
+              <CircleUser size={36} />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -41,9 +51,7 @@ const Navbar = () => {
               View Profile
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => {
-                console.log("Logout clicked");
-              }}
+              onClick={handleLogout}
               className="cursor-pointer px-4 py-2 text-gray-700 text-sm hover:bg-red-100 hover:text-red-600 rounded transition"
             >
               Logout

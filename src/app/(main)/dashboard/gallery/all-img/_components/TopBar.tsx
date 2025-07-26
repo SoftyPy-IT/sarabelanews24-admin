@@ -113,7 +113,7 @@ const TopBar = () => {
           <h2 className="text-sm md:text-3xl pl-2 font-semibold">All Images</h2>
         </div>
 
-        <div>
+        <div className="hidden lg:flex">
           <div className="relative flex-grow">
             <div className="absolute p-3">
               <Search className="h-4 md:h-5 w-4 md:w-5" />
@@ -141,8 +141,8 @@ const TopBar = () => {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
                 <div className="space-y-5">
-                  <div className="w-full mt-5 flex items-center gap-2">
-                    <div className="w-[400px]">
+                  <div className="w-full mt-5 lg:flex items-center gap-2">
+                    <div className="lg:w-[400px]">
                       <SelectInput
                         control={form.control}
                         name="folder"
@@ -157,10 +157,12 @@ const TopBar = () => {
                         }
                       />
                     </div>
-                    <h1>OR</h1>
-                    <Button className="h-[46px] " onClick={() => setOpen(true)}>
+                    <h1 className="text-center">OR</h1>
+<div className="flex justify-center ">
+                    <Button className="lg:h-[46px] " onClick={() => setOpen(true)}>
                       Create New Folder
                     </Button>
+                    </div>
                   </div>
                   <FileInput
                     control={form.control}

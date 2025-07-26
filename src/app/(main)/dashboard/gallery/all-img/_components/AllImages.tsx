@@ -20,26 +20,27 @@ import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { Trash2 } from "lucide-react";
 import { TQueryParam } from "@/types/api.types";
+import Loader from "@/app/loading";
 
 const AllImages = () => {
   const [openZoom, setOpenZoom] = React.useState(false);
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
   const [currentPage, setCurrentPage] = React.useState(1);
-  const limit = 20;
+
 
   const [params, setParams] = React.useState<TQueryParam[]>([]);
-  const { data, isLoading, isFetching, refetch } = useGetAllImagesQuery([
+  const { data, isLoading, refetch } = useGetAllImagesQuery([
     ...params,
   ]) as any;
   console.log(data);
 
   React.useEffect(() => {
     refetch();
-  }, [currentPage]);
+  }, [currentPage, refetch]);
 
   const [deleteImage] = useDeleteImagesMutation();
 
-  if (isLoading) return <h1>Loading...</h1>;
+  if (isLoading) return <Loader />;
 
   const handleImageClick = (image: string) => {
     setSelectedImage(image);
@@ -87,7 +88,7 @@ const AllImages = () => {
     <>
       <div className="w-full">
         <div className="text-gray-900">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 p-1 md:p-4">
+          <div className="grid grid-cols-4 gap-2 lg:gap-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 p-1 md:p-4">
             {images.map((image: any) => (
               <div key={image._id} className="relative group">
                 <Image

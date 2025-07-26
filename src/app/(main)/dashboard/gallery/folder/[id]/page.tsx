@@ -15,11 +15,8 @@ import TopBar from "../_components/TopBar";
 import ImgZoomModal from "../_components/ImgZoomModal";
 import { Trash2 } from "lucide-react";
 
-type newsProps = {
-  params: { id: string };
-};
 
-const AllImages = ({ params }: newsProps) => {
+const AllImages = ({ params }: any) => {
   const [open, setOpen] = React.useState(false);
   const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
   const [folderId, setFolderId] = React.useState<string | null>(null);

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import React from "react";
@@ -102,7 +102,7 @@ const FileInput = <T extends FieldValues>({
     };
   }, [selectedFiles]);
 
-  const handleDelete = (index: number) => {
+  const handleRemove = (index: number) => {
     const updatedFiles = [...field.value];
     updatedFiles.splice(index, 1);
     field.onChange(updatedFiles);
@@ -176,7 +176,7 @@ const FileInput = <T extends FieldValues>({
                     <button
                       type="button"
                       className="absolute top-0 right-0  text-red-500 opacity-0 group-hover:opacity-100 transition"
-                      onClick={() => handleDelete(index)}
+                      onClick={() => handleRemove(index)}
                     >
                       <CircleX className="w-5 h-5" />
                     </button>

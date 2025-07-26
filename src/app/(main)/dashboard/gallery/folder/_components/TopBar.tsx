@@ -142,7 +142,7 @@
 //           <SheetTrigger asChild>
 //             <Button className="">+ Add Image</Button>
 //           </SheetTrigger>
-//           <SheetContent side="right" className="pt-20">
+//           <SheetContent side="right" className="pt-20 overflow-auto">
 //             <SheetHeader>
 //               <SheetTitle className="text-center">Add Image</SheetTitle>
 //               <hr />
@@ -278,7 +278,7 @@ const TopBar = ({ folderId }: TopBarProps) => {
         <h2 className="text-sm md:text-3xl pl-2 font-semibold">Folder Image</h2>
       </div>
 
-      <div>
+      <div className="hidden lg:flex">
         <div className="relative flex-grow">
           <div className="absolute p-3">
             <Search className="h-4 md:h-5 w-4 md:w-5" />

@@ -14,7 +14,7 @@ import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import { useCreateNewsMutation } from "@/redux/dailynews/news.api";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
-import SelectorWithSearch from "@/utils/Form_Inputs/SelectorWithSearch";
+import SelecteWithSearch from "@/utils/Form_Inputs/SelecteWithSearch";
 import TagSelector from "@/utils/Form_Inputs/TagSelector";
 import RadioInput from "@/utils/Form_Inputs/RadioInput";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
@@ -24,7 +24,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MultiSelector from "@/utils/Form_Inputs/MultiSelector";
 import {
   districtOption,
@@ -34,9 +34,9 @@ import {
   upazilaOption,
 } from "@/utils/options";
 import toast from "react-hot-toast";
-import NewsType from "@/utils/Form_Inputs/NewsType";
 import Image from "next/image";
 import { useCreateVideoNewsMutation } from "@/redux/dailynews/videoNews.api ";
+import NewsLocation from "@/utils/Form_Inputs/NewsLocation";
 
 type Inputs = {
   reportedDate: string;
@@ -45,7 +45,6 @@ type Inputs = {
   currentNews: boolean;
   displayLocation: string;
   // firstPage: boolean;
-
   selectedImage: string;
   imageTagline: string;
   photojournalistName: string;
@@ -104,7 +103,23 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
 
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
   const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
+  const [locationData, setLocationData] = useState<
+    Record<string, Record<string, string[]>>
+  >({});
+  const [districtOptions, setDistrictOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [upazilaOptions, setUpazilaOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
 
+  // Load location data
+  useEffect(() => {
+    fetch("/data/location.json")
+      .then((res) => res.json())
+      .then((data) => setLocationData(data));
+  }, []);
+  
   const form = useForm<Inputs>({
     defaultValues: {
       reportedDate: "",
@@ -138,6 +153,35 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
       metaDescription: "",
     },
   });
+
+  const division = useWatch({ control: form.control, name: "division" });
+  const district = useWatch({ control: form.control, name: "district" });
+
+  useEffect(() => {
+    if (division && locationData[division]) {
+      setDistrictOptions(
+        Object.keys(locationData[division]).map((district) => ({
+          label: district,
+          value: district,
+        }))
+      );
+      form.setValue("district", ""); // Reset district
+      form.setValue("upazila", ""); // Reset upazila
+      setUpazilaOptions([]); // Clear upazila options
+    }
+  }, [division, locationData, form]);
+
+  useEffect(() => {
+    if (district && division && locationData[division][district]) {
+      setUpazilaOptions(
+        locationData[division][district].map((upazila) => ({
+          label: upazila,
+          value: upazila,
+        }))
+      );
+      form.setValue("upazila", ""); // Reset upazila
+    }
+  }, [district, division, locationData, form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -178,7 +222,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
       const res = await createNews(modifyData).unwrap();
       // console.log("response:",res)
       if (res) {
-        toast.success("News Create Successfully!");
+        toast.success("Video News Created Successfully!");
         router.push("/dashboard/list-video-news");
       }
     } catch (error) {
@@ -196,24 +240,29 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
               <div className="lg:col-span-8 col-span-full space-y-3">
                 {/* Reporter Info Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
-                  <h1 className="mb-2 font-semibold  ">প্রতিনিধি তথ্য:</h1>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <SelectInput
-                      control={form.control}
-                      name="reporterType"
-                      placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
-                      options={reporterTypeOption}
-                      rules={{ required: "Reporter type is required" }}
-                    />
+                  <h1 className="mb-2 font-semibold">প্রতিনিধি তথ্য:</h1>
 
-                    <DateTimeInput
-                      control={form.control}
-                      type="datetime-local"
-                      name="reportedDate"
-                      rules={{ required: "Reported date and time is required" }}
-                    />
-
-                    <div className="col-span-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                    <div>
+                      <SelectInput
+                        control={form.control}
+                        name="reporterType"
+                        placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
+                        options={reporterTypeOption}
+                        rules={{ required: "Reporter type is required" }}
+                      />
+                    </div>
+                    <div>
+                      <DateTimeInput
+                        control={form.control}
+                        type="datetime-local"
+                        name="reportedDate"
+                        rules={{
+                          required: "Reported date and time is required",
+                        }}
+                      />
+                    </div>
+                    <div className="col-span-1 md:col-span-2">
                       <TextInput
                         control={form.control}
                         name="reporterName"
@@ -246,7 +295,31 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                       <>
                         <h1 className="mb-1 font-semibold ">নিউজ এলাকা</h1>
                         <div className="col-span-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
-                          <SelectorWithSearch
+                          <SelecteWithSearch
+                            name="division"
+                            options={Object.keys(locationData).map(
+                              (division) => ({
+                                label: division,
+                                value: division,
+                              })
+                            )}
+                            label="বিভাগ নির্বাচন করুন"
+                          />
+
+                          <SelecteWithSearch
+                            name="district"
+                            options={districtOptions}
+                            label="জেলা নির্বাচন করুন"
+                            // disabled={!division}
+                          />
+
+                          <SelecteWithSearch
+                            name="upazila"
+                            options={upazilaOptions}
+                            label="উপজেলা নির্বাচন করুন"
+                            // disabled={!district}
+                          />
+                          {/* <SelectorWithSearch
                             name="division"
                             options={divisionOption}
                             label="বিভাগ নির্বাচন করুন"
@@ -260,7 +333,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                             name="upazila"
                             options={upazilaOption}
                             label="উপজেলা নির্বাচন করুন"
-                          />
+                          /> */}
                         </div>
                       </>
                     )}
@@ -321,40 +394,44 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                   ))}
 
                   <div className="space-y-2">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                      <div className="col-span-2">
-                        <TextInput
-                          control={form.control}
-                          rules={{ required: "Photographer name is required" }}
-                          name="photojournalistName"
-                          placeholder="ফটো সাংবাদিক নাম"
-                        />
-                      </div>
-
-                      <SelectInput
+                    <div className="col-span-2">
+                      <TextInput
                         control={form.control}
-                        name="category"
-                        placeholder="নিউজ ক্যাটাগরি নির্বাচন করুন"
-                        rules={{ required: "News Category is required" }}
-                        options={
-                          data?.categories?.map(
-                            (program: { name: string; _id: string }) => ({
-                              label: program.name,
-                              value: program._id,
-                            })
-                          ) || []
-                        }
-                      />
-
-                      <NewsType
-                        form={form}
-                        name="displayLocation"
-                        className="mb-4"
-                        setFirstPage={setFirstPage}
+                        rules={{ required: "Photographer name is required" }}
+                        name="photojournalistName"
+                        placeholder="ফটো সাংবাদিক নাম"
                       />
                     </div>
 
-                    <div className="col-span-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                      <div>
+                        <SelectInput
+                          control={form.control}
+                          name="category"
+                          placeholder="নিউজ ক্যাটাগরি নির্বাচন করুন"
+                          rules={{ required: "News Category is required" }}
+                          options={
+                            data?.categories?.map(
+                              (program: { name: string; _id: string }) => ({
+                                label: program.name,
+                                value: program._id,
+                              })
+                            ) || []
+                          }
+                        />
+                      </div>
+                      <div>
+                        <NewsLocation
+                          form={form}
+                          name="displayLocation"
+                          className="mb-4"
+                          rules={{ required: "News type is required" }}
+                          setFirstPage={setFirstPage}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-span-1 md:col-span-2">
                       <TextInput
                         control={form.control}
                         name="newsTitle"
@@ -375,7 +452,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                     <div className="col-span-2">
                       <RichText
                         name="description"
-                        placeholder={"বিস্তারিত বর্ণনা "}
+                        // placeholder={"বিস্তারিত বর্ণনা "}
                       />
                     </div>
                   </div>
@@ -415,10 +492,7 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                             rules={{
                               required: "Additional Link is required",
                               pattern: {
-                                value:
-                                  /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
-                                message:
-                                  "Please enter a valid URL with https://",
+                                message: "Please enter a valid URL",
                               },
                             }}
                           />
@@ -490,27 +564,26 @@ const AddVideoForm = ({ editingId, initialData }: CourseFormProps) => {
                 {/* SEO Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold ">SEO Section:</h1>
-                  <CardContent className="space-y-5">
-                    <TextInput
-                      control={form.control}
-                      name="metaTitle"
-                      label="Meta Title"
-                      type="text"
-                      placeholder="Enter Meta Title"
-                    />
-                    <TextArea
-                      control={form.control}
-                      name="metaDescription"
-                      label="Meta Description"
-                      placeholder="Enter Meta Description"
-                    />
 
-                    <TagSelector
-                      name="metaKeywords"
-                      label="Meta Keywords"
-                      defaultValues={initialData?.metaKeywords || []}
-                    />
-                  </CardContent>
+                  <TextInput
+                    control={form.control}
+                    name="metaTitle"
+                    label="Meta Title"
+                    type="text"
+                    placeholder="Enter Meta Title"
+                  />
+                  <TextArea
+                    control={form.control}
+                    name="metaDescription"
+                    label="Meta Description"
+                    placeholder="Enter Meta Description"
+                  />
+
+                  <TagSelector
+                    name="metaKeywords"
+                    label="Meta Keywords"
+                    defaultValues={initialData?.metaKeywords || []}
+                  />
                 </section>
               </div>
             </div>

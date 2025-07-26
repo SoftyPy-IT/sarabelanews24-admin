@@ -4,12 +4,11 @@
 import { Form } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { CardContent } from "@/components/ui/card";
 import RichText from "@/utils/Form_Inputs/RichText";
 import TextArea from "@/utils/Form_Inputs/TextArea";
 import TextInput from "@/utils/Form_Inputs/TextInput";
 import SelectInput from "@/utils/Form_Inputs/SelectInput";
-import { Delete, ImageUpIcon, PlusIcon } from "lucide-react";
+import { CircleX, ImageUpIcon } from "lucide-react";
 import DateTimeInput from "@/utils/Form_Inputs/DateTimeInput";
 import {
   useGetSingleNewsQuery,
@@ -17,7 +16,6 @@ import {
 } from "@/redux/dailynews/news.api";
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
 import { useGetAllCategoriesQuery } from "@/redux/dailynews/category.api";
-import SelectorWithSearch from "@/utils/Form_Inputs/SelectorWithSearch";
 import TagSelector from "@/utils/Form_Inputs/TagSelector";
 import RadioInput from "@/utils/Form_Inputs/RadioInput";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
@@ -30,23 +28,24 @@ import {
 import React, { use, useEffect, useState } from "react";
 import MultiSelector from "@/utils/Form_Inputs/MultiSelector";
 import {
-  districtOption,
-  divisionOption,
   newsTagOption,
   reporterTypeOption,
-  upazilaOption,
 } from "@/utils/options";
 import toast from "react-hot-toast";
-import NewsType from "@/utils/Form_Inputs/NewsType";
-import TopBar from "../../_components/TopBar";
 import Image from "next/image";
+import Loading from "@/app/loading";
+import UpdateTopBar from "../../_components/UpdateTopBar";
+import SelecteWithSearch from "@/utils/Form_Inputs/SelecteWithSearch";
+import NewsLocation from "@/utils/Form_Inputs/NewsLocation";
 
 type Inputs = {
+  firstPage: string;
   reportedDate: string;
   reporterType: string;
   reporterName: string;
   currentNews: boolean;
-  displayLocation: string;
+  localNews: boolean;
+  newsLocation: string;
   selectedImage: string;
   imageTagline: string;
   photojournalistName: string;
@@ -59,7 +58,6 @@ type Inputs = {
   newsCategory: string;
   newsTitle: string;
   adminName: string;
-  slug: string;
   category: string;
   publishedDate: string;
   shortDescription: string;
@@ -82,9 +80,12 @@ const Page = ({ params }: newsProps) => {
   const { id } = use(params);
   const { data, isLoading, isError } = useGetAllCategoriesQuery({});
   const router = useRouter();
-  const [firstPage, setFirstPage] = useState("");
+  const [firstPage, setFirstPage] = useState<string>("no");
   const [currentNews, setCurrentNews] = useState<boolean>(false);
+  const [localNews, setLocalNews] = useState<boolean>(false);
+
   const [updateNews] = useUpdateNewsMutation();
+
   const { data: singleData } = useGetSingleNewsQuery(id);
 
   const [mainSelectedFiles, setMainSelectedFiles] = React.useState<
@@ -96,13 +97,35 @@ const Page = ({ params }: newsProps) => {
   >([]);
 
   const [openSheetIndex, setOpenSheetIndex] = useState<number | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  // Add state for location data
+  const [locationData, setLocationData] = useState<
+    Record<string, Record<string, string[]>>
+  >({});
+  const [districtOptions, setDistrictOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [upazilaOptions, setUpazilaOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+
+  // Load location data
+  useEffect(() => {
+    fetch("/data/location.json")
+      .then((res) => res.json())
+      .then((data) => setLocationData(data));
+  }, []);
+
   const form = useForm<Inputs>({
     defaultValues: {
+      firstPage:"", 
       reportedDate: "",
       reporterType: "",
       reporterName: "",
-      currentNews: false,
-      displayLocation: "",
+      currentNews: true || false,
+      localNews: true || false,
+      newsLocation: "",
       selectedImage: "",
       imageTagline: "",
       photojournalistName: "",
@@ -115,7 +138,6 @@ const Page = ({ params }: newsProps) => {
       newsCategory: "",
       newsTitle: "",
       adminName: "",
-      slug: "",
       category: "",
       publishedDate: "",
       shortDescription: "",
@@ -127,14 +149,61 @@ const Page = ({ params }: newsProps) => {
     },
   });
 
+  // Watch for changes to division, district, and newsType
+  const division = useWatch({
+    control: form.control,
+    name: "division",
+  });
+
+  const district = useWatch({
+    control: form.control,
+    name: "district",
+  });
+
+  const newsType = useWatch({
+    control: form.control,
+    name: "newsType",
+  });
+
+  // Update district options when division changes
   useEffect(() => {
-    if (singleData && Object.keys(singleData).length > 0) {
+    if (division && locationData[division]) {
+      setDistrictOptions(
+        Object.keys(locationData[division]).map((district) => ({
+          label: district,
+          value: district,
+        }))
+      );
+    }
+  }, [division, locationData]);
+
+  // Update upazila options when district changes
+  useEffect(() => {
+    if (division && district && locationData[division]?.[district]) {
+      setUpazilaOptions(
+        locationData[division][district].map((upazila) => ({
+          label: upazila,
+          value: upazila,
+        }))
+      );
+    }
+  }, [district, division, locationData]);
+
+  // Load existing data and initialize form
+  useEffect(() => {
+   if (singleData && Object.keys(singleData).length > 0) {
+      const formatDate = (isoString: string) =>
+        isoString ? isoString.slice(0, 16) : "";
+
+      // Set form values from single data
       form.reset({
-        reportedDate: singleData.reportedDate || "",
-        reporterType: singleData.reporterType || "own_representative",
+        reportedDate: formatDate(singleData.reportedDate),
+        reporterType: singleData.reporterType || "",
         reporterName: singleData.reporterName || "",
         currentNews: singleData.currentNews || false,
-        displayLocation: singleData.displayLocation || "",
+        localNews: singleData.localNews || false,
+        firstPage: singleData.firstPage ? "yes" : "no",     
+        newsLocation: singleData.newsLocation || "",
         selectedImage: singleData.images?.[0] || "",
         imageTagline: singleData.imageTagline || "",
         photojournalistName: singleData.photojournalistName || "",
@@ -147,9 +216,8 @@ const Page = ({ params }: newsProps) => {
         newsCategory: singleData.newsCategory || "",
         newsTitle: singleData.newsTitle || "",
         adminName: singleData.adminName || "",
-        slug: singleData.slug || "",
         category: singleData.category?._id || "",
-        publishedDate: singleData.publishedDate || "",
+        publishedDate: formatDate(singleData.publishedDate),
         shortDescription: singleData.shortDescription || "",
         description: singleData.description || "",
         tags: singleData.tags || [
@@ -159,63 +227,71 @@ const Page = ({ params }: newsProps) => {
         metaKeywords: singleData.metaKeywords || [],
         metaDescription: singleData.metaDescription || "",
       });
-      // Initialize main image from API
-    const mainImages = singleData.images?.map((url: string) => ({ url })) || [];
-    setMainSelectedFiles(mainImages);
 
-    // Initialize tag images from API
-    const initialTagFiles = singleData.tags?.map((tag: any) => 
-      tag.selectedImage ? [{ url: tag.selectedImage }] : []
-    ) || [];
-    setTagSelectedFiles(initialTagFiles);
-  }
-}, [singleData, form]);
+      // Update currentNews and localNews state
+      setCurrentNews(singleData.currentNews || false);
+      setLocalNews(singleData.localNews || false);
 
+      // Set main images
+      const mainImages =
+        singleData.images?.map((url: string) => ({ url })) || [];
+      setMainSelectedFiles(mainImages);
 
+      // Initialize tag images from API
+      const initialTagFiles =
+        singleData.tags?.map((tag: any) =>
+          tag.selectedImage ? [{ url: tag.selectedImage }] : []
+        ) || [];
+      setTagSelectedFiles(initialTagFiles);
+      setFirstPage(singleData.firstPage ? "yes" : "no");
+    }
 
+  }, [singleData, form]);
 
-  const { fields, append, remove } = useFieldArray({
+  // Initialize location dropdowns after both location data and news data are loaded
+  useEffect(() => {
+    if (singleData && Object.keys(locationData).length > 0) {
+      // If division is set, update district options
+      if (singleData.division && locationData[singleData.division]) {
+        setDistrictOptions(
+          Object.keys(locationData[singleData.division]).map((district) => ({
+            label: district,
+            value: district,
+          }))
+        );
+
+        // If district is set, update upazila options
+        if (singleData.district && locationData[singleData.division][singleData.district]) {
+          setUpazilaOptions(
+            locationData[singleData.division][singleData.district].map((upazila) => ({
+              label: upazila,
+              value: upazila,
+            }))
+          );
+        }
+      }
+    }
+  }, [singleData, locationData]);
+
+  const { fields, append, remove } = useFieldArray({ 
     control: form.control,
     name: "tags",
   });
 
-  const newsType = useWatch({
-    control: form.control,
-    name: "newsType",
-  });
-
-  // const onSubmit = async (data: Inputs) => {
-  //   const modifyData = {
-  //     ...data,
-  //     category: data.category,
-  //     postDate: new Date().toISOString(),
-  //   };
-  //   console.log(data)
-  //   try {
-  //     const res = await updateNews({ ...modifyData, id }).unwrap();
-  //     console.log("response:",res)
-  //     if (res) {
-  //       toast.success("News Update Successfully!");
-  //       router.push("/dashboard/list-news");
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
   const onSubmit = async (data: Inputs) => {
     const modifyData = {
       ...data,
+          firstPage: data.firstPage === "yes",
       category: data.category,
       postDate: new Date().toISOString(),
       images: mainSelectedFiles.map((item) => item.url),
     };
-    // console.log("modify value:",modifyData);
-    // console.log(data);
+    console.log("modify value:", modifyData);
+    console.log(data);
 
     try {
       const res = await updateNews({ ...modifyData, id }).unwrap();
-      console.log("response:",res)
+      console.log("response:", res);
       if (res) {
         toast.success("News Update Successfully!");
         router.push("/dashboard/list-news");
@@ -227,21 +303,28 @@ const Page = ({ params }: newsProps) => {
 
   const handleImageSelect = (images: any[]) => {
     if (openSheetIndex === null) {
-      setMainSelectedFiles(images.map((img) => ({ url: img.url })));
+      const urls = images.map((img) => img.url);
+      setMainSelectedFiles(images);
+      form.setValue("selectedImage", urls[0] || "");
     } else {
       const newTagFiles = [...tagSelectedFiles];
-      newTagFiles[openSheetIndex] = images.map((img) => ({ url: img.url }));
+      newTagFiles[openSheetIndex] = images;
       setTagSelectedFiles(newTagFiles);
+      form.setValue(
+        `tags.${openSheetIndex}.selectedImage`,
+        images[0]?.url || ""
+      );
     }
+    setSheetOpen(false);
   };
 
   if (isLoading) {
-    return <p>Loading............</p>;
+    return <Loading />;
   }
 
   return (
     <>
-      <TopBar />
+      <UpdateTopBar />
       <div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -250,20 +333,29 @@ const Page = ({ params }: newsProps) => {
                 {/* Reporter Info Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">প্রতিনিধি তথ্য:</h1>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <SelectInput
-                      control={form.control}
-                      name="reporterType"
-                      placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
-                      options={reporterTypeOption}
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                    <div>
+                      <SelectInput
+                        control={form.control}
+                        name="reporterType"
+                        placeholder="প্রতিনিধি টাইপ নির্বাচন করুন"
+                        options={reporterTypeOption}
+                      />
+                    </div>
+                    <div>
+                      <DateTimeInput
+                        control={form.control}
+                        type="datetime-local"
+                        name="reportedDate"
 
-                    <DateTimeInput
-                      control={form.control}
-                      type="datetime-local"
-                      name="reportedDate"
-                    />
-                    <div className="col-span-2">
+                      
+                   
+                     
+                       
+                
+                      />
+                    </div>
+                    <div className="col-span-1 md:col-span-2">
                       <TextInput
                         control={form.control}
                         name="reporterName"
@@ -292,22 +384,48 @@ const Page = ({ params }: newsProps) => {
                       <>
                         <h1 className="mb-1 font-semibold">নিউজ এলাকা</h1>
                         <div className="col-span-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
-                          <SelectorWithSearch
+                          <SelecteWithSearch
                             name="division"
-                            options={divisionOption}
+                            options={Object.keys(locationData).map((div) => ({
+                              label: div,
+                              value: div,
+                            }))}
                             label="বিভাগ নির্বাচন করুন"
+                            onChange={(value) => {
+                              // Reset district and upazila when division changes
+                              form.setValue("district", "");
+                              form.setValue("upazila", "");
+                              setUpazilaOptions([]);
+                            }}
                           />
-                          <SelectorWithSearch
+
+                          <SelecteWithSearch
                             name="district"
-                            options={districtOption}
+                            options={districtOptions}
                             label="জেলা নির্বাচন করুন"
+                            onChange={(value) => {
+                              // Reset upazila when district changes
+                              form.setValue("upazila", "");
+                            }}
                           />
-                          <SelectorWithSearch
+
+                          <SelecteWithSearch
                             name="upazila"
-                            options={upazilaOption}
+                            options={upazilaOptions}
                             label="উপজেলা নির্বাচন করুন"
                           />
                         </div>
+                        <section className="bg-white py-3 border-2 border-dashed rounded-lg mt-2 md:col-span-2 xl:col-span-1">
+                          <RadioInput
+                            title={"জনপদের সংবাদ?"}
+                            name="localNews"
+                            value={localNews}
+                            onChange={(value: boolean) => {
+                              setLocalNews(value);
+                              form.setValue("localNews", value);
+                            }}
+                          />
+                        </section>
                       </>
                     )}
                     {newsType === "International" && (
@@ -329,16 +447,21 @@ const Page = ({ params }: newsProps) => {
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">সংবাদের তথ্য:</h1>
                   <div>
-                    <Sheet>
+                    <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                       <SheetTrigger asChild>
                         <Button
                           variant="outline"
                           className="p-8 border rounded-full mb-5"
+                          onClick={() => setOpenSheetIndex(null)}
                         >
                           <ImageUpIcon color="red" size={50} /> Add Image
                         </Button>
                       </SheetTrigger>
-                      <SheetContent side="right" style={{ maxWidth: "800px" }}>
+                      <SheetContent
+                        side="right"
+                        style={{ maxWidth: "800px" }}
+                        className="overflow-auto"
+                      >
                         <SheetTitle className="sr-only">
                           Image Selection Modal
                         </SheetTitle>
@@ -349,15 +472,31 @@ const Page = ({ params }: newsProps) => {
                       </SheetContent>
                     </Sheet>
                   </div>
-                  {mainSelectedFiles.map((file, index) => (
-                    <Image
-                      key={index}
-                      src={file.url}
-                      alt={`Preview ${index}`}
-                      width={130}
-                      height={100}
-                    />
-                  ))}
+
+                  <div className="flex flex-wrap gap-4 mb-3">
+                    {mainSelectedFiles.map((file, index) => (
+                      <div key={index} className="relative rounded-lg group">
+                        <Image
+                          src={file.url}
+                          alt={`Preview ${index}`}
+                          width={150}
+                          height={150}
+                          className="lg:h-[150px] lg:w-[150px] rounded-lg object-cover"
+                        />
+                        <button
+                          onClick={() => {
+                            setMainSelectedFiles((files) =>
+                              files.filter((_, i) => i !== index)
+                            );
+                          }}
+                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                        >
+                          <CircleX />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
                   <div className="space-y-2">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       <div className="col-span-2">
@@ -381,13 +520,17 @@ const Page = ({ params }: newsProps) => {
                           ) || []
                         }
                       />
-                      <NewsType
+
+                      <NewsLocation
                         form={form}
-                        name="displayLocation"
-                        className="mb-4"
+                        name="newsLocation"
+                        className=""
+                        rules={{ required: "News type is required" }}
                         setFirstPage={setFirstPage}
+                        initialFirstPage={singleData?.firstPage}
                       />
                     </div>
+
                     <div className="col-span-2">
                       <TextInput
                         control={form.control}
@@ -405,7 +548,6 @@ const Page = ({ params }: newsProps) => {
                     <div className="col-span-2">
                       <RichText
                         name="description"
-                        placeholder="বিস্তারিত বর্ণনা"
                       />
                     </div>
                   </div>
@@ -417,81 +559,13 @@ const Page = ({ params }: newsProps) => {
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">সংবাদ ট্যাগ:</h1>
                   <div className="col-span-2">
-                    {fields.map((field, index) => (
-                      <div key={field.id} className="flex flex-col space-y-3">
-                        <div className="flex justify-between items-center gap-2 p-4">
-                          <Sheet>
-                            <SheetTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className="p-8 border rounded-full"
-                              >
-                                <ImageUpIcon color="red" size={50} />
-                                Add Image
-                              </Button>
-                            </SheetTrigger>
-                            <SheetContent
-                              side="right"
-                              style={{ maxWidth: "800px" }}
-                            >
-                              <AllImgModal
-                                onImageSelect={(images: any) => {
-                                  const newTagFiles = [...tagSelectedFiles];
-                                  newTagFiles[index] = images;
-                                  setTagSelectedFiles(newTagFiles);
-                                }}
-                                onClose={() => setOpenSheetIndex(null)}
-                              />
-                            </SheetContent>
-                          </Sheet>
-                          <div className="flex justify-end gap-2">
-                            {fields.length > 1 && (
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => remove(index)}
-                              >
-                                <Delete className="w-4 h-4" />
-                              </Button>
-                            )}
-                            {index === fields.length - 1 && (
-                              <Button
-                                type="button"
-                                variant="default"
-                                size="sm"
-                                onClick={() =>
-                                  append({
-                                    imageTagline: "",
-                                    photojournalistName: "",
-                                    selectedImage: "",
-                                  })
-                                }
-                              >
-                                <PlusIcon className="w-4 h-4" />
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                        {/* Tag Image Display */}
-                        {tagSelectedFiles[index]?.map((file, imgIndex) => (
-                          <Image
-                            key={imgIndex}
-                            src={file.url}
-                            alt={`Preview ${imgIndex}`}
-                            width={130}
-                            height={100}
-                          />
-                        ))}
-                        <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
-                          <TextInput
-                            control={form.control}
-                            name="imageTagline"
-                            placeholder="ইমেজ ট্যাগ লাইন"
-                          />                          
-                        </div>
-                      </div>
-                    ))}
+                    <div className="grid grid-cols-1 md:grid-cols-1 xl:grid-cols-0 gap-4">
+                      <TextInput
+                        control={form.control}
+                        name="imageTagline"
+                        placeholder="ইমেজ ট্যাগ লাইন"
+                      />
+                    </div>
                   </div>
                 </section>
 
@@ -512,7 +586,10 @@ const Page = ({ params }: newsProps) => {
                     title="ক্যারেন্ট নিউজ হিসেবে রাখতে চাচ্ছেন ?"
                     name="currentNews"
                     value={currentNews}
-                    onChange={(value: boolean) => setCurrentNews(value)}
+                    onChange={(value: boolean) => {
+                      setCurrentNews(value);
+                      form.setValue("currentNews", value);
+                    }}
                   />
                 </section>
 
@@ -541,22 +618,29 @@ const Page = ({ params }: newsProps) => {
                 {/* SEO Section */}
                 <section className="bg-white border border-gray-300 rounded p-5">
                   <h1 className="mb-2 font-semibold">SEO Section:</h1>
-                  <CardContent className="space-y-5">
-                    <TextInput
-                      control={form.control}
-                      name="metaTitle"
-                      label="Meta Title"
-                      type="text"
-                      placeholder="Enter Meta Title"
-                    />
-                    <TextArea
-                      control={form.control}
-                      name="metaDescription"
-                      label="Meta Description"
-                      placeholder="Enter Meta Description"
-                    />
-                    <TagSelector name="metaKeywords" label="Meta Keywords" />
-                  </CardContent>
+
+                  <TextInput
+                    control={form.control}
+                    name="metaTitle"
+                    label="Meta Title"
+                    type="text"
+                    placeholder="Enter Meta Title"
+                  />
+                  <TextArea
+                    control={form.control}
+                    name="metaDescription"
+                    label="Meta Description"
+                    placeholder="Enter Meta Description"
+                  />
+                  {/* <TagSelector
+                    name="metaKeywords"
+                    label="Meta Keywords"
+                  /> */}
+                  <TagSelector
+                    name="metaKeywords"
+                    label="Meta Keywords"
+                    // defaultValues={singleData?.metaKeywords || []}
+                  />
                 </section>
               </div>
             </div>
@@ -564,7 +648,7 @@ const Page = ({ params }: newsProps) => {
             {/* Submit Section */}
             <section className="my-4 flex justify-end">
               <Button type="submit" className="w-[400px] text-white">
-                Submit
+                Update
               </Button>
             </section>
           </form>

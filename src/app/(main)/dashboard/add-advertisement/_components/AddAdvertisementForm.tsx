@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 "use client";
 
 import AllImgModal from "@/components/Shared/AllImagesModal/AllImgModal";
@@ -11,7 +11,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import TextInput from "@/utils/Form_Inputs/TextInput";
-import { ImageUpIcon } from "lucide-react";
+import { CircleX, ImageUpIcon } from "lucide-react";
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Form } from "@/components/ui/form";
@@ -94,7 +94,7 @@ const router = useRouter();
     <>
       <div className="max-w-xl mx-auto">
         <TopBar />
-        <div className="bg-white rounded border-gray-300 p-8 shadow-sm">
+        <div className="bg-white rounded border-gray-300 p-4 lg:p-8 shadow-sm">
           <div className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-800 mb-2">
               Add Image
@@ -132,15 +132,29 @@ const router = useRouter();
                 </Sheet>
               </div>
 
-              {mainSelectedFiles.map((file, index) => (
-                <Image
-                  key={index}
-                  src={file.url}
-                  alt={`Preview ${index}`}
-                  width={130}
-                  height={100}
-                />
-              ))}
+              <div className="flex flex-wrap gap-4">
+                  {mainSelectedFiles.map((file, index) => (
+                    <div key={index} className="relative rounded-lg group">
+                      <Image
+                        src={file.url}
+                        alt={`Preview ${index}`}
+                        width={150}
+                        height={150}
+                        className="h-[150px] w-[150px] rounded-lg object-cover"
+                      />
+                      <button
+                        onClick={() => {
+                          setMainSelectedFiles(files => files.filter((_, i) => i !== index));
+                        }}
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                       <CircleX />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+             
 
               {/* Additional Link Section */}
               <div className="space-y-2">
@@ -154,8 +168,8 @@ const router = useRouter();
                   rules={{
                     required: "Additional Link is required",
                     pattern: {
-                      value:
-                        /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
+                      // value:
+                        // /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
                       message: "Please enter a valid URL with https://",
                     },
                   }}

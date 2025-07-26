@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,13 @@ type TagInputProps = {
   tags: Tag[];
   setTags: React.Dispatch<React.SetStateAction<Tag[]>>;
 };
+const handleImageSelect = (images: any[]) => {
+  // Handle image selection here
+};
 
+const handleClose = () => {
+  // Handle modal close here
+};
 const TagsInput = ({ control, tags, setTags }: TagInputProps) => {
   const handleAddTag = () => {
     setTags([
@@ -55,9 +62,9 @@ const TagsInput = ({ control, tags, setTags }: TagInputProps) => {
                       <ImageUpIcon color="red" size={50} />
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="right" style={{ maxWidth: "800px" }}>
+                  <SheetContent side="right" style={{ maxWidth: "800px" }} className="overflow-auto">
                     <SheetTitle className="sr-only">tags</SheetTitle>
-                    <AllImgModal />
+                    <AllImgModal onImageSelect={handleImageSelect} onClose={handleClose} />
                   </SheetContent>
                 </Sheet>
 

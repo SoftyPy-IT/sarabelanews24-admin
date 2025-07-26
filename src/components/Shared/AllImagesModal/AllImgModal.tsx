@@ -6,22 +6,24 @@ import Upload from "./Upload";
 import Recent from "./Recent";
 
 const AllImgModal = ({
-  onImageSelect, // Add this prop
+  onImageSelect,
   onClose,
 }: {
   onImageSelect: (images: any[]) => void;
   onClose: () => void;
 }) => {
+  const handleImageSelect = (images: any[]) => {
+    onImageSelect(images);
+  };
   return (
     <div className="w-full mt-5">
-      <Tabs defaultValue="account" className="w-[750px]">
+      <Tabs defaultValue="account" className="responsive-sheet">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="account">Recent</TabsTrigger>
           <TabsTrigger value="password">New Upload</TabsTrigger>
         </TabsList>
         <TabsContent value="account">
-          {/* Pass onImageSelect to Recent */}
-          <Recent onImageSelect={onImageSelect} onClose={onClose} />
+          <Recent onImageSelect={handleImageSelect} onClose={onClose} />
         </TabsContent>
         <TabsContent value="password">
           <Upload onSuccess={onClose} />
