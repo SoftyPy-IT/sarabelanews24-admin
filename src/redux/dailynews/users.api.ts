@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "../api/baseApi";
 
 const usersApi = baseApi.injectEndpoints({
@@ -18,14 +19,23 @@ const usersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["user"],
     }),
+
     getAllUser: builder.query({
       query: () => ({
         url: "/user",
         method: "GET",
-    
       }),
       providesTags: ["user"],
     }),
+
+    getCurrentUser: builder.query<any, void>({
+      query: () => ({
+        url: "/user/me",
+        method: "GET",
+      }),
+      providesTags: ["user"],
+    }),
+
     getSingleUser: builder.query({
       query: (id) => ({
         url: `/user/${id}`,
@@ -33,11 +43,12 @@ const usersApi = baseApi.injectEndpoints({
       }),
       providesTags: ["user"],
     }),
+
     updateUser: builder.mutation({
-      query: ({ id, ...data }) => ({
+      query: ({ id, body }) => ({
         url: `/user/${id}`,
         method: "PATCH",
-        data,
+        data: body,
       }),
       invalidatesTags: ["user"],
     }),
@@ -45,9 +56,10 @@ const usersApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useCreateUserMutation, 
-  useDeleteUserMutation, 
+  useCreateUserMutation,
+  useDeleteUserMutation,
   useGetAllUserQuery,
+  useGetCurrentUserQuery,
   useGetSingleUserQuery,
-  useUpdateUserMutation
+  useUpdateUserMutation,
 } = usersApi;
