@@ -82,7 +82,7 @@ const CategoryList = () => {
 
   return (
     <>
-      {/* <div className="overflow-x-auto w-[800px] mx-auto "> */}
+    
         <TopBar />
         <div className="bg-white lg:py-5 px-2 lg:px-8 rounded">
           <DataTable
