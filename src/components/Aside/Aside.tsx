@@ -163,7 +163,7 @@ const Aside = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
                             "hover:bg-blue-600/20",
                             pathname === child.href && "text-blue-200 border-b-2 border-white"
                           )}
-                          onClick={toggleSidebar} // Close sidebar when clicked
+                          onClick={toggleSidebar} 
                         >
                           <child.icon className="w-4 h-4 mr-2" />
                           {child.label}
