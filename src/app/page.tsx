@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
 import { motion } from "framer-motion"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
+// import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Eye, EyeOff } from "lucide-react"
 import TextInput from "@/utils/Form_Inputs/TextInput"
@@ -97,7 +97,7 @@ const ParticleBackground = () => {
 }
 
 const Page = () => {
-  const router = useRouter()
+  // const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
 
   const form = useForm<FormData>({
@@ -108,7 +108,7 @@ const Page = () => {
   })
 
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
+ const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       const res = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/auth/login`, data);
   
@@ -118,7 +118,7 @@ const Page = () => {
         setCookie("accessToken", accessToken, { expires: 7 });
   
         localStorage.setItem("accessToken", accessToken);
-        router.push("/dashboard");
+        window.location.href="/dashboard"
         toast.success("Login successful!");
       } else {
         console.error("Access Token not found in response");
@@ -139,6 +139,7 @@ const Page = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
   }
+
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-2 md:px-0 overflow-hidden">
