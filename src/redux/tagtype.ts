@@ -6,6 +6,7 @@ export const tagTypesList = [
     "user",
     "folder",
     "images",
-    "photoNews"
+    "photoNews",
+    "visitor"
   ];
   
