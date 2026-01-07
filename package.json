@@ -68,7 +68,7 @@
     "lowlight": "^3.3.0",
     "lucide-react": "^0.469.0",
     "multiselect-react-dropdown": "^2.0.25",
-    "next": "^15.2.3",
+    "next": "^15.0.5",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
